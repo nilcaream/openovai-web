@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenOv AI — a small team of AI developer sessions on one machine</title>
+<meta name="description" content="A toolkit for running a small team of AI developer sessions on one machine, built on top of Claude Code. One session is the lead; the others are named workers with one task each.">
+<link rel="canonical" href="https://openov.ai/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/">
+<meta property="og:title" content="OpenOv AI">
+<meta property="og:description" content="A toolkit for running a small team of AI developer sessions on one machine. Every session's identity is a directory on disk, not a process.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="#install">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <p class="tag">Early development &middot; prototype</p>
+    <h1>A small team of AI developer sessions, on one machine.</h1>
+    <p class="lead">
+      A toolkit for running a small team of AI developer sessions on one machine, built on top of
+      <a href="https://code.claude.com">Claude Code</a>. One session is the lead; the others are
+      named workers with one task each.
+    </p>
+    <p class="lead">
+      Every session's identity is a directory on disk, not a process &mdash; so a session can be
+      replaced at any time without losing the work.
+    </p>
+    <p class="cta">
+      <a class="btn" href="#install">Install it</a>
+      <a class="btn btn-quiet" href="https://github.com/nilcaream/openovai">Read the source</a>
+    </p>
+  </section>
+
+  <section class="wrap">
+    <figure class="term" aria-labelledby="room-cap">
+      <figcaption id="room-cap">The room &mdash; one line per session, above the panels.</figcaption>
+      <pre>Paul — worker — reading the water meter — answering, 1 waiting · 24,479 tokens · last moved just now
+Ann  — worker — writing the install notes — <b>needs you</b> · 8,102 tokens · last moved 2m ago
+Ivy  — worker — (has not said what it is on) — idle · nothing to carry on · nothing said yet
+Leo  — worker — checking the meter reads — idle, last ran 40m ago · refused until 14:30 · 12,004 tokens</pre>
+    </figure>
+    <p class="note">
+      What would otherwise mean opening every panel and reading it. <b>needs you</b> comes first:
+      that session is stopped until somebody answers it, and answering is a click.
+    </p>
+  </section>
+
+  <section class="wrap">
+    <h2>The idea</h2>
+    <ul class="marks">
+      <li><b>A desk is a person.</b> Each worker owns a directory holding one Markdown state file.
+        That file, not the session's memory, is what a replacement session reads to continue.</li>
+      <li><b>Handover replaces summarisation.</b> When a session's conversation fills up, it is
+        asked to write its desk and the thread is ended; the next message on that panel starts a
+        fresh one, which reads the desk first. Nothing is compacted away.</li>
+      <li><b>One lead, many workers.</b> The lead delegates, takes the workers' questions and
+        decides what reaches the human. Workers do the work and leave when it ships.</li>
+      <li><b>Every session is hosted on the page.</b> Nobody has a terminal of their own. The lead
+        and every worker get the same panel, with the same text box under it.</li>
+      <li><b>One place says who is doing what.</b> A room above the panels gives each session a
+        line: what it is on, whether it is answering, how big its conversation has grown and how
+        long since anything happened on its panel.</li>
+      <li><b>Built from ordinary Claude Code features.</b> Agent personas, hooks, skills, project
+        settings, plus a few shell and Node launchers and a small web page to host them on.</li>
+    </ul>
+  </section>
+
+  <section class="wrap">
+    <h2>Why a handover, and not a summary</h2>
+    <p>
+      Resuming a conversation the model service has stopped holding costs most of it again at
+      write price: measured at fourteen times an ordinary turn on a conversation of 40,000
+      tokens, and about twenty on a large one. So a full session is not resumed. It writes its
+      desk, ends, and a fresh one reads the desk and carries on.
+    </p>
+    <p class="note">
+      This is not a setting and there is nothing to turn on. It is the shape of the thing.
+    </p>
+  </section>
+
+  <section class="wrap" id="install">
+    <h2>Install</h2>
+    <p>
+      There is no package and no one-line installer yet. You clone the repository and run the
+      installer from it. Every option is required: the installer never prompts and never guesses,
+      so one command line describes a whole instance and can be read back and repeated.
+    </p>
+    <div class="term term-copy">
+      <button type="button" class="copy ghost" data-copy="install" hidden>Copy</button>
+<pre id="install-cmd">git clone https://github.com/nilcaream/openovai.git
+cd openovai
+./install.sh --root ~/trying-it --source . --human Mike --leader Superman \
+             --leader-model sonnet --worker-model haiku --port 0 --auth inherit
+~/trying-it/bin/ovai hire Paul
+~/trying-it/bin/ovai chat</pre>
+    </div>
+    <p class="note"><code>ovai chat</code> prints the address it is listening on. Open it, and ask
+      Paul for something on his panel.</p>
+
+    <h3>What it needs</h3>
+    <ul class="marks marks-tight">
+      <li>Claude Code</li>
+      <li>Node.js 24 or newer</li>
+      <li>Bash 4</li>
+      <li><code>tar</code>, to take a newer version</li>
+      <li>A Linux desktop</li>
+    </ul>
+  </section>
+
+  <section class="wrap">
+    <h2>Where it is</h2>
+    <p>
+      It is a prototype and it says so. The design is being worked out in the open, so the layout,
+      the names and the interfaces will move. The README is the documentation &mdash; one read
+      rather than a reference, including the places where what it claims is narrower than it
+      looks.
+    </p>
+    <p class="cta">
+      <a class="btn" href="https://github.com/nilcaream/openovai">github.com/nilcaream/openovai</a>
+    </p>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+# The whole deploy. There is no build: the repository root IS the site, so this uploads it and
+# publishes it. The alternative is Pages' own "Deploy from a branch", which needs no file at all;
+# this exists so the deploy is written down, greppable, and has somewhere to grow a link check.
+#
+# No secret is involved anywhere. The only credential is GITHUB_TOKEN, which the run is given,
+# is scoped to this repository, and expires when the job ends.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege, top level: nothing here reads or writes repository contents beyond checking
+# them out, and `pages`/`id-token` are exactly what deploy-pages needs and nothing more.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and a newer push wins. `cancel-in-progress: false` so a run that is
+# already publishing is allowed to finish rather than leaving the site half-swapped.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      # The site is the repository root. Nothing is compiled, so nothing is excluded.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

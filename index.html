@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OpenOv AI — a small team of AI developer sessions on one machine</title>
-<meta name="description" content="A toolkit for running a small team of AI developer sessions on one machine, built on top of Claude Code. One session is the lead; the others are named workers with one task each.">
+<meta name="description" content="A toolkit for running a small team of AI developer sessions on one machine, built on top of Claude Code. One session is the Leader; the others are named Workers with one task each.">
 <link rel="canonical" href="https://openov.ai/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/">
@@ -38,8 +38,8 @@
     <h1>A small team of AI developer sessions, on one machine.</h1>
     <p class="lead">
       A toolkit for running a small team of AI developer sessions on one machine, built on top of
-      <a href="https://code.claude.com">Claude Code</a>. One session is the lead; the others are
-      named workers with one task each.
+      <a href="https://code.claude.com">Claude Code</a>. One session is the Leader; the others are
+      named Workers with one task each.
     </p>
     <p class="lead">
       Every session's identity is a directory on disk, not a process &mdash; so a session can be
@@ -109,7 +109,7 @@ Leo  — worker — checking the meter reads — idle, last ran 40m ago · refus
       <button type="button" class="copy ghost" data-copy="install" hidden>Copy</button>
 <pre id="install-cmd">git clone https://github.com/nilcaream/openovai.git
 cd openovai
-./install.sh --root ~/trying-it --source . --human Mike --leader Superman \
+./install.sh --root ~/trying-it --source . --user Mike --leader Superman \
              --leader-model sonnet --worker-model haiku --port 0 --auth inherit
 ~/trying-it/bin/ovai hire Paul
 ~/trying-it/bin/ovai chat</pre>

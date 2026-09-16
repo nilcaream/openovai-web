@@ -52,36 +52,19 @@
   </section>
 
   <section class="wrap">
-    <figure class="term" aria-labelledby="room-cap">
-      <figcaption id="room-cap">The room &mdash; one line per session, above the panels.</figcaption>
-      <pre>Paul — worker — reading the water meter — answering, 1 waiting · 24,479 tokens · last moved just now
-Ann  — worker — writing the install notes — <b>needs you</b> · 8,102 tokens · last moved 2m ago
-Ivy  — worker — (has not said what it is on) — idle · nothing to carry on · nothing said yet
-Leo  — worker — checking the meter reads — idle, last ran 40m ago · refused until 14:30 · 12,004 tokens</pre>
-    </figure>
-    <p class="note">
-      What would otherwise mean opening every panel and reading it. <b>needs you</b> comes first:
-      that session is stopped until somebody answers it, and answering is a click.
-    </p>
-  </section>
-
-  <section class="wrap">
     <h2>The idea</h2>
     <ul class="marks">
-      <li><b>A desk is a person.</b> Each worker owns a directory holding one Markdown state file.
+      <li><b>A desk is a person.</b> Each Worker owns a directory holding one Markdown state file.
         That file, not the session's memory, is what a replacement session reads to continue.</li>
       <li><b>Handover replaces summarisation.</b> When a session's conversation fills up, it is
-        asked to write its desk and the thread is ended; the next message on that panel starts a
-        fresh one, which reads the desk first. Nothing is compacted away.</li>
-      <li><b>One lead, many workers.</b> The lead delegates, takes the workers' questions and
-        decides what reaches the human. Workers do the work and leave when it ships.</li>
-      <li><b>Every session is hosted on the page.</b> Nobody has a terminal of their own. The lead
-        and every worker get the same panel, with the same text box under it.</li>
-      <li><b>One place says who is doing what.</b> A room above the panels gives each session a
-        line: what it is on, whether it is answering, how big its conversation has grown and how
-        long since anything happened on its panel.</li>
-      <li><b>Built from ordinary Claude Code features.</b> Agent personas, hooks, skills, project
-        settings, plus a few shell and Node launchers and a small web page to host them on.</li>
+        asked to write its desk and the thread is ended; a fresh one starts on the same desk, in the
+        same panel, and reads the desk first. Nothing is compacted away.</li>
+      <li><b>One Leader, many Workers.</b> The Leader delegates, takes the Workers' questions and
+        decides what reaches the User. Workers do the work and leave when it ships.</li>
+      <li><b>Every session is hosted on the page.</b> Nobody has a terminal of their own. The Leader
+        and every Worker get the same panel, with the same text box under it.</li>
+      <li><b>Built from ordinary Claude Code features.</b> Agent personas, project settings, an
+        MCP server, plus a few shell and Node launchers and a small web page to host them on.</li>
     </ul>
   </section>
 
@@ -109,8 +92,8 @@ Leo  — worker — checking the meter reads — idle, last ran 40m ago · refus
       <button type="button" class="copy ghost" data-copy="install" hidden>Copy</button>
 <pre id="install-cmd">git clone https://github.com/nilcaream/openovai.git
 cd openovai
-./install.sh --root ~/trying-it --source . --user Mike --leader Superman \
-             --leader-model sonnet --worker-model haiku --port 0 --auth inherit
+./install.sh --root ~/trying-it --source . --user Nil --leader Bob \
+             --leader-model opus --worker-model opus --port 0 --auth inherit
 ~/trying-it/bin/ovai hire Paul
 ~/trying-it/bin/ovai chat</pre>
     </div>

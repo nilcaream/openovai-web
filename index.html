@@ -94,11 +94,10 @@
 cd openovai
 ./install.sh --root ~/trying-it --source . --user Nil --leader Bob \
              --leader-model opus --worker-model opus --port 0 --auth inherit
-~/trying-it/bin/ovai hire Paul
-~/trying-it/bin/ovai chat</pre>
+~/trying-it/bin/ovai start</pre>
     </div>
-    <p class="note"><code>ovai chat</code> prints the address it is listening on. Open it, and ask
-      Paul for something on his panel.</p>
+    <p class="note"><code>ovai start</code> starts the server in the background and prints the address it
+      is listening on. Open it, and ask Bob for something on his panel; <code>ovai stop</code> stops it.</p>
 
     <h3>What it needs</h3>
     <ul class="marks marks-tight">

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ and troubleshooting — OpenOv AI</title>
+<meta name="description" content="The questions a first evening raises: the Leader not answering, a port taken, an update refusing, a Worker gone quiet, everything stopping at once, a card you did not see, two instances, where the conversation is, macOS, and whether it is safe to leave running.">
+<link rel="canonical" href="https://openov.ai/faq/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/faq/">
+<meta property="og:title" content="FAQ and troubleshooting — OpenOv AI">
+<meta property="og:description" content="Ten questions a first evening raises, and what each one means.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="faq">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>FAQ and troubleshooting</h1>
+    <p class="lead">
+      The questions a first evening raises. Most of them have one answer, and the answer is usually
+      something the instance already said &mdash; on the panel, in the terminal, or in
+      <code>runtime.log</code> at the root.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="leader">The Leader is not answering</h2>
+    <p>
+      The Leader starts on the first thing addressed to it, so a panel that shows history and no
+      reply is usually an instance that is not signed in. <code>ovai configuration</code> reports
+      whether the instance has a credential, and says plainly that it has not checked it against
+      Anthropic: finding out costs a request, so the first message is where a dead credential shows
+      up. Under <code>--auth login</code>, <code>~/workspace/bin/ovai login</code> opens a browser
+      once. Under <code>--auth inherit</code> the instance takes <code>CLAUDE_CODE_OAUTH_TOKEN</code>
+      from the environment it was started in &mdash; start the server from a shell that has it. The
+      seat's own words for what went wrong are on its panel; the server's are in
+      <code>runtime.log</code>.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="port">The port is taken</h2>
+    <p>
+      <code>ovai start</code> says so and names what holds it &mdash; the pid, and the command line
+      when it can read one &mdash; and asks you to stop that. A server of this instance already
+      running is a different message: it is reported with its address and left alone. If the port
+      is somebody else's for good, install over the instance with <code>--force</code> and another
+      <code>--port</code>, or <code>0</code> for whatever is free; the option you give is written
+      into <code>openovai.json</code> and everything else is kept.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="update"><code>ovai update</code> refuses</h2>
+    <p>
+      It refuses while the server is running, and while any session of this instance is running
+      &mdash; found on the machine by the Claude Code home it carries. Each one is named with the
+      <code>kill &lt;pid&gt;</code> line that ends it, and the process's command line after it as a
+      comment, so a session of yours can be told from a process that merely carried the instance's
+      home; the line still pastes. <code>ovai stop</code> first parks the room properly &mdash; every
+      session writes its desk &mdash; and then the update goes through. It also refuses to go
+      backwards by name: <code>--downgrade</code> takes an older release anyway, and
+      <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="quiet">A Worker went quiet, said "back in a moment", or disappeared</h2>
+    <p>
+      Three different things. <em>Quiet</em>: the Leader is told about a silent Worker at 10 and at
+      50 minutes; at 55 any seat is told it goes cold at 60, writes its desk and stops. A seat on a
+      turn &mdash; a card waiting included &mdash; is never idle. <em>Back in a moment</em>: its
+      context passed the ceiling; it wrote its desk and restarted, and a successor is starting on the
+      same desk, in the same panel, with whatever was queued carried over. <em>Disappeared</em>: a
+      Worker whose process has gone is dimmed with its text box closed and removed from the page
+      thirty seconds later; the desk stays, and the Leader's <code>hire</code> on that name brings
+      it back on the same desk with its rows. Ask the Leader; it was told each time.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="stopped">Everything stopped at once</h2>
+    <p>
+      Two causes, told apart by what the panels say. If a panel says which usage window is spent and
+      when it resets, it is the <a href="/how-it-works/#quota">quota gate</a> at its second stage:
+      the server holds every turn until the window resets, then releases them, the Leader's first;
+      nothing is lost, and nothing to do but wait, or talk to the Leader, whose held turns say so.
+      The Workers stopped a little earlier, at the first stage, on their own; after the reset the
+      Leader brings them back with <code>hire</code>.
+    </p>
+    <figure class="media">
+      <b>[media 18]</b>
+      <figcaption>screenshot: a held panel saying which window is spent and when it resets</figcaption>
+    </figure>
+    <p>
+      If instead every instance on the machine stopped with the same message, an inherited token
+      expired: under <code>--auth inherit</code> the token is long-lived but not forever and cannot
+      refresh itself. Mint a new one with <code>claude setup-token</code>, export it where the
+      instances are started from, and start them again; one token fixes them all.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="waiting">A session was waiting on me and I did not see it</h2>
+    <p>
+      Nothing on that path times out: the run waits for as long as you take, and after ten minutes
+      the Leader is told once that somebody is waiting on their panel. To be told yourself, turn
+      the exclamation-mark switch on the Leader's head on: a card appearing on any panel then
+      reaches you through the browser's notifications while the page is not visible, and a click on
+      it brings that panel into view. From another tab, the page's icon carries a ring while any
+      panel is waiting for you. Both are described under
+      <a href="/customization/#notifications">notifications</a>.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="two">Can I run two instances?</h2>
+    <p>
+      Yes; that is what an instance being a directory is for. Two on one machine share the runtimes
+      under <code>~/.local/share/openovai/</code> and nothing else: not the account, not the
+      transcripts, not the port &mdash; each has its own Claude Code home. For two different
+      accounts install both with <code>--auth login</code> and sign each in; with
+      <code>--auth inherit</code> they share the one token. Give them different ports, or
+      <code>0</code> each.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="conversation">Where is the conversation?</h2>
+    <p>
+      What you see on a panel is kept in <code>desks/&lt;Name&gt;/conversation.json</code> inside
+      the instance, one file per seat, so stopping the server does not throw it away; the desk file
+      beside it is the state the next session starts from. Claude Code's own transcripts are under
+      <code>.local/</code> at the instance root, its config directory for this instance. A retired
+      Worker's directory is moved whole under <code>archive/</code>, conversation included.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="macos">Can it run on macOS?</h2>
+    <p>
+      The requirement is a Linux desktop; that is what it is built and run on, and nothing else is
+      claimed. The pieces are ordinary &mdash; a POSIX shell script, Node.js, Claude Code, a page on
+      <code>127.0.0.1</code> &mdash; but the pinned runtimes are fetched for Linux, and no other
+      platform has been measured. When one has, this page will say so.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="safe">Is it safe to leave running?</h2>
+    <p>
+      The page listens on <code>127.0.0.1</code> only. A session does what the instance allows,
+      never gets to try what it denies &mdash; <code>git push</code>, <code>sudo</code> and
+      <code>ssh</code> from birth &mdash; and stops on a card for anything undecided, for as long as
+      you take. A seat idle for an hour writes its desk and stops. A tool of the server's is one
+      permission rule; a tool of yours under <code>plugins/</code> is one you wrote. The
+      <a href="/permissions/">permissions page</a> has the seeded rules and the shape of the ones
+      you add; what you leave the room allowed to do is what it can do while you are away.
+    </p>
+    <div class="callout">
+      <b>Next</b>
+      <p><a href="/reference/">Reference</a>: everything with a name, in tables.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

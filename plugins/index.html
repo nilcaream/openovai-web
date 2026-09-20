@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plugins: tools of your own — OpenOv AI</title>
+<meta name="description" content="A file under plugins/ is a tool every session can call: three exports, a restart, no permission card. The contract, what is refused and why, and one worked example built from scratch.">
+<link rel="canonical" href="https://openov.ai/plugins/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/plugins/">
+<meta property="og:title" content="Plugins: tools of your own — OpenOv AI">
+<meta property="og:description" content="The file is the tool. Three exports and a restart, and every session in the workspace can call it.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="plugins">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>Tools of your own</h1>
+    <p class="lead">
+      The eleven tools the server serves are the ones every workspace wants. The ones only yours
+      wants &mdash; the tracker your team files work in, the machine your builds run on &mdash; are
+      written where the machine is known, beside the instance. A file under <code>plugins/</code>
+      is a tool: three exports, a restart, and every session can call it.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="file">The file is the tool</h2>
+    <div class="term">
+<pre>~/workspace/bin/ovai plugin ci-status</pre>
+    </div>
+    <p>
+      writes <code>plugins/ci-status.mjs</code> from a scaffold, and that is the whole of adding
+      one. Its name is the tool's name, and the directory is the list: nothing is registered, no
+      list is kept in step, and renaming a tool is renaming its file. A name is a letter, then
+      letters, digits and hyphens, up to 32 of them &mdash; no underscore, because a permission rule
+      for one tool of a server is spelled <code>mcp__&lt;server&gt;__&lt;tool&gt;</code>, and a name
+      holding two of them would make a rule that named a different tool than the one you meant.
+    </p>
+    <p>
+      <code>ovai plugin</code> refuses a name the server already serves (<code>room</code> is a
+      name a tool can have; what is in the way is that this server already has one), and a name
+      whose file is already there: what is in that file is somebody's work, and a command that
+      quietly replaced it would be worse than the surprise it saved. <code>plugins/</code> sits at
+      the instance root beside <code>desks/</code>, outside everything an update replaces.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="contract">The contract</h2>
+    <p>A tool is three exports, and nothing else is read from the file:</p>
+    <figure class="term">
+<pre>export const description = "What it does, and what it refuses. A session reads this before calling.";
+export const inputSchema = { type: "object", properties: {}, additionalProperties: false };
+export function run(args, { seat, role, root, config }) {
+  return { text: `${seat} called, and this workspace lives at ${root}` };
+}</pre>
+    </figure>
+    <dl>
+      <dt>description</dt>
+      <dd>What a session reads before it decides whether to call this at all. Say what it does
+        <em>and</em> what it refuses: a session that cannot tell will either not call it or call
+        it wrongly.</dd>
+      <dt>inputSchema</dt>
+      <dd>What the call may carry, as a JSON schema. Every property wants a description of its own
+        &mdash; it is the only place a session is told what to put there &mdash; and
+        <code>required</code> says which of them it cannot leave out.</dd>
+      <dt>run(args, context)</dt>
+      <dd>The work. <code>args</code> is what the call carried. The context is what the server knows
+        about the caller: <code>seat</code> is who is calling, resolved from the process's secret and
+        never from anything the session says; <code>role</code> is <code>Leader</code> or
+        <code>Worker</code>; <code>root</code> is where the instance is, as an absolute path &mdash;
+        the one thing the file cannot work out for itself, since an instance records no path
+        anywhere; <code>config</code> is <code>openovai.json</code>, the names of the User and the
+        Leader included. It may be <code>async</code>.</dd>
+    </dl>
+    <p>
+      Answer <code>{ text }</code> with what to tell the caller, or <code>{ refused }</code> with
+      why not. A refusal is an answer: it arrives as words the calling session reads and can act on,
+      rather than as a call that failed. There is no third shape &mdash; a handler that forgets to
+      return is answered for by the server, with a refusal naming the file and what it answered
+      instead, so silence never reaches the model. Whatever <code>run</code> throws is caught and
+      reaches the caller the same way, naming the file; the server and everybody working in it
+      survive a bad afternoon in there. A tool of yours is offered to everybody and refuses in its
+      own words if it is the Leader's.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="example">One from scratch: what is on CI for this branch</h2>
+    <p>
+      A team that keeps asking "did the build of my branch pass?" gives the question to the
+      sessions. The whole tool is
+      <a href="/plugins/example/ci-status.mjs"><code>ci-status.mjs</code></a>, thirty lines with
+      its comments:
+    </p>
+    <figure class="term">
+<pre>const CI = "https://ci.example.com";
+
+export const description =
+  "The last build of a branch on CI: its state and where its log is. Read-only: it starts " +
+  "nothing and cancels nothing. Refuses a branch name that is not a plain ref.";
+
+export const inputSchema = {
+  type: "object",
+  properties: {
+    branch: { type: "string", description: "The branch, as git names it: main, feature/login." },
+  },
+  required: ["branch"],
+  additionalProperties: false,
+};
+
+export async function run({ branch }, { seat }) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(branch)) {
+    return { refused: `${branch} is not a branch name this tool asks CI about` };
+  }
+  const response = await fetch(`${CI}/api/builds?branch=${encodeURIComponent(branch)}&amp;limit=1`);
+  if (!response.ok) {
+    return { refused: `CI answered ${response.status} for ${branch}` };
+  }
+  const [build] = await response.json();
+  if (build === undefined) {
+    return { text: `no build of ${branch} on CI yet` };
+  }
+  return { text: `${branch}: ${build.state}, build #${build.number}, log at ${build.url} (asked by ${seat})` };
+}</pre>
+    </figure>
+    <p>Read it top to bottom, it is the contract in order:</p>
+    <ol class="steps">
+      <li>
+        <h3>The description says what it refuses</h3>
+        <p>"Read-only: it starts nothing and cancels nothing" is there for the session, not for
+          you: a Leader that has been told this does not reach for it to rerun a build, and does not
+          ask you whether it may.</p>
+      </li>
+      <li>
+        <h3>The schema names the one thing a call carries</h3>
+        <p>One property, described in git's own words, required, and nothing else allowed. A
+          session gets this text and nothing more when it decides what to put there.</p>
+      </li>
+      <li>
+        <h3>The first thing <code>run</code> does is refuse</h3>
+        <p>A branch name that is not a plain ref is answered with <code>{ refused }</code> before
+          anything leaves the machine. A refusal is words the session reads; it is not a failure,
+          and the turn goes on.</p>
+      </li>
+      <li>
+        <h3>Then it asks, and answers in one line</h3>
+        <p>The state, the build number, where the log is &mdash; and who asked, from
+          <code>seat</code>, which the session cannot forge. An answer a session can paste into its
+          reply as it is. A CI that is down is a refusal with the status code, never a throw.</p>
+      </li>
+    </ol>
+    <div class="callout callout-warn">
+      <b>What this example does not do</b>
+      <p>It has not been run against a CI server: <code>ci.example.com</code> and the JSON shape
+        &mdash; a list with <code>state</code>, <code>number</code>, <code>url</code> &mdash; are
+        stand-ins for whatever yours answers, and the first thing to change. It carries no
+        credential; a CI that needs one gets it from a file beside the plugin or from the
+        environment the server was started in, never from the session calling. And it never starts,
+        restarts or cancels anything &mdash; a tool that could would have to say so in its
+        description.</p>
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="restart">Scaffold, edit, restart</h2>
+    <ol class="steps">
+      <li>
+        <h3><code>ovai plugin ci-status</code></h3>
+        <p>writes <code>plugins/ci-status.mjs</code> from the scaffold: the three exports with
+          comments saying what each is for, and a <code>run</code> that refuses everybody but the
+          Leader, as a start. Replace it with the file above, or with yours.</p>
+      </li>
+      <li>
+        <h3><code>ovai restart</code></h3>
+        <p>Plugins are read once, when the server starts &mdash; a directory read on every call
+          would show a new file and go on serving the stale code of a changed one, and nobody could
+          tell which they had. So <strong>restart after writing or changing one</strong>. The log
+          then says, on a <code>plugins</code> row, <code>This instance serves a tool of its own:
+          ci-status</code> &mdash; or names the file and why it is not served.</p>
+      </li>
+      <li>
+        <h3>Ask on a panel</h3>
+        <p>Every seat sees it as <code>mcp__openovai__ci-status</code>, under the one permission
+          rule the instance already holds for the server's tools. "What did CI make of
+          <code>feature/login</code>?" on the Leader's panel is one tool line and one sentence back.
+          No card appears, for this tool or any other in <code>plugins/</code>.</p>
+      </li>
+    </ol>
+    <figure class="media">
+      <b>[media 16]</b>
+      <figcaption>screenshot: <code>ovai plugin</code> writing the file, the <code>plugins</code>
+        row in <code>runtime.log</code>, and a session calling the tool on a panel with no card</figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="refused">What is not served, and why</h2>
+    <p>
+      A file that cannot be served is not an error and not nothing. Not an error: the server starts
+      anyway and goes on serving the rest, since a workspace where nobody can talk to anybody is a
+      worse answer to a typo in one file than a workspace missing one tool. Not nothing: a tool
+      silently absent is the one failure this arrangement is most likely to produce, because the
+      directory <em>is</em> the list and a file in it looks served. So the reason is written to
+      <code>runtime.log</code>, one row per file, in these words:
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>the file</th><th>the row says</th></tr></thead>
+        <tbody>
+          <tr><td>is not named the way a tool is</td><td><code>plugins/my_tool.mjs is not served: "my_tool" is not a name a tool can have — a letter, then letters, digits and hyphens, up to 32 of them</code></td></tr>
+          <tr><td>takes a built-in name</td><td><code>plugins/room.mjs is not served: room is already the name of a tool the chat serves everywhere, and a file cannot take it</code></td></tr>
+          <tr><td>does not load &mdash; a syntax error, an import of something not installed, work at the top level that throws</td><td><code>plugins/ci-status.mjs is not served: it could not be read: &lt;the error&gt;</code></td></tr>
+          <tr><td>loads and is missing an export</td><td><code>plugins/ci-status.mjs is not served: a tool is description, inputSchema, run, and this one exports no inputSchema</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The first two are answered without reading the file; the two names are checked before the
+      module is imported, so a file called <code>room.mjs</code> is told it cannot be called that
+      instead of being appended to a list where the first <code>room</code> wins. A file that loads
+      and is missing a part is refused whole, while the answer can still be a sentence: offered, it
+      would be a tool with no description, or one a session calls and is answered by nothing.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="modules">Shared code goes in a directory</h2>
+    <p>
+      The loader serves the <code>.mjs</code> files of <code>plugins/</code> and never looks inside
+      a directory: a directory in there is not a tool with parts, anything that is not a module is
+      not a module, and notes somebody left beside their plugin are notes. So a module two tools
+      share lives in a subdirectory &mdash; <code>plugins/ci/client.mjs</code>, say &mdash; and each
+      tool imports it; a words file, a schedule, a token file sit beside the plugin the same way,
+      read by the tool and served by nobody. Files under <code>plugins/</code> are sorted by name
+      when the server lists what it serves, so the log reads the same on two machines.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="trust">Writing the file is the deciding</h2>
+    <p>
+      A tool of yours runs inside the server process, so the permission system never sees it:
+      there is no card for a plugin call, and no rule to grant, because <code>mcp__openovai</code>
+      is granted already. That is the point &mdash; a session calls your tracker the way it calls
+      <code>recall</code> &mdash; and it is also the whole of the trust model: whatever the file can
+      reach, a session that calls it reaches. Write the refusals in; give the tool the least it
+      needs; keep a credential out of the session's hands by keeping it out of the answer. And note
+      what a plugin is not: a tool a session chooses to call, never a way to the person. The page
+      notifies; a plugin cannot.
+    </p>
+    <div class="callout">
+      <b>Next</b>
+      <p><a href="/customization/">Customization</a>: the personas you extend, every key of
+        <code>openovai.json</code>, and no knob that does not exist.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

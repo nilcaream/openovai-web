@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customization: make it yours — OpenOv AI</title>
+<meta name="description" content="Every knob an instance has, and no more than there are: what you append to the personas, every key of openovai.json with its default, the models, the permission rules that are yours, the two notification switches, the theme, a fixed port and the web app.">
+<link rel="canonical" href="https://openov.ai/customization/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/customization/">
+<meta property="og:title" content="Customization: make it yours — OpenOv AI">
+<meta property="og:description" content="Personas you extend, every key of openovai.json, and what an update never touches.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="customization">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>Make it yours</h1>
+    <p class="lead">
+      An instance has a handful of knobs, and this page is all of them. What you add to the
+      personas, the one JSON file that describes the instance, the models, the permission rules,
+      the two switches on the Leader's head, and the port. Everything here is yours: an update
+      replaces the payload and leaves every one of these alone.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="personas">The personas</h2>
+    <p>
+      A persona is rendered once, when a seat's process starts, from the templates the instance has
+      at that moment, and kept beside that seat's conversation under <code>desks/&lt;Name&gt;/</code>.
+      What you add to it is yours: <code>customization/leader.md</code> or
+      <code>customization/worker.md</code> at the instance root is appended, as it is, to every
+      persona of that kind the instance renders. So an edit changes nothing for a process already
+      running, and reaches every process started after it &mdash; the next Worker hired, the Leader
+      after its next restart.
+    </p>
+    <p>
+      The place for what is true of your workspace and not of the product: the language the team
+      writes in, the shape of a commit message, where a design goes before it is built. Rules the
+      team should hold in front of every turn are better as <a href="/store/#hard-rules">hard
+      rules</a>, which reach a running session too; a persona addition is read at start and never
+      again.
+    </p>
+    <figure class="term">
+<pre># customization/worker.md
+
+Commit messages are one line, imperative, under 72 characters, and say what changed rather
+than what you did. A design goes in your desk directory as design.md before any code is written,
+and you say so to the Leader before you start on it.</pre>
+    </figure>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="json"><code>openovai.json</code></h2>
+    <p>
+      The instance's description of itself, at the root. The installer writes it &mdash; who works
+      here, on which models, on which port, how it signs in; no absolute path, so an instance can
+      be moved and still be itself &mdash; and an install over the instance with <code>--force</code>
+      writes any option you give into it. Everything below the first group is optional: absent, the
+      default holds. The server reads the file when it starts, so <code>ovai restart</code> after
+      an edit.
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>key</th><th>default</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td colspan="3"><em>written by the installer</em></td></tr>
+          <tr><td><code>user</code></td><td>&mdash;</td><td>the person the team works for</td></tr>
+          <tr><td><code>leader</code></td><td>&mdash;</td><td>the name of the session that leads the team</td></tr>
+          <tr><td><code>models.leader</code>, <code>models.worker</code></td><td>&mdash;</td><td>the models those sessions run on; a Worker named a model at <code>hire</code> is the exception</td></tr>
+          <tr><td><code>port</code></td><td>&mdash;</td><td>the port the page listens on, <code>127.0.0.1</code> only; <code>0</code> is whatever is free</td></tr>
+          <tr><td><code>auth</code></td><td>&mdash;</td><td><code>login</code> or <code>inherit</code></td></tr>
+          <tr><td><code>schema</code>, <code>createdAt</code></td><td>&mdash;</td><td>the file's version and when the instance was installed; <code>ovai configuration</code> reports the second</td></tr>
+          <tr><td colspan="3"><em>read when present</em></td></tr>
+          <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code></td><td>the two stages of the <a href="/how-it-works/#quota">quota gate</a>, in percent of each window; the <code>7d</code> pair holds every weekly window, the one over all models and fable's own alike</td></tr>
+          <tr><td><code>hardRules</code></td><td><code>{ "count": 25, "length": 200 }</code></td><td>how many <a href="/store/#hard-rules">hard rules</a> the store holds and how long one may be; a rule over the cap is refused with the cap</td></tr>
+          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when any seat is told to write its desk and stop</td></tr>
+          <tr><td><code>context</code></td><td><code>{ "ceiling": 160000 }</code></td><td>tokens: the request size at which a session is told <code>context-full</code> and hands over to a successor</td></tr>
+          <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, and how long a server stop waits for the whole room</td></tr>
+          <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code></td><td>minutes a Worker may wait on a card before the Leader is told once that somebody is waiting on your panel</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      That is the whole list. A key not on it is not read; a value of the wrong shape &mdash; a
+      string where a number goes, a pair with three numbers &mdash; falls back to the default for
+      that key and nothing else. There is no quiet-hours setting, no log level, no cache.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="models">Models</h2>
+    <p>
+      The instance was installed with a model for the Leader and one for the Workers, and
+      <code>ovai configuration</code> lists every desk with what it resolves to. A Worker hired
+      with a model beside its name is one that should not run on what the workspace runs its
+      Workers on; that word is kept in <code>desks/&lt;Name&gt;/MODEL</code>, its own file rather
+      than a line of the desk &mdash; the desk file is written by its session, and a model kept in
+      there would be a model that session could raise for itself. It goes away with the desk.
+      Leaving the model out at <code>hire</code> writes nothing down, so changing
+      <code>models.worker</code> moves everybody who was never named one, from their next process.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="rules">The rules are yours</h2>
+    <p>
+      <code>.claude/settings.json</code> under the instance root is seeded once and then belongs to
+      you: every card you answer with the third button and every rule the Leader settles with
+      <code>permission</code> is written there, and <code>.claude/allowed.md</code> beside it keeps
+      one line per rule &mdash; who asked, when, what for. An update touches it for two things and
+      no other: it wires the compound hook into a file that lacks it, and turns Claude Code's
+      commit attribution off in a file that says nothing about it. It adds no rule; it says which
+      of the rules a fresh instance is born with the file has not got, and leaves that to you. A
+      file that says something else about attribution is yours, and an update leaves it. The
+      <a href="/permissions/">permissions page</a> has the seeded set and the shape of a rule.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="notifications">Notifications and theme</h2>
+    <p>
+      Two icon buttons on the Leader's head, beside the theme toggle, are the whole of the
+      notification configuration: an exclamation mark for the action-needed notification
+      (<code>&lt;name&gt; requires your action</code> &mdash; a card appeared on some panel) and a
+      bell for the end-of-turn notification (<code>&lt;name&gt; finished their turn</code> &mdash;
+      the Leader's turn ended, however it ended). Each is lit while on and slashed across while off,
+      both off to begin with, kept by the browser for that page. The first switch you turn on asks
+      the browser for its permission, the way any site does, and lights only once the browser has
+      granted it; a prompt refused or dismissed leaves the switch off. Nothing is sent while the
+      page is visible &mdash; a tab you are looking at tells you itself. A click on a notification
+      brings the page to the front and the panel it came from into view; a burst on one panel
+      replaces its own, never stacks. Sound, and whether anything shows while you are in another
+      app, are the browser's and the system's, not the page's.
+    </p>
+    <figure class="media">
+      <b>[media 17]</b>
+      <figcaption>screenshot: a browser notification <code>Paul requires your action</code> over
+        another window; the tab's icon with the amber ring beside a plain one</figcaption>
+    </figure>
+    <p>
+      At the right edge of the same head, a toggle between light and dark. The page starts light;
+      a choice is kept by the browser for that page, the same way the two switches are.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="port">A fixed port, and the page as an app</h2>
+    <p>
+      <code>--port 0</code> at install means whatever is free, and <code>ovai start</code> prints the
+      address it actually got. Pick a number when you want the same one every time: a bookmark, or
+      the page installed as a web app. The page ships a manifest and three icons &mdash; one of them
+      for a platform that masks icons to its own shape &mdash; so the browser's "install" puts it
+      on your desktop like any app, which is what a fixed port is for. The port is on
+      <code>127.0.0.1</code> only, whatever the number.
+    </p>
+    <figure class="media">
+      <b>[media 19]</b>
+      <figcaption>screenshot: the installed web app's icon on a desktop</figcaption>
+    </figure>
+    <div class="callout">
+      <b>Next</b>
+      <p><a href="/faq/">FAQ</a>: the ten questions a first evening raises, and what each one
+        means.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

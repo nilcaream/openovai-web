@@ -107,10 +107,18 @@ openovai</pre>
       </li>
       <li class="card">
         <h3>The lifecycle is tools, not phrases.</h3>
-        <p>Full, idle, out of quota, parked: one server event each, one tool call back. The
-          quota gate warns the team, then holds every turn until the window resets, and lets
-          them go in order.</p>
+        <p>Full, idle, out of quota, parked: one server event each, one tool call back. No
+          button on the page starts or ends a seat, and a session cannot end before its desk is
+          written &mdash; the desk comes first, always.</p>
         <a href="/how-it-works/#lifecycle">The lifecycle &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>It knows the quota, and never runs it dry.</h3>
+        <p>The server reads the account's usage windows with every turn. Near the limit the
+          Workers write their desks and stop on their own; the Leader stays, because talking to
+          it costs little, and tells you which window and when it resets. A spent window holds
+          turns rather than failing them mid-work; after the reset the team is brought back.</p>
+        <a href="/how-it-works/#quota">The quota gate &rarr;</a>
       </li>
       <li class="card">
         <h3>Every session on one page.</h3>

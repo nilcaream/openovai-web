@@ -319,8 +319,34 @@ park           you said this is it for the day; or ovai stop, or any signal to t
     <p>
       A seat on a turn &mdash; a permission stop included &mdash; is never idle. A stop keeps the desk
       and the panel's rows; anything addressed to the Leader starts it again, and <code>hire</code>
-      on a stopped Worker's name brings it back on the same desk. Talking to a warm Leader costs
-      little, which is why it stays while the Workers stop.
+      on a stopped Worker's name brings it back on the same desk.
+    </p>
+
+    <h3 id="quota">Quota</h3>
+    <p>
+      The server reads the usage windows Claude Code reports with every turn &mdash; the session
+      window and the weekly one &mdash; and the weekly window of the one model that has its own,
+      from the account's usage endpoint. Two threshold pairs in <code>openovai.json</code> cover
+      them, <code>quota: { "5h": [90, 95], "7d": [97, 99] }</code> by default: a warning stage and
+      a critical one for each. One event, <code>quota-low</code>, is sent at both stages and says
+      which window and when it resets.
+    </p>
+    <p>
+      At the warning every running seat is told. A Worker writes its desk and stops; the Leader
+      tells you &mdash; which window, that the Workers stopped, the reset time &mdash; writes its
+      desk and stays, because talking to a warm Leader costs little. No Worker is hired from here
+      until the window resets.
+    </p>
+    <p>
+      From the critical stage the server gates every turn: before anything goes on any stdin it
+      checks the window, and a frame that would not pass waits in the server's queue rather than
+      failing mid-work. A Worker still mid-turn is interrupted and told again, with
+      <code>interrupted="true"</code>: do not resume, write your desk and stop. The Leader is told
+      once and not interrupted. A message to a held seat answers at once that it is held, and the
+      page says which window and when it resets. After the reset, held frames are released the
+      Leader's first, then the Workers', each in the order they arrived, and the Leader brings the
+      Workers back on their desks. The one model's own window holds that model and nothing else:
+      no process starts on it while it is spent, and every other model goes on.
     </p>
     <div class="callout">
       <b>Next</b>

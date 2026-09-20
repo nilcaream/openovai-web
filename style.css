@@ -262,6 +262,145 @@ code { font-family: var(--mono); font-size: 0.9em; }
 
 .bar-foot { color: var(--text-soft); font-size: 0.85rem; }
 
+/* ---- the docs row --------------------------------------------------------
+ *
+ * Every page carries the same second row under the header: one link per docs page. The page
+ * that is open is marked from the body's data-page, so the row itself is the same bytes on every
+ * page and the mark needs no script.
+ */
+
+.docs { border-top: 1px solid var(--line); font-size: 0.85rem; }
+.docs-in {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  align-items: baseline;
+  padding-block: 0.45rem;
+}
+.docs-in span { font-family: var(--mono); font-size: 0.76rem; color: var(--text-soft); }
+.docs-in a { text-decoration: none; color: var(--text-soft); padding-block: 0.15rem; }
+.docs-in a:hover { color: var(--text); }
+[data-page="how-it-works"] .docs-in a[href="/how-it-works/"],
+[data-page="install"]       .docs-in a[href="/install/"],
+[data-page="team"]          .docs-in a[href="/team/"],
+[data-page="permissions"]   .docs-in a[href="/permissions/"],
+[data-page="store"]         .docs-in a[href="/store/"],
+[data-page="plugins"]       .docs-in a[href="/plugins/"],
+[data-page="customization"] .docs-in a[href="/customization/"],
+[data-page="faq"]           .docs-in a[href="/faq/"],
+[data-page="reference"]     .docs-in a[href="/reference/"] {
+  color: var(--mark-firm);
+  box-shadow: inset 0 -2px 0 var(--mark-firm);
+}
+
+/* ---- docs pages ----------------------------------------------------------
+ *
+ * A docs page is one column of prose with boxes in it. The boxes use the full column; the text
+ * stays at --text-col, as on the front page.
+ */
+
+.prose > * + * { margin-top: var(--gap); }
+.prose h2 { margin-top: 2.6rem; padding-top: 0.4rem; }
+.prose h3 { margin-top: 1.8rem; }
+.prose h2 + *, .prose h3 + * { margin-top: 0.7rem; }
+.prose ul, .prose ol { max-width: var(--text-col); padding-left: 1.4rem; margin: 0; }
+.prose li + li { margin-top: 0.35rem; }
+.prose li > ul { margin-top: 0.35rem; }
+.prose dl { max-width: var(--text-col); margin: 0; }
+.prose dt { font-family: var(--mono); font-size: 0.88rem; font-weight: 500; margin-top: 0.8rem; }
+.prose dd { margin: 0.15rem 0 0 0; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin-block: 2rem; }
+
+/* Inline code in prose sits on the soft ground; code inside a terminal box does not. */
+.prose p code, .prose li code, .prose dd code, .prose td code, .card code {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.05em 0.3em;
+  font-size: 0.86em;
+}
+
+/* Tables: the reference page is mostly these. A wide one scrolls in its own box. */
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); }
+td:first-child { white-space: nowrap; }
+
+/* Cards: the front page's grid of what you get, and any other list that wants to be boxes. */
+.cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.9rem;
+}
+.card {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-soft);
+  padding: 1rem 1.1rem;
+}
+.card h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+.card p { font-size: 0.92rem; color: var(--text-soft); }
+.card a { display: inline-block; margin-top: 0.6rem; font-family: var(--mono); font-size: 0.8rem; }
+
+/* Callouts: a note is something to know, a warning is something that bites. */
+.callout {
+  max-width: var(--text-col);
+  border-left: 3px solid var(--mark-firm);
+  background: var(--bg-soft);
+  padding: 0.7rem 1rem;
+  border-radius: 0 3px 3px 0;
+  font-size: 0.95rem;
+}
+.callout-warn { border-left-color: hsl(32 90% 45%); }
+.callout > * + * { margin-top: 0.5rem; }
+.callout b:first-child { font-family: var(--mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* A media figure that is not recorded yet: a dashed box saying what goes there and why. */
+.media {
+  margin: 0;
+  max-width: none;
+  border: 2px dashed var(--line-firm);
+  border-radius: 4px;
+  padding: 1.6rem 1.2rem;
+  text-align: center;
+  color: var(--text-soft);
+}
+.media b { display: block; font-family: var(--mono); font-size: 0.8rem; color: var(--mark-firm); margin-bottom: 0.3rem; }
+.media figcaption { font-size: 0.92rem; }
+
+/* A diagram in words: a terminal box that is not a command. */
+.diagram pre { font-size: 0.8rem; line-height: 1.6; }
+
+/* Steps: the install page is a numbered read. */
+.steps { counter-reset: step; list-style: none; padding: 0; max-width: none; }
+.steps > li { counter-increment: step; position: relative; padding-left: 2.6rem; }
+.steps > li + li { margin-top: 1.6rem; }
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  border-radius: 50%;
+  background: var(--mark);
+  color: var(--mark-firm);
+}
+.steps > li > * + * { margin-top: 0.7rem; }
+.steps h3 { margin-top: 0; }
+
+/* The two-line hero on the front page, and the tag under it. */
+.hero .line { font-family: var(--mono); font-size: 0.9rem; color: var(--mark-firm); }
+
 /* ---- accessibility ------------------------------------------------------ */
 
 .skip {

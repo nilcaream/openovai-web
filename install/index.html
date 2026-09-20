@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install — OpenOv AI</title>
+<meta name="description" content="From nothing to a Leader answering: one line installs the openovai command, one more creates an instance. Node.js and Claude Code are fetched for you, pinned per release.">
+<link rel="canonical" href="https://openov.ai/install/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/install/">
+<meta property="og:title" content="Install — OpenOv AI">
+<meta property="og:description" content="One line installs the openovai command, one more creates an instance. Sign in, start, update.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="install">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>Install</h1>
+    <p class="lead">
+      One line installs the <code>openovai</code> command. One more creates an instance: a
+      directory of its own, signed in to its own account, served on one port. Node.js and Claude
+      Code are fetched for you, pinned per release. Nothing global, no <code>sudo</code>.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="start">From nothing to a Leader answering</h2>
+    <ol class="steps">
+      <li>
+        <h3>Get the <code>openovai</code> command</h3>
+        <div class="term term-copy">
+          <button type="button" class="copy ghost" data-copy="install" hidden>Copy</button>
+<pre id="install-cmd">curl -fsSL https://raw.githubusercontent.com/nilcaream/openovai/main/openovai | sh</pre>
+        </div>
+        <p>
+          It is one shell script. Read from a pipe, it installs itself: a copy under
+          <code>~/.local/share/openovai/</code> and a link at <code>~/.local/bin/openovai</code>,
+          and it says so. If <code>~/.local/bin</code> is not on your <code>PATH</code> it prints
+          the one line to add to your shell profile and asks you to open a new terminal &mdash; it
+          never edits a profile itself. Once per user; every instance after that starts from it.
+        </p>
+      </li>
+      <li>
+        <h3>Create the first instance</h3>
+        <div class="term">
+<pre>openovai</pre>
+        </div>
+        <p>
+          With no arguments the release's installer asks its questions: where the instance lives,
+          who it works for, the Leader's name, the models, the port, how it signs in. Before
+          anything else <code>openovai</code> says which version it resolved &mdash;
+          <code>openovai 0.16.0 (latest)</code> &mdash; downloads that release once, fetches the
+          Node.js and Claude Code it pins, and hands over to its installer. The directory has to be
+          empty or new.
+        </p>
+        <figure class="media">
+          <b>[media 5]</b>
+          <figcaption>recording, 20&ndash;30&nbsp;s: from the one-liner to the page opening &mdash;
+            the version resolved, the runtimes fetched, <code>ovai start</code> printing the address</figcaption>
+        </figure>
+      </li>
+      <li>
+        <h3>Sign in, and start</h3>
+        <div class="term">
+<pre># if the instance signs itself in (--auth login): opens a browser once, the credential stays inside the instance
+~/workspace/bin/ovai login
+# start the server in the background: it prints http://127.0.0.1:&lt;port&gt; and returns
+~/workspace/bin/ovai start</pre>
+        </div>
+        <p>
+          Open the address it prints. The Leader's panel is in the middle; type what you want and
+          the Leader starts. <code>ovai status</code> says whether the server is running and where,
+          <code>ovai stop</code> stops it.
+        </p>
+      </li>
+      <li>
+        <h3>A second instance, on one line</h3>
+        <div class="term">
+<pre>openovai --root ~/second --user Ana --leader Max \
+         --leader-model opus --worker-model sonnet --port 7800 --auth login
+~/second/bin/ovai login
+~/second/bin/ovai start</pre>
+        </div>
+        <p>
+          Every argument after the version is the release installer's own, passed through as it is:
+          give them all and nothing is asked, so one command line describes a whole instance and
+          can be read back, repeated and tested. Two instances on one machine share the runtimes
+          and nothing else &mdash; not the account, not the transcripts, not the port. A later
+          instance simply gets the newest release, said out loud; the older one catches up with
+          <code>ovai update</code>.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="options">The options</h2>
+    <p>Each one is the installer's; <code>openovai</code> passes them through and knows only one
+      of its own, the version.</p>
+    <dl>
+      <dt>openovai [version]</dt>
+      <dd><code>openovai 0.16.0 &hellip;</code> or <code>openovai --version 0.16.0 &hellip;</code>
+        takes that release; absent, the newest release on GitHub at that moment, printed before
+        anything is done. Asked interactively, the choice offers <code>latest</code> and the
+        versions already downloaded.</dd>
+      <dt>--root</dt>
+      <dd>Where the instance lives. It has to be empty or new. With <code>--force</code> an install
+        over an instance already in place is an update of it: the payload is replaced whole and
+        every file of yours is kept.</dd>
+      <dt>--user</dt>
+      <dd>The person the team works for.</dd>
+      <dt>--leader</dt>
+      <dd>The name of the session that leads the team.</dd>
+      <dt>--leader-model, --worker-model</dt>
+      <dd>The models those sessions run on. A Worker can be hired onto another one later.</dd>
+      <dt>--port</dt>
+      <dd>The port the page listens on, on <code>127.0.0.1</code> only. <code>0</code> means
+        whatever is free, and <code>ovai start</code> prints the address it actually got; pick a
+        number when you want the same one every time &mdash; a bookmark, or the page installed as a
+        web app.</dd>
+      <dt>--auth</dt>
+      <dd>How the instance gets an account: <code>login</code> or <code>inherit</code>. Below.</dd>
+    </dl>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="needs">What it needs</h2>
+    <p>
+      A Linux desktop. The rest the installer brings: the Node.js and Claude Code an instance runs
+      on are pinned, exactly, per release &mdash; chosen and tested when the release is cut &mdash;
+      fetched from a fixed address and checked against a checksum, and kept under
+      <code>~/.local/share/openovai/</code>, per user, outside every instance. Instances on one
+      machine share those runtimes and reuse what is already there; an instance runs them by
+      absolute path and never touches, nor uses, a Node.js or Claude Code the system already has.
+      Nothing lands on your <code>PATH</code> but the <code>openovai</code> command.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="signing-in">Signing in</h2>
+    <p>An instance needs an Anthropic account before it can answer anything. <code>--auth</code>
+      picks how it gets one.</p>
+    <dl>
+      <dt>--auth login</dt>
+      <dd>The instance signs itself in. A freshly installed one has an empty Claude Code home, so
+        <code>ovai login</code> opens a browser once and the credential is kept inside that
+        instance. Use this when two instances on one machine should be two different accounts.</dd>
+      <dt>--auth inherit</dt>
+      <dd>The instance takes <code>CLAUDE_CODE_OAUTH_TOKEN</code> from the environment it is started
+        in. Mint that token once on the machine with <code>claude setup-token</code>, export it
+        wherever instances are started from, and every one of them is signed in from its first
+        message, with no browser in the way. The token is long-lived but not forever and cannot
+        refresh itself: when it expires every instance stops at once with the same message, and a
+        new token fixes them all. <code>ovai login</code> refuses under this option and says so.</dd>
+    </dl>
+    <p>
+      Either way the instance's Claude Code home is its own, so transcripts and settings stay
+      separate. <code>ovai configuration</code> reports whether the instance has a credential and
+      says plainly that it has not checked it against Anthropic: finding out costs a request, so
+      the first message is where a dead credential shows up. <code>ANTHROPIC_API_KEY</code> and
+      <code>ANTHROPIC_AUTH_TOKEN</code> are removed from what an instance runs with, under both
+      options.
+    </p>
+    <figure class="media">
+      <b>[media 6]</b>
+      <figcaption>screenshot: <code>ovai configuration</code> &mdash; version, seats and their models,
+        port, how it signs in, the credential line</figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="clone">From a clone</h2>
+    <p>The same installer, run from the repository instead of a downloaded release:</p>
+    <div class="term">
+<pre>git clone https://github.com/nilcaream/openovai.git
+cd openovai
+./install.sh --root ~/workspace --source . --user Ana --leader Max \
+             --leader-model opus --worker-model sonnet --port 7799 --auth login</pre>
+    </div>
+    <p>
+      <code>--source</code> is where to install from: a clone, or an unpacked release. The
+      instance copies <code>bin/</code> and <code>lib/</code> in, so it never reaches back to where
+      it was installed from.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="update">Taking a newer version</h2>
+    <p>
+      An instance carries its own copy of everything it runs and does not follow the toolkit
+      along on its own. <code>ovai update</code> is how it catches up:
+    </p>
+    <div class="term">
+<pre>~/workspace/bin/ovai update</pre>
+    </div>
+    <p>
+      It asks GitHub for the latest release, and if that is newer than the version this instance
+      is on it takes it: the payload &mdash; <code>bin/</code> and <code>lib/</code>, the runtimes it
+      pins &mdash; is replaced whole, and a file of yours that a fresh install of this version would
+      have seeded and this instance has not got is seeded once. Desks, conversations,
+      <code>customization/</code>, <code>plugins/</code>, <code>openovai.json</code>, the settings
+      and the Claude Code home are left alone. There is no rollback: taking the release again is
+      the fix.
+    </p>
+    <p>
+      It refuses while the server is running, and while any session of this instance is running
+      &mdash; found on the machine and named with the <code>kill</code> that ends it. It refuses to
+      go backwards by name; <code>--downgrade</code> takes an older release anyway, and
+      <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub.
+    </p>
+    <figure class="media">
+      <b>[media 7]</b>
+      <figcaption>screenshot: <code>ovai update</code> taking a release; and refusing, with the
+        <code>kill</code> lines it prints while a session runs</figcaption>
+    </figure>
+    <p>
+      A persona is rendered once, when a seat's process starts, from the templates the instance
+      has at that moment. So an update changes nothing for a process already running; every
+      process started after it is rendered from the new templates. What each release changed is in
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">the release notes</a>,
+      written for whoever runs the workspace that takes it.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="ovai">The <code>ovai</code> command</h2>
+    <p>Each instance has one, at <code>&lt;root&gt;/bin/ovai</code>. With no command it prints the
+      help.</p>
+    <div class="table">
+      <table>
+        <thead><tr><th>command</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address it is listening on; a port already taken names the process that holds it</td></tr>
+          <tr><td><code>ovai status</code></td><td><code>not running</code> (exit 3), or <code>running at &lt;url&gt; (pid, since)</code> &mdash; found out by asking the address, not by trusting a file</td></tr>
+          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, by a deadline &mdash; then closes the server; not running is not a failure</td></tr>
+          <tr><td><code>ovai restart</code></td><td>the two in a row, and prints the new address</td></tr>
+          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential, every desk with what it runs on, where the store is</td></tr>
+          <tr><td><code>ovai login</code></td><td>signs the instance in, once, under <code>--auth login</code></td></tr>
+          <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from a scaffold &mdash; see <a href="/plugins/">plugins</a></td></tr>
+          <tr><td><code>ovai update</code></td><td>takes the latest release, as above</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <b>Next</b>
+      <p>The page is open and the Leader is in the middle. <a href="/team/">The Leader and the
+        Workers</a> says what to type and what happens then.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works — OpenOv AI</title>
+<meta name="description" content="One instance, one directory: a server that hosts every session on one page, one Claude Code process per seat, tools over a per-process secret, desks on disk, and a store every session reads.">
+<link rel="canonical" href="https://openov.ai/how-it-works/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/how-it-works/">
+<meta property="og:title" content="How it works — OpenOv AI">
+<meta property="og:description" content="The server, the page, the sessions, the tools, the desks, the store and the lifecycle, in five minutes.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="how-it-works">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>How it works</h1>
+    <p class="lead">
+      One instance is one directory. In it: a server that hosts every session on one page, one
+      Claude Code process per seat, a set of tools those processes reach over a secret of their
+      own, a desk per person, and a store every session reads. Five minutes, before any command.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="instance">One instance, one directory</h2>
+    <p>
+      An instance is a directory of its own, and nothing else ever lands in it. It carries its own
+      copy of the toolkit, its own Claude Code home &mdash; account, transcripts, settings &mdash;
+      and no absolute path, so it can be moved and still be itself. Two instances on one machine
+      share neither account nor transcripts.
+    </p>
+    <figure class="term">
+<pre>&lt;root&gt;/
+  bin/ovai          the one command
+  lib/              everything else the release ships; replaced whole on update
+  openovai.json     the instance's description of itself: who works here, on which models, which port
+  runtime.json      the running server: url, pid, since
+  runtime.log       what the server said, one row per line
+  plugins/          tools the instance serves itself, one file each; yours
+  store/            what the workspace knows: memory/ and knowledge/, one file per record
+  customization/    what you add to the personas; yours, never touched
+  desks/&lt;Name&gt;/     one directory per person: STATE.md, persona.md, conversation.json
+  archive/          retired desks, moved whole
+  reference/        kept to look at; never worked on
+  projects/         worked on
+  temp/             scratch, deletable by anyone at any time
+  .claude/          Claude Code's project settings for the instance
+  .local/           Claude Code's config dir for the instance: account, transcripts</pre>
+    </figure>
+    <p>
+      In groups: the product is <code>bin/</code> and <code>lib/</code>; the instance's own is
+      <code>openovai.json</code>, the runtime files, <code>plugins/</code>, <code>store/</code> and
+      <code>customization/</code>; the people are <code>desks/</code> and <code>archive/</code>;
+      your material is <code>reference/</code>, <code>projects/</code> and <code>temp/</code>;
+      Claude Code's is <code>.claude/</code> and <code>.local/</code>.
+    </p>
+    <figure class="term diagram">
+      <figcaption>the parts, and who talks to whom</figcaption>
+<pre>  you ──── browser page ══ one event stream ══ server (Node, 127.0.0.1:port)
+                                                  │  the only writer of every session's stdin
+                                                  │  serves the tools at POST /mcp/&lt;secret&gt;
+                                                  │  writes runtime.log
+                                   ┌──────────────┼──────────────┐
+                              Leader          Worker           Worker      one Claude Code process per seat
+                              desks/Max/      desks/Paul/      desks/Jane/ one desk per person, on disk
+                                   └──────────────┼──────────────┘
+                                          store/ (memory, knowledge)      what outlives every desk
+                                          plugins/                        tools of your own</pre>
+    </figure>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="server">The server</h2>
+    <p>
+      <code>ovai start</code> starts it in the background and prints the address it is listening
+      on: the instance's page, on the port it was installed with, on <code>127.0.0.1</code> only.
+      The terminal is yours again the moment the address is printed. The server starts the seats,
+      is the only thing that writes to their stdin, serves the page from one event stream, serves
+      the tools, and writes the log. If the port is already taken it says which process holds it,
+      with the pid; a server already running is reported with its address and left alone.
+    </p>
+    <p>
+      Every row of <code>runtime.log</code> has the same four columns &mdash; the moment, the event,
+      the seat, the tool-call id &mdash; then the text. There are no levels: the event is the level.
+      The three rows of one tool call share its id, so one <code>grep</code> is a call's whole
+      life. No request is ever logged.
+    </p>
+    <figure class="term">
+<pre>2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200
+2026-09-20T02:15:41.008+02:00 called Max toolu_01GFHRkEQuMCjA5AvqQUSdHM Read /home/ana/workspace/desks/Max/STATE.md
+2026-09-20T02:15:41.530+02:00 called Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk
+2026-09-20T02:15:41.532+02:00 tool Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms
+2026-09-20T02:15:44.210+02:00 queued Paul - message #54, 1 waiting
+2026-09-20T03:02:10.884+02:00 stopped Paul - idle</pre>
+    </figure>
+    <p>
+      <code>ovai stop</code> parks the room first &mdash; every session is told to write its desk
+      and stop, the Leader included, with a deadline &mdash; then closes the server. Stopping what
+      is not running says <code>not running</code> and is not a failure.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="page">The page and its panels</h2>
+    <p>
+      Three columns: the Leader's panel in the middle, the Workers' panels either side, alternating
+      left and right in the order they appeared so a panel keeps its side. At 900&nbsp;px and below
+      it is one column, the Leader first. Nobody has a terminal of their own; the Leader and every
+      Worker get the same panel, with the same text box under it, and you can type on any of them.
+    </p>
+    <figure class="media">
+      <b>[media 3]</b>
+      <figcaption>screenshot: the Leader's head close up &mdash; dot, name, model, context in k, state
+        word, connected, the usage windows, the theme and notification switches</figcaption>
+    </figure>
+    <p>
+      A panel is a head &mdash; a dot, the name, the model, the context in k once known, and what
+      the session is doing: listening, working, waiting for you &mdash; a transcript, and a text
+      box. Enter sends, Shift+Enter is a newline. The dot is green between turns, amber while a
+      turn runs, red once the process is gone. The head of the Leader's panel carries the account's
+      usage windows &mdash; the session window with the time to its reset, the weekly window over
+      all models, and the weekly window of the one model that has its own, like
+      <code>8% (3h) · all 86% (6d) · fable 20% (6d)</code> &mdash; and the toggle between light and
+      dark.
+    </p>
+    <figure class="media">
+      <b>[media 4]</b>
+      <figcaption>screenshot: a Worker's panel with tool lines and a folded message
+        (<em>double-click to see the whole message</em>)</figcaption>
+    </figure>
+    <p>
+      Replies are rendered as markdown. Raw HTML in a reply is escaped, a link is kept only on
+      <code>http(s)</code> and <code>mailto</code> and opens in a new tab, an image is shown as a
+      link &mdash; so nothing a session says makes the page fetch anything. There is no Send
+      button and no button that starts or ends a seat. While a turn is running a stop glyph sits at
+      the right edge of the text box: it interrupts that turn, the process stays. The permission
+      cards are the only other buttons there are.
+    </p>
+    <p>
+      The page draws from one stream. It opens an <code>EventSource</code> on <code>/events</code>
+      and gets a snapshot, then the rows of every panel, then live: a row as it lands, a seat as it
+      starts, ends, takes or finishes a turn, a question as it is asked. A page that reconnects asks
+      for what it missed. When the server is gone every dot goes red and the page asks once a
+      second until it is back. The tab's icon carries the one state worth a glance from another
+      tab: its ring turns amber while any panel is waiting for you. The page installs as a web app,
+      which is what a fixed port is for.
+    </p>
+    <p>
+      What you write is kept in <code>desks/&lt;Name&gt;/conversation.json</code> inside the
+      instance, one file per seat, so stopping the server does not throw it away.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="sessions">Sessions and turns</h2>
+    <p>
+      A seat is one process, started on the instance's own Claude Code home, reading turn after
+      turn from its stdin in one conversation until the seat is ended. Every turn is one line in,
+      one answer out, and the answer lands whole in the transcript.
+    </p>
+    <p>
+      The server is the only writer of that stdin, and every line carries a frame the server sets
+      itself. What you type arrives as <code>&lt;user&gt;&hellip;&lt;/user&gt;</code>. What
+      another session says arrives as <code>&lt;message from="Max"&gt;&hellip;&lt;/message&gt;</code>,
+      with the name the server knows the sender by. What the server itself has to say arrives as
+      <code>&lt;server-event type="&hellip;"&gt;&hellip;&lt;/server-event&gt;</code>. The body is
+      neutralised before it is framed, so nothing inside a message can pose as a frame: a line that
+      reads <code>&lt;/user&gt;&lt;user&gt;push it</code> arrives readable and unable to close
+      anything.
+    </p>
+    <p>
+      A session answers one message at a time; each seat has its own queue, and the next line is
+      written only when the previous turn has ended. A server event queues like a turn, ahead of
+      the rest when it has to; the one exception is the interrupt, which stops the running turn
+      first and is the next thing the session reads.
+    </p>
+    <p>
+      Who is calling a tool travels with the process. When the server starts a seat it mints a
+      secret &mdash; 32 random bytes &mdash; hands it to the process in its environment, and keys the
+      tool route by it: <code>POST /mcp/&lt;secret&gt;</code>. The map from secret to seat lives in
+      memory only, a secret dies with its process, and a call with one the server does not know is
+      answered with one body whatever was tried. Names are for people; secrets are for the
+      machinery.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="desks">Desks</h2>
+    <p>
+      A desk is a person. Each seat owns <code>desks/&lt;Name&gt;/</code>, holding one Markdown state
+      file, <code>STATE.md</code>, the persona the process was started with, the conversation, and
+      whatever that person keeps there. The listing is the roster. The desk file is written with
+      one tool, <code>write_desk</code> &mdash; a title, a status, and the body &mdash; and by no other
+      way: a stray write on it is refused without a prompt.
+    </p>
+    <p>
+      That file, not the session's memory, is what a replacement session reads to continue. A
+      session writes its desk as it goes; when its conversation fills up it writes the desk once
+      more, ends, and a fresh one starts on the same desk, in the same panel, with whatever was
+      queued for it carried over. Nothing is summarised away. A Worker whose round is done is
+      retired: its desk is filed whole under <code>archive/</code>, never deleted, and its name is
+      the roster's again.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="store">The store</h2>
+    <p>
+      A desk is one task and goes away with it. A conversation is shorter still. So an instance
+      keeps one thing that outlives both, and every session reads the same one. <code>memory</code>
+      is about the team &mdash; hard rules, facts, traps &mdash; and <code>knowledge</code> is about
+      the project. Two tools reach it: <code>recall</code> reads, by meaning, by id, or the whole of
+      a store; <code>remember</code> writes one record. Nothing is ever deleted or edited in place:
+      a record that changes is superseded by a new one that names it. The instance's Claude Code
+      home turns the built-in memory off, so the store is the only thing that outlives a
+      conversation.
+    </p>
+    <p>
+      Where a request needs understanding rather than a grep &mdash; which records answer a query,
+      whether a new text restates a record already held &mdash; the tool asks a helper: Claude Code
+      run once, with no tools and nothing persisted, from an empty directory outside the instance.
+      It proposes; the tool checks the answer and applies every rule itself.
+      <a href="/store/">Memory and knowledge</a> has the whole of it.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="tools">The eleven tools</h2>
+    <p>
+      The server serves eleven tools over the secret route. Seven go to every seat; four are the
+      Leader's, and a Worker asking for one is refused in words. The whole of it costs one
+      permission rule, seeded at install.
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>tool</th><th>who</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>message</code></td><td>everyone</td><td>say something to another session; comes back the moment the other seat has it</td></tr>
+          <tr><td><code>room</code></td><td>everyone</td><td>who works here: every seat, its role, its model, whether it is running, which one is you, where the quota stands</td></tr>
+          <tr><td><code>recall</code></td><td>everyone</td><td>read the store: by meaning, by id, or all of it</td></tr>
+          <tr><td><code>remember</code></td><td>everyone</td><td>write one record to the store</td></tr>
+          <tr><td><code>write_desk</code></td><td>everyone</td><td>the caller's own desk: title, status, body</td></tr>
+          <tr><td><code>restart_session</code></td><td>everyone</td><td>end the caller's process and start a successor on the same desk</td></tr>
+          <tr><td><code>stop_session</code></td><td>everyone</td><td>end the caller's process and its panel; the desk stays</td></tr>
+          <tr><td><code>park</code></td><td>Leader</td><td>every running Worker writes its desk and stops, by a deadline</td></tr>
+          <tr><td><code>hire</code></td><td>Leader</td><td>start a Worker on a desk: a new name from the roster, or somebody who stopped, back on theirs</td></tr>
+          <tr><td><code>retire</code></td><td>Leader</td><td>file a stopped Worker's desk under <code>archive/</code></td></tr>
+          <tr><td><code>permission</code></td><td>Leader</td><td>settle one rule for the whole instance, on a card you answer</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <code>restart_session</code> and <code>stop_session</code> refuse until the desk was written
+      since the event that asked, so the desk comes first, always. The
+      <a href="/reference/">reference</a> has every argument.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="lifecycle">The lifecycle</h2>
+    <p>
+      A session's context filling up, going idle, running out of quota and being parked are one
+      flow each, and none of it is a phrase to recognise: the server sends a frame it set itself,
+      and the session answers with a tool call.
+    </p>
+    <figure class="term diagram">
+      <figcaption>four events, one answer each</figcaption>
+<pre>context-full   the turn's request passed the ceiling (160k tokens by default)
+               → write_desk, restart_session: a successor starts on the same desk, same panel, queue carried
+
+idle           the Leader is told about a silent Worker at 10 and at 50 minutes;
+               at 55 the seat is told it goes cold at 60
+               → write_desk, stop_session; what is not stopped by 60 is ended, and the Leader is told
+
+quota-low      the account's 5h or 7d window is nearly spent (thresholds in openovai.json)
+  warning      → Workers write their desks and stop; the Leader tells you and stays; no hires until the reset
+  critical     → every turn is held at the gate; a Worker still mid-turn is interrupted and told again
+               after the reset, held frames are released, the Leader's first
+
+park           you said this is it for the day; or ovai stop, or any signal to the server
+               → every Worker writes its desk and stops, by a deadline (20 seconds by default)</pre>
+    </figure>
+    <p>
+      A seat on a turn &mdash; a permission stop included &mdash; is never idle. A stop keeps the desk
+      and the panel's rows; anything addressed to the Leader starts it again, and <code>hire</code>
+      on a stopped Worker's name brings it back on the same desk. Talking to a warm Leader costs
+      little, which is why it stays while the Workers stop.
+    </p>
+    <div class="callout">
+      <b>Next</b>
+      <p><a href="/install/">Install</a> an instance, then read <a href="/team/">the Leader and the
+        Workers</a> for what a day looks like.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

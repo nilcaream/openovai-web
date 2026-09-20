@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — OpenOv AI</title>
+<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance root file by file, the keys of openovai.json, the eleven tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
+<link rel="canonical" href="https://openov.ai/reference/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/reference/">
+<meta property="og:title" content="Reference — OpenOv AI">
+<meta property="og:description" content="Commands, files, keys, tools, events, rules, log columns and the plugin contract. Nothing sold.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="reference">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>Reference</h1>
+    <p class="lead">
+      Everything with a name, in tables. The two commands, the instance root, the configuration
+      keys, the eleven tools and what they take, the events a session receives, the rules an
+      instance is born with, the log, the plugin contract, and what it needs to run.
+    </p>
+    <p>
+      <a href="#openovai">openovai</a> &middot; <a href="#ovai">ovai</a> &middot;
+      <a href="#root">the instance root</a> &middot; <a href="#json">openovai.json</a> &middot;
+      <a href="#tools">tools</a> &middot; <a href="#events">server events</a> &middot;
+      <a href="#rules">seeded rules</a> &middot; <a href="#log">runtime.log</a> &middot;
+      <a href="#plugin">plugin contract</a> &middot; <a href="#needs">requirements</a>
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="openovai"><code>openovai</code> &mdash; the user-level command</h2>
+    <p>
+      One POSIX shell script at <code>~/.local/share/openovai/openovai</code>, linked as
+      <code>~/.local/bin/openovai</code>. Read from a pipe &mdash;
+      <code>curl -fsSL https://raw.githubusercontent.com/nilcaream/openovai/main/openovai | sh</code>
+      &mdash; it installs itself there and says so; if <code>~/.local/bin</code> is not on
+      <code>PATH</code> it prints the line to add to your shell profile and never edits one. Run
+      from its place it resolves a release, prints it, downloads it once under
+      <code>~/.local/share/openovai/releases/&lt;version&gt;/</code> and hands over to that release's
+      installer. It knows one option of its own:
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>form</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.16.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
+          <tr><td><code>openovai 0.16.0 &hellip;</code><br><code>openovai --version 0.16.0 &hellip;</code></td><td>that release</td></tr>
+          <tr><td><code>openovai [version] --root &hellip; --user &hellip; --leader &hellip; --leader-model &hellip; --worker-model &hellip; --port &hellip; --auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="ovai"><code>ovai</code> &mdash; the instance's command</h2>
+    <p><code>&lt;root&gt;/bin/ovai</code>, one per instance. Bare <code>ovai</code> prints the help.</p>
+    <div class="table">
+      <table>
+        <thead><tr><th>command</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>ovai help</code></td><td>the usage; <code>--help</code> and <code>-h</code> the same</td></tr>
+          <tr><td><code>ovai status</code></td><td><code>running at &lt;url&gt; (pid, since)</code>, or <code>not running</code>; reads <code>runtime.json</code> and then tries the address, so a record a killed server left behind is found out by asking</td></tr>
+          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, where the store is</td></tr>
+          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address, <code>http://127.0.0.1:&lt;port&gt;</code>; a taken port is named with the process holding it; a server already running is reported and left alone</td></tr>
+          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, with <code>park.timeout</code> as the deadline &mdash; then closes the server; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
+          <tr><td><code>ovai restart</code></td><td>stop, then start; prints the new address</td></tr>
+          <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from the scaffold; refuses a name a tool cannot have, a built-in name, and a name whose file is already there</td></tr>
+          <tr><td><code>ovai login</code></td><td>under <code>--auth login</code>, opens a browser once and keeps the credential inside the instance; refuses under <code>inherit</code> and says so</td></tr>
+          <tr><td><code>ovai update [--downgrade] [--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, a file a fresh install would seed and this instance has not got seeded once, everything of yours left alone; refuses while the server or any session of the instance runs, naming the <code>kill</code> line for each; refuses to go backwards without <code>--downgrade</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <table>
+        <thead><tr><th>exit</th><th>when</th></tr></thead>
+        <tbody>
+          <tr><td><code>0</code></td><td>done</td></tr>
+          <tr><td><code>1</code></td><td>the server, a plugin or a release said no: the message, and no usage under it</td></tr>
+          <tr><td><code>2</code></td><td>the command line or the instance: an unknown command, an argument too many, a root that is not an instance; the message with the usage under it</td></tr>
+          <tr><td><code>3</code></td><td><code>ovai status</code>: not running</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="root">The instance root</h2>
+    <p>This, and nothing else ever lands in it.</p>
+    <div class="table">
+      <table>
+        <thead><tr><th>path</th><th>whose</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>bin/ovai</code></td><td>the product</td><td>the one command</td></tr>
+          <tr><td><code>lib/</code></td><td>the product</td><td>everything else the release ships, its version in <code>lib/VERSION</code>; replaced whole on update</td></tr>
+          <tr><td><code>openovai.json</code></td><td>the instance</td><td>its description of itself; <a href="#json">the keys</a></td></tr>
+          <tr><td><code>instructions.json</code></td><td>the instance</td><td>the settings document every session is started with: the instruction files above the instance it is not to read; written at every start</td></tr>
+          <tr><td><code>runtime.json</code></td><td>the instance</td><td>the running server: url, pid, since</td></tr>
+          <tr><td><code>runtime.log</code></td><td>the instance</td><td>what the server said, one row per line, every run appended; <a href="#log">the columns</a></td></tr>
+          <tr><td><code>plugins/</code></td><td>the instance</td><td>tools it serves itself, one file each; yours, kept across updates</td></tr>
+          <tr><td><code>store/</code></td><td>the instance</td><td>what the workspace knows: <code>memory/</code> and <code>knowledge/</code>, one file per record</td></tr>
+          <tr><td><code>customization/</code></td><td>the instance</td><td>what you add to the personas, one file per kind; never touched</td></tr>
+          <tr><td><code>desks/&lt;Name&gt;/</code></td><td>the people</td><td>one directory per person: <code>STATE.md</code>, <code>persona.md</code>, <code>conversation.json</code>, <code>MODEL</code> when one was named, and whatever that person keeps there; the listing is the roster</td></tr>
+          <tr><td><code>archive/</code></td><td>the people</td><td>retired desks, moved whole: <code>&lt;day&gt;-&lt;Name&gt;-&lt;slug of the final title&gt;/</code>; appears at the first retire</td></tr>
+          <tr><td><code>reference/</code></td><td>your material</td><td>kept to look at: documents, sources, clones for analysis; never worked on</td></tr>
+          <tr><td><code>projects/</code></td><td>your material</td><td>worked on; a reference that needs edits is cloned fresh here, never moved</td></tr>
+          <tr><td><code>temp/</code></td><td>your material</td><td>scratch, deletable by anyone at any time</td></tr>
+          <tr><td><code>.claude/</code></td><td>Claude Code</td><td>the project settings for the instance: <code>settings.json</code> with the rules, <code>allowed.md</code> with one line per rule granted from a card</td></tr>
+          <tr><td><code>.local/</code></td><td>Claude Code</td><td>its config dir for the instance: account, transcripts, memory (off)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      A fresh instance's root is exactly that list without <code>runtime.json</code>,
+      <code>runtime.log</code> and <code>archive/</code>, which appear at the first start and the
+      first retire.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="json"><code>openovai.json</code></h2>
+    <p>Read when the server starts. The <a href="/customization/#json">customization page</a> says what each one does.</p>
+    <div class="table">
+      <table>
+        <thead><tr><th>key</th><th>default</th></tr></thead>
+        <tbody>
+          <tr><td><code>user</code>, <code>leader</code>, <code>models.leader</code>, <code>models.worker</code>, <code>port</code>, <code>auth</code></td><td>written by the installer; no default</td></tr>
+          <tr><td><code>schema</code>, <code>createdAt</code></td><td>written by the installer</td></tr>
+          <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> &mdash; percent</td></tr>
+          <tr><td><code>hardRules</code></td><td><code>{ "count": 25, "length": 200 }</code></td></tr>
+          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> &mdash; minutes</td></tr>
+          <tr><td><code>context</code></td><td><code>{ "ceiling": 160000 }</code> &mdash; tokens</td></tr>
+          <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code> &mdash; seconds</td></tr>
+          <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code> &mdash; minutes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="tools">The eleven tools</h2>
+    <p>
+      Served over <code>POST /mcp/&lt;secret&gt;</code>, one secret per process, and named
+      <code>mcp__openovai__&lt;tool&gt;</code> to the session. Seven go to every seat; four are the
+      Leader's, and a Worker asking for one is refused in words.
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>tool</th><th>who</th><th>arguments</th><th>refused when</th></tr></thead>
+        <tbody>
+          <tr><td><code>message</code></td><td>everyone</td><td><code>to</code> (who), <code>text</code> (what); both required</td><td>the other seat has no process; a seat held by the quota gate has it and reads it at the reset</td></tr>
+          <tr><td><code>room</code></td><td>everyone</td><td>none</td><td>&mdash;</td></tr>
+          <tr><td><code>recall</code></td><td>everyone</td><td><code>store</code> (<code>memory</code> | <code>knowledge</code>, required); exactly one of <code>query</code>, <code>id</code>, <code>all</code>; <code>kind</code> (<code>hard-rule</code> | <code>fact</code> | <code>trap</code>); <code>expired</code> (boolean, default false)</td><td>two of query, id and all, or none; <code>kind: hard-rule</code> on <code>knowledge</code>; the helper held for quota, not answering, or answering badly</td></tr>
+          <tr><td><code>remember</code></td><td>everyone</td><td><code>store</code> (required), <code>kind</code>, <code>text</code>, <code>until</code> (an absolute ISO 8601 moment, words such as "for today", or <code>now</code> to retire), <code>replaces</code> (an id, or <code>none</code>), <code>reason</code> (with a named replacement), <code>restore</code> (an id, alone with <code>store</code>); Leader only: <code>source</code> (<code>user</code> | <code>team</code>), <code>scope</code> (<code>team</code> | <code>leader</code>)</td><td>a hard rule from a Worker; a rule over the cap; a text that restates a held record when <code>replaces</code> is left out, naming it; a replacement without a reason; the second of two writes replacing one record</td></tr>
+          <tr><td><code>write_desk</code></td><td>everyone</td><td><code>title</code> (one line, up to 120 characters), <code>status</code> (one line, up to 80, no <code>|</code>), <code>body</code> (markdown, up to 64 KB); all required</td><td>an empty title or status, a newline in either, a <code>|</code> in status, a body over 64 KB, any other key</td></tr>
+          <tr><td><code>restart_session</code></td><td>everyone</td><td>none</td><td>the desk was not written since the event that asked, or since the turn began</td></tr>
+          <tr><td><code>stop_session</code></td><td>everyone</td><td>none</td><td>the same</td></tr>
+          <tr><td><code>park</code></td><td>Leader</td><td><code>interrupt</code> (boolean, default false), <code>deadline</code> (seconds, at least 5; default <code>park.deadline</code>)</td><td>a Worker calling it</td></tr>
+          <tr><td><code>hire</code></td><td>Leader</td><td><code>name</code> (somebody who has a desk and stopped; left out, the roster names a new Worker), <code>model</code> (when not the usual one)</td><td>the quota gate holds hires; the Leader's own name; a name whose directory is under <code>desks/</code> without a desk file in it</td></tr>
+          <tr><td><code>retire</code></td><td>Leader</td><td><code>name</code> (required): a Worker that has stopped</td><td>a name that is not one; the Leader's own; a name with no desk; a Worker still running; the server stopping</td></tr>
+          <tr><td><code>permission</code></td><td>Leader</td><td><code>rule</code> (<code>Bash(word:*)</code> or <code>Edit(/dir/**)</code>), <code>why</code> (what the User reads beside it); with neither, answers what the instance holds and what is pending</td><td>a rule in another shape; a rule already settled (say it to the User); a rule already asked on the panel; no <code>why</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The roster <code>hire</code> names from is a fixed list of thirty first names &mdash; Paul,
+      Jane, Jack, Pete, Anna, Mark, Lucy, Tom, Eva, Sam, Nora, Ben, Mia, Leo, Zoe, Max, Ivy, Finn,
+      Ada, Noah, Ella, Owen, Ruby, Hugo, Iris, Otto, Lena, Axel, Nina, Theo &mdash; and the next
+      name is the least recently used free one: never used first, in that order, then the one whose
+      holder left longest ago, read from the desk file under <code>archive/</code>; a name is taken
+      while <code>desks/&lt;Name&gt;/</code> exists. With nobody in the pool free, <code>Dev</code>
+      and three digits.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="events">Server events</h2>
+    <p>
+      A frame the server sets itself, <code>&lt;server-event type="&hellip;"&gt;</code>, queued like a
+      turn and ahead of the rest when it has to be. Nothing inside a message can pose as one.
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>type</th><th>attributes</th><th>to</th><th>what the session does</th></tr></thead>
+        <tbody>
+          <tr><td><code>context-full</code></td><td><code>context</code>, <code>ceiling</code></td><td>the seat over the ceiling, once</td><td><code>write_desk</code>, <code>restart_session</code>, "back in a moment"; a successor starts on the same desk with the queue carried</td></tr>
+          <tr><td><code>quota-low</code></td><td><code>stage</code> (<code>warning</code> | <code>critical</code>), <code>window</code> (<code>5h</code> | <code>7d</code> | <code>7d-fable</code>), <code>resets</code>; <code>model="fable"</code> for fable's own window; <code>interrupted="true"</code> when the turn was stopped for it</td><td>every running seat at the first stage, seats on that model only for fable's window</td><td>a Worker writes its desk and stops; the Leader tells the User and stays; at the second stage a Worker still running is interrupted and told again</td></tr>
+          <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or let it stop</td></tr>
+          <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>any seat at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way</td></tr>
+          <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>every Worker, from <code>park</code>; the Leader too from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
+          <tr><td><code>hard-rules</code></td><td><code>set</code></td><td>every running seat, in front of its next turn</td><td>follows the set as written; nothing to answer</td></tr>
+          <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
+          <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
+          <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code></td><td>the Leader, when a Worker stopped idle or into an exhausted window</td><td>notes it; <code>hire</code> brings it back when the work is still wanted</td></tr>
+          <tr><td><code>permission</code></td><td><code>who</code>, <code>waiting</code>, and the call</td><td>the Leader, once a Worker has waited <code>permission.wait</code> minutes on a card; also when a rule the Leader asked for was settled</td><td>tells the User somebody is waiting, or gives the work to somebody else</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="rules">The seeded permission rules</h2>
+    <p>
+      <code>.claude/settings.json</code>, written once at install. Every path rule starts with
+      <code>/</code>, anchored at the instance root. An update adds no rule; it wires the compound
+      hook into a file that lacks it and turns commit attribution off in one that says nothing about
+      it.
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>list</th><th>rule</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the eleven tools and every plugin</td></tr>
+          <tr><td>allow</td><td><code>Read(/**)</code></td><td>reading any file</td></tr>
+          <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
+          <tr><td>allow</td><td><code>Edit(/desks/&lt;Leader&gt;/**)</code></td><td>the Leader's desk directory; every Worker hired gets the same pair for theirs, withdrawn at retire</td></tr>
+          <tr><td>allow</td><td>one <code>Bash(&hellip;:*)</code> each for <code>git</code>, <code>mkdir</code>, <code>cd</code>, <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>, <code>cmp</code>, <code>sha256sum</code>, <code>grep</code>, <code>find</code>, <code>sed</code>, <code>awk</code>, <code>head</code>, <code>tail</code>, <code>wc</code>, <code>echo</code>, <code>chmod</code>, <code>touch</code>, <code>curl</code>, <code>npm</code></td><td>a seat's ordinary shell commands, matched by the command from its first character &mdash; a <code>git -C</code> spelling asks; a <code>cd &hellip; &amp;&amp; &hellip;</code> compound is let through by the hook when every side is allowed and none denied</td></tr>
+          <tr><td>deny</td><td><code>Edit(/desks/*/STATE.md)</code></td><td>a desk file is written through <code>write_desk</code>; a stray write is refused without a prompt</td></tr>
+          <tr><td>deny</td><td>the instance's own account files</td><td>under <code>.local/</code></td></tr>
+          <tr><td>deny</td><td><code>git push</code>, <code>sudo</code>, <code>ssh</code></td><td>a push is yours; a refusal wins over the <code>git</code> rule that would let it through, whatever the hook says</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Also seeded: <code>attribution</code> with an empty <code>commit</code> and <code>pr</code> and
+      <code>sessionUrl</code> false, so a commit says what its message says; and the hook
+      <code>lib/hooks/compound.mjs</code> before every Bash call. The instance's Claude Code home
+      turns the built-in memory off.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="log"><code>runtime.log</code></h2>
+    <p>Every row has the same four columns, single spaces, then the text. No request is ever logged.</p>
+    <figure class="term">
+<pre>&lt;moment&gt; &lt;event&gt; &lt;seat&gt; &lt;id&gt; &lt;text…&gt;
+2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.16.0
+2026-09-20T02:15:41.530+02:00 called Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk
+2026-09-20T02:15:41.532+02:00 tool Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms
+2026-09-20T02:15:44.210+02:00 queued Paul - message #54, 1 waiting
+2026-09-20T03:02:10.884+02:00 stopped Paul - idle
+2026-09-20T03:40:00.117+02:00 stopped - - SIGTERM</pre>
+    </figure>
+    <div class="table">
+      <table>
+        <thead><tr><th>column</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page, the desks and the store keep</td></tr>
+          <tr><td>event</td><td>one word, and the event is the level: <code>started</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>queued</code>, <code>wrote</code>, <code>held</code>, <code>released</code>, <code>parked</code>, <code>stopped</code>, <code>plugins</code>, among others</td></tr>
+          <tr><td>seat</td><td>the session the row is about; <code>-</code> for the server itself</td></tr>
+          <tr><td>id</td><td>the tool-use id on <code>called</code>, <code>tool</code> and <code>failed</code>, else <code>-</code>; <code>grep toolu_&hellip; runtime.log</code> is a call's whole life, and the three rows name the tool in full, as Claude Code does</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The pid, the host, the user and the version are on the <code>started</code> row and on no
+      other. A session's process gone is one <code>stopped</code> row after the last row of its
+      calls, saying what it ended as &mdash; <code>stop</code>, <code>restart</code>,
+      <code>idle</code>, <code>park</code>, <code>idle-forced</code>, <code>park-deadline</code>
+      &mdash; or, for one that ended on its own, how: <code>exit 1</code>, <code>SIGKILL</code>. The
+      server's own going out is the last row of its run, <code>stopped - - SIGTERM</code>.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="plugin">The plugin contract</h2>
+    <p><code>plugins/&lt;name&gt;.mjs</code>; the name is the tool's. Read once, when the server starts.</p>
+    <div class="table">
+      <table>
+        <thead><tr><th>export</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>description</code></td><td>a string: what it does and what it refuses; a session reads it before calling</td></tr>
+          <tr><td><code>inputSchema</code></td><td>a JSON schema object for the call's arguments</td></tr>
+          <tr><td><code>run(args, { seat, role, root, config })</code></td><td>the work, sync or async; <code>seat</code> from the secret, <code>role</code> <code>Leader</code> | <code>Worker</code>, <code>root</code> the instance's absolute path, <code>config</code> <code>openovai.json</code>. Answers <code>{ text }</code> or <code>{ refused }</code>; anything else, or a throw, reaches the caller as a refusal naming the file</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table">
+      <table>
+        <thead><tr><th>not served when</th></tr></thead>
+        <tbody>
+          <tr><td>the name is not a letter followed by letters, digits and hyphens, up to 32 in all</td></tr>
+          <tr><td>the name is one of the eleven the server serves itself</td></tr>
+          <tr><td>the file does not load</td></tr>
+          <tr><td>the file loads and lacks one of the three exports</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Each is one <code>plugins</code> row in <code>runtime.log</code> naming the file and the reason. The <a href="/plugins/">plugins page</a> walks through one.</p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="needs">Requirements</h2>
+    <div class="table">
+      <table>
+        <thead><tr><th>what</th><th>for</th></tr></thead>
+        <tbody>
+          <tr><td>a Linux desktop</td><td>running an instance: the page is opened in your browser on <code>127.0.0.1</code></td></tr>
+          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them</td></tr>
+          <tr><td>an Anthropic account</td><td>signing the instance in, with <code>--auth login</code> or a token under <code>--auth inherit</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Node.js and Claude Code are not requirements: each release pins the exact versions it was
+      tested with and the installer fetches them under <code>~/.local/share/openovai/</code>, per
+      user, shared between instances, used by absolute path. Nothing global, no <code>sudo</code>.
+    </p>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

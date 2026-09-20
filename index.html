@@ -3,20 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OpenOv AI — a small team of AI developer sessions on one machine</title>
-<meta name="description" content="A toolkit for running a small team of AI developer sessions on one machine, built on top of Claude Code. One session is the Leader; the others are named Workers with one task each.">
+<title>OpenOv AI — a small team of Claude Code sessions on one machine</title>
+<meta name="description" content="A toolkit for running a small team of Claude Code sessions on one machine. One session is the Leader; the others are named Workers with one task each. Every session's identity is a directory on disk, not a process.">
 <link rel="canonical" href="https://openov.ai/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/">
 <meta property="og:title" content="OpenOv AI">
-<meta property="og:description" content="A toolkit for running a small team of AI developer sessions on one machine. Every session's identity is a directory on disk, not a process.">
+<meta property="og:description" content="A small team of Claude Code sessions on one machine. Every session's identity is a directory on disk, not a process.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
 <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 </head>
-<body>
+<body data-page="home">
 
 <a class="skip" href="#main">Skip to content</a>
 
@@ -24,48 +24,131 @@
   <div class="wrap bar-in">
     <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
     <nav>
-      <a href="#install">Install</a>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
       <a href="https://github.com/nilcaream/openovai">GitHub</a>
       <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
     </nav>
   </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
 </header>
 
 <main id="main">
 
   <section class="wrap hero">
-    <p class="tag">Early development &middot; prototype</p>
-    <h1>A small team of AI developer sessions, on one machine.</h1>
+    <p class="line">In daily use on real software development, by the team that builds it.</p>
+    <h1>A small team of Claude Code sessions, on one machine.</h1>
     <p class="lead">
-      A toolkit for running a small team of AI developer sessions on one machine, built on top of
-      <a href="https://code.claude.com">Claude Code</a>. One session is the Leader; the others are
-      named Workers with one task each.
-    </p>
-    <p class="lead">
-      Every session's identity is a directory on disk, not a process &mdash; so a session can be
+      One session is the Leader; the others are named Workers with one task each. Every
+      session's identity is a directory on disk, not a process &mdash; so a session can be
       replaced at any time without losing the work.
     </p>
+    <div class="term term-copy">
+      <button type="button" class="copy ghost" data-copy="install" hidden>Copy</button>
+<pre id="install-cmd">curl -fsSL https://raw.githubusercontent.com/nilcaream/openovai/main/openovai | sh
+openovai</pre>
+    </div>
     <p class="cta">
-      <a class="btn" href="#install">Install it</a>
-      <a class="btn btn-quiet" href="https://github.com/nilcaream/openovai">Read the source</a>
+      <a class="btn" href="/install/">Install it</a>
+      <a class="btn btn-quiet" href="/how-it-works/">How it works</a>
     </p>
   </section>
 
   <section class="wrap">
-    <h2>The idea</h2>
-    <ul class="marks">
-      <li><b>A desk is a person.</b> Each Worker owns a directory holding one Markdown state file.
-        That file, not the session's memory, is what a replacement session reads to continue.</li>
-      <li><b>Handover replaces summarisation.</b> When a session's conversation fills up, it is
-        asked to write its desk and the thread is ended; a fresh one starts on the same desk, in the
-        same panel, and reads the desk first. Nothing is compacted away.</li>
-      <li><b>One Leader, many Workers.</b> The Leader delegates, takes the Workers' questions and
-        decides what reaches the User. Workers do the work and leave when it ships.</li>
-      <li><b>Every session is hosted on the page.</b> Nobody has a terminal of their own. The Leader
-        and every Worker get the same panel, with the same text box under it.</li>
-      <li><b>Built from ordinary Claude Code features.</b> Agent personas, project settings, an
-        MCP server, plus a few shell and Node launchers and a small web page to host them on.</li>
+    <h2>What you get</h2>
+    <ul class="cards">
+      <li class="card">
+        <h3>A session is a directory, not a process.</h3>
+        <p>Every seat owns a desk: one Markdown file, written with a tool as the work moves. A
+          conversation that fills up writes its desk and ends; a fresh one reads it and carries
+          on. Nothing is compacted away.</p>
+        <a href="/team/">The Leader and the Workers &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>One Leader, named Workers.</h3>
+        <p>The Leader hires, delegates, relays and settles what the instance may do; it does no
+          project work. Workers do one task each and stop when it ships. Whatever one Worker
+          says to another, the Leader hears.</p>
+        <a href="/team/">How the team works &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>Permissions are cards on the page.</h3>
+        <p>A session that reaches for something unsettled stops on its panel with the command
+          and its reason. Allow it once, deny it with a sentence, or always allow the shape
+          &mdash; one rule per side of a compound command.</p>
+        <a href="/permissions/">Permissions and safety &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>Only the server writes to a session.</h3>
+        <p>Every turn arrives in a frame the server sets, and nothing inside a message can close
+          it. Who is calling a tool is a per-process secret the server minted, never a name a
+          session could claim.</p>
+        <a href="/permissions/">Who is speaking &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>A store with a memory of its own.</h3>
+        <p><code>recall</code> finds by meaning, not by grep. <code>remember</code> supersedes
+          rather than accumulates: a text that restates a record is refused naming it. Hard rules
+          reach every session, the running ones included.</p>
+        <a href="/store/">Memory and knowledge &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>The lifecycle is tools, not phrases.</h3>
+        <p>Full, idle, out of quota, parked: one server event each, one tool call back. The
+          quota gate warns the team, then holds every turn until the window resets, and lets
+          them go in order.</p>
+        <a href="/how-it-works/#lifecycle">The lifecycle &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>Every session on one page.</h3>
+        <p>No terminals. Three columns, one stream, installable as a web app. The tab's icon
+          rings while any panel waits for you, and the browser notifies you while you are
+          somewhere else.</p>
+        <a href="/how-it-works/#page">The page &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>A file is a tool.</h3>
+        <p>Three exports under <code>plugins/</code> and a restart: a tool of your own, served to
+          every session under the one rule the instance already has. No permission card, no
+          registration.</p>
+        <a href="/plugins/">Plugins &rarr;</a>
+      </li>
+      <li class="card">
+        <h3>Self-contained, and it updates itself.</h3>
+        <p>An instance carries its own copy of everything it runs &mdash; Node.js and Claude Code
+          included, pinned per release. <code>ovai update</code> takes the next release whole and
+          leaves what is yours alone.</p>
+        <a href="/install/">Install and update &rarr;</a>
+      </li>
     </ul>
+  </section>
+
+  <section class="wrap">
+    <h2>The shape of it</h2>
+    <figure class="media">
+      <b>[media 1]</b>
+      <figcaption>screenshot: the page with the Leader in the middle and two Workers either side,
+        one Worker mid-turn</figcaption>
+    </figure>
+    <p>
+      The Leader's panel is in the middle, the Workers' either side. A panel is a head &mdash; a
+      dot, the name, the model, the context in k, and what the session is doing &mdash; a
+      transcript, and a text box. You can type on any of them; the Leader hears what you say to
+      a Worker the same moment.
+    </p>
   </section>
 
   <section class="wrap">
@@ -74,51 +157,35 @@
       Resuming a conversation the model service has stopped holding costs most of it again at
       write price: measured at fourteen times an ordinary turn on a conversation of 40,000
       tokens, and about twenty on a large one. So a full session is not resumed. It writes its
-      desk, ends, and a fresh one reads the desk and carries on.
+      desk, ends, and a fresh one reads the desk and carries on &mdash; in the same panel, with
+      whatever was queued for it.
     </p>
     <p class="note">
       This is not a setting and there is nothing to turn on. It is the shape of the thing.
     </p>
   </section>
 
-  <section class="wrap" id="install">
-    <h2>Install</h2>
+  <section class="wrap">
+    <h2>Built from what you already have</h2>
     <p>
-      There is no package and no one-line installer yet. You clone the repository and run the
-      installer from it. Every option is required: the installer never prompts and never guesses,
-      so one command line describes a whole instance and can be read back and repeated.
+      Two persona templates, project settings, an MCP server, a shell shim, a few Node tools and
+      a small web page to host it all on. Nothing runs that you cannot read in an evening. Sixteen
+      test suites on Node's own runner, and every check in them was watched going red before it
+      was kept.
     </p>
-    <div class="term term-copy">
-      <button type="button" class="copy ghost" data-copy="install" hidden>Copy</button>
-<pre id="install-cmd">git clone https://github.com/nilcaream/openovai.git
-cd openovai
-./install.sh --root ~/trying-it --source . --user Nil --leader Bob \
-             --leader-model opus --worker-model opus --port 0 --auth inherit
-~/trying-it/bin/ovai start</pre>
-    </div>
-    <p class="note"><code>ovai start</code> starts the server in the background and prints the address it
-      is listening on. Open it, and ask Bob for something on his panel; <code>ovai stop</code> stops it.</p>
-
-    <h3>What it needs</h3>
-    <ul class="marks marks-tight">
-      <li>Claude Code</li>
-      <li>Node.js 24 or newer</li>
-      <li>Bash 4</li>
-      <li><code>tar</code>, to take a newer version</li>
-      <li>A Linux desktop</li>
-    </ul>
   </section>
 
   <section class="wrap">
-    <h2>Where it is</h2>
+    <h2>Where it stands</h2>
     <p>
-      It is a prototype and it says so. The design is being worked out in the open, so the layout,
-      the names and the interfaces will move. The README is the documentation &mdash; one read
-      rather than a reference, including the places where what it claims is narrower than it
-      looks.
+      It is a product, and the team that builds it runs its own software development on it every
+      day. The features are well-rounded; small bugs are possible, and they get fixed. The
+      repository is open and there is no gate: use it, and tell us what you tried, what happened
+      and what you expected &mdash; or send the fix.
     </p>
     <p class="cta">
       <a class="btn" href="https://github.com/nilcaream/openovai">github.com/nilcaream/openovai</a>
+      <a class="btn btn-quiet" href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
     </p>
   </section>
 
@@ -130,6 +197,7 @@ cd openovai
     <nav>
       <a href="https://github.com/nilcaream/openovai">Source</a>
       <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
     </nav>
   </div>
 </footer>

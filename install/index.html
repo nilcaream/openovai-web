@@ -221,17 +221,18 @@ cd openovai
   <section class="wrap prose">
     <h2 id="update">Taking a newer version</h2>
     <p>
-      An instance carries its own copy of everything it runs and does not follow the toolkit
-      along on its own. <code>ovai update</code> is how it catches up:
+      An instance carries its own copy of the toolkit and does not follow it along on its own. <code>ovai update</code> is how it catches up:
     </p>
     <div class="term">
 <pre>~/workspace/bin/ovai update</pre>
     </div>
     <p>
       It asks GitHub for the latest release, and if that is newer than the version this instance
-      is on it takes it: the payload &mdash; <code>bin/</code> and <code>lib/</code>, the runtimes it
-      pins &mdash; is replaced whole, and a file of yours that a fresh install of this version would
-      have seeded and this instance has not got is seeded once. Desks, conversations,
+      is on it takes it: the payload &mdash; <code>bin/</code> and <code>lib/</code> &mdash; is replaced
+      whole, and a file of yours that a fresh install of this version would have seeded and this
+      instance has not got is seeded once. When the new release pins a newer Node.js or Claude
+      Code, those are fetched beside the ones already there, and an instance still on the older
+      release keeps using the older ones. Desks, conversations,
       <code>customization/</code>, <code>plugins/</code>, <code>openovai.json</code>, the settings
       and the Claude Code home are left alone. There is no rollback: taking the release again is
       the fix.

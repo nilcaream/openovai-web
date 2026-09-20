@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Leader and the Workers — OpenOv AI</title>
+<meta name="description" content="Three actors: the User, the Leader, the Workers. What each does, how they talk, what a day looks like, and how a desk survives the session that wrote it.">
+<link rel="canonical" href="https://openov.ai/team/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/team/">
+<meta property="og:title" content="The Leader and the Workers — OpenOv AI">
+<meta property="og:description" content="What the Leader does, what a Worker does, how they talk, and what a day looks like.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="team">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <span>docs</span>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/store/">Memory and knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>The Leader and the Workers</h1>
+    <p class="lead">
+      Three actors. The User steers the team through the Leader, in plain words. The Leader
+      hires, delegates, relays, settles what the instance may do and writes the hard rules; it
+      does no project work. Workers do the work, one task each, and stop when it ships.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="actors">Three actors</h2>
+    <dl>
+      <dt>User</dt>
+      <dd>You. The Leader's panel is in the middle; type what you want and the Leader starts. You
+        can type on any Worker's panel too, and the Leader hears it the same moment. Rules about
+        what the instance may do are yours, settled in your words on a card.</dd>
+      <dt>Leader</dt>
+      <dd>One session, always there. It takes your words, hires Workers by name, briefs them,
+        takes their questions and reports, decides what reaches you, files a finished desk away
+        and parks the room when you say the day is over. When it is not running, the panel shows
+        its history, and the next thing addressed to it &mdash; a line you type, a Worker's message,
+        a server event &mdash; starts it on its desk.</dd>
+      <dt>Worker</dt>
+      <dd>A named session on a desk of its own, with one task. It keeps its desk written as the
+        work moves, reports to the Leader with a message, and stops when the task ships. A
+        Worker's panel lives with its process; hired again on the same desk it is back with its
+        rows.</dd>
+    </dl>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="day">The day of a Leader</h2>
+    <p>
+      You open the page and type on the Leader's panel: what you want, in any words. The Leader
+      answers in plain language, and when the work is somebody's, it hires. Called with no name,
+      the roster names the Worker: a fixed list of thirty first names, and the next one is the
+      least recently used free one &mdash; never used first, then the one whose holder left longest
+      ago. A new name gets a desk opened from the template, and the rules that make that directory
+      the Worker's to write in. A name is for somebody who has a desk &mdash; somebody who stopped
+      &mdash; started again on it, panel kept.
+    </p>
+    <figure class="media">
+      <b>[media 8]</b>
+      <figcaption>recording, 30&ndash;45&nbsp;s: a task typed on the Leader's panel, the Leader hiring
+        a Worker &mdash; a new panel appearing under a roster name &mdash; the Worker reporting back,
+        and an <code>Ana &rarr; Paul</code> line</figcaption>
+    </figure>
+    <p>
+      Then the Leader briefs: a message to the Worker, which comes back the moment the Worker has
+      it, and the Leader's turn goes on. What the Worker says back arrives later, as a message the
+      other way, and the Leader decides what of it reaches you. While the Leader's turn runs, one
+      line above its panel reads what it is at &mdash; thinking, or the call it has out.
+    </p>
+    <p>
+      Through the day the server tells the Leader what it needs to know and nothing more: that
+      you typed on a Worker's panel, and what; that one Worker said something to another; that a
+      Worker has been silent for 10 minutes, and again at 50; that a Worker has been waiting on a
+      card for ten minutes; that a Worker stopped idle, with its desk as it was last written; that
+      a hard rule changed. Told, not asked: nothing waits on the Leader for any of it.
+    </p>
+    <p>
+      The rules the instance holds are settled through the Leader, in your words. Say "you will be
+      autonomous, push without asking" or "pip install is too much, ask me every time", and the
+      Leader answers in plain language first, then calls <code>permission</code> once per rule
+      &mdash; a card on its panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every time</b>. A Worker
+      hired to push is hired after the push is allowed.
+      <a href="/permissions/">Permissions</a> has the whole of it.
+    </p>
+    <p>
+      When a Worker's round is done the Leader retires it: <code>desks/&lt;Name&gt;/</code> is moved
+      whole &mdash; the desk, the conversation, the persona &mdash; under <code>archive/</code>, the
+      seat leaves the room and the page, and the name is the roster's again. Filed, never deleted.
+      One that may be wanted back on the same desk is stopped, not retired. And when you say this
+      is it for the day, in any words, the Leader parks the room: every Worker writes its desk and
+      stops.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="worker">What a Worker does</h2>
+    <p>
+      One task at a time. A Worker is started on its desk with a persona rendered at that moment,
+      reads its desk first, and works from there: the desk directory is its working directory, so
+      what the work produces &mdash; a design, a finding, notes &mdash; is kept beside the desk
+      file. It writes the desk with a tool at every point the work moves, not only at the end,
+      because a written desk is what survives and anything worked out and not written is gone
+      with the session.
+    </p>
+    <p>
+      A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
+      its own panel lands there and nowhere else. Seven tools go to every seat; the four that are
+      the Leader's &mdash; <code>park</code>, <code>hire</code>, <code>retire</code>,
+      <code>permission</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
+      proposes it to the Leader. When the task ships the Worker reports, writes its desk and stops
+      with <code>stop_session</code>; the desk stays, and <code>hire</code> on its name brings it
+      back on the same desk if it is wanted again.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="talking">Talking</h2>
+    <p>
+      Between sessions there is one way to talk: <code>message</code>, to a named seat. It is
+      refused when the other seat has no process; a seat held by the quota gate has it and reads
+      it when the window resets. A message between the Leader and a Worker is one line on the
+      Leader's panel and a full row on the Worker's; a message from one Worker to another reaches
+      both, and lands on the Leader's panel too as <code>Paul &rarr; Jane: &hellip;</code> &mdash;
+      heard, not asked. A message whose markdown opens with a table, a list or a code block folds
+      behind one line; a double click opens it.
+    </p>
+    <figure class="media">
+      <b>[media 9]</b>
+      <figcaption>screenshot: the Leader's panel with an overheard <code>Paul &rarr; Jane: &hellip;</code>
+        line between its own rows</figcaption>
+    </figure>
+    <p>
+      When you type on a Worker's panel, the words are that Worker's own <code>&lt;user&gt;</code>
+      turn &mdash; your authority, for a typed "go" &mdash; and the server tells the Leader the same
+      moment: one line on the Leader's panel, <code>Ana &rarr; Paul: &hellip;</code>, and an event
+      to its process. The Leader hears what you typed as you typed it, and the Worker does not
+      have to pass it on.
+    </p>
+    <p>
+      Every one of these arrives in a frame the server set &mdash; <code>&lt;user&gt;</code>,
+      <code>&lt;message from="Max"&gt;</code>, <code>&lt;server-event&gt;</code> &mdash; so a session
+      always knows who is speaking, and nothing inside a message can pose as somebody else.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="desks">Desks and handover</h2>
+    <p>
+      A desk is a person. The desk file is written with <code>write_desk</code> &mdash; a title,
+      one line, what the seat is on; a status, one line, where it stands; and the body, the
+      sections &mdash; and the server writes the header line. It is how the User and the Leader
+      see what everybody is on without opening every panel.
+    </p>
+    <p>
+      When a session's conversation passes the ceiling, the server sends it one event,
+      <code>context-full</code>. The session writes its desk, tells the Leader in one line that it
+      is restarting and where the work stands, calls <code>restart_session</code>, and says "back
+      in a moment". A successor starts on the same desk, in the same panel, with whatever was
+      queued for it carried over, and reads the desk first. Both <code>restart_session</code> and
+      <code>stop_session</code> refuse until the desk was written since the event that asked, so
+      the desk comes first, always.
+    </p>
+    <figure class="media">
+      <b>[media 10]</b>
+      <figcaption>recording, 15&nbsp;s: a handover &mdash; the "back in a moment" reply and the
+        successor's first turn on the same panel</figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="models">Models per seat</h2>
+    <p>
+      The instance was installed with a model for the Leader and one for the Workers. A Worker
+      that should not run on the usual one is hired with a model beside its name, kept as one
+      word in <code>desks/&lt;Name&gt;/MODEL</code> &mdash; its own file rather than a line of the
+      desk, because the desk file is written by its session, and a model kept in there would be a
+      model that session could raise for itself. It goes away with the desk. Leaving the model out
+      writes nothing down, so changing the installed model moves everybody who was never named
+      one, from their next process. <code>ovai configuration</code> lists every desk with what it
+      resolves to.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="idle">Idle and quota, from the team's side</h2>
+    <p>
+      A Worker that has been silent is reported to the Leader at 10 and at 50 minutes. At 55 the
+      seat itself is told it goes cold at 60, and writes its desk and stops. A seat on a turn
+      &mdash; waiting on a card included &mdash; is never idle. What is not stopped by 60 is ended
+      with its desk as it was last written, and the Leader is told.
+    </p>
+    <p>
+      When a usage window nears its limit every running seat is told: a Worker writes its desk
+      and stops; the Leader tells you which window and when it resets, writes its desk and stays.
+      No Worker is hired until the reset. A Worker still mid-turn when the window is spent is
+      interrupted and told again &mdash; do not resume, write your desk and stop. After the reset the
+      Leader brings the Workers back with <code>hire</code> on their desks. The
+      <a href="/how-it-works/#quota">quota gate</a> has the stages and the thresholds.
+    </p>
+    <div class="callout">
+      <b>Next</b>
+      <p><a href="/permissions/">Permissions</a>: what a session may do from birth, and what the
+        card on its panel offers you.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

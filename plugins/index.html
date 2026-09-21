@@ -212,8 +212,8 @@ export async function run({ branch }, { seat }) {
         <p>Plugins are read once, when the server starts &mdash; a directory read on every call
           would show a new file and go on serving the stale code of a changed one, and nobody could
           tell which they had. So <strong>restart after writing or changing one</strong>. The log
-          then says, on a <code>plugins</code> row, <code>This instance serves a tool of its own:
-          ci-status</code> &mdash; or names the file and why it is not served.</p>
+          then says, on a <code>plugins</code> row, <code>This instance serves a tool of its own: <wbr>ci-status</code>
+          &mdash; or names the file and why it is not served.</p>
       </li>
       <li>
         <h3>Ask on a panel</h3>
@@ -244,10 +244,10 @@ export async function run({ branch }, { seat }) {
       <table>
         <thead><tr><th>the file</th><th>the row says</th></tr></thead>
         <tbody>
-          <tr><td>is not named the way a tool is</td><td><code>plugins/my_tool.mjs is not served: "my_tool" is not a name a tool can have — a letter, then letters, digits and hyphens, up to 32 of them</code></td></tr>
-          <tr><td>takes a built-in name</td><td><code>plugins/room.mjs is not served: room is already the name of a tool the chat serves everywhere, and a file cannot take it</code></td></tr>
-          <tr><td>does not load &mdash; a syntax error, an import of something not installed, work at the top level that throws</td><td><code>plugins/ci-status.mjs is not served: it could not be read: &lt;the error&gt;</code></td></tr>
-          <tr><td>loads and is missing an export</td><td><code>plugins/ci-status.mjs is not served: a tool is description, inputSchema, run, and this one exports no inputSchema</code></td></tr>
+          <tr><td>is not named the way a tool is</td><td><code>plugins/my_tool.mjs is not served: <wbr>"my_tool" is not a name a tool can have — <wbr>a letter, then letters, digits and hyphens, <wbr>up to 32 of them</code></td></tr>
+          <tr><td>takes a built-in name</td><td><code>plugins/room.mjs is not served: <wbr>room is already the name of a tool <wbr>the chat serves everywhere, <wbr>and a file cannot take it</code></td></tr>
+          <tr><td>does not load &mdash; a syntax error, an import of something not installed, work at the top level that throws</td><td><code>plugins/ci-status.mjs is not served: <wbr>it could not be read: <wbr>&lt;the error&gt;</code></td></tr>
+          <tr><td>loads and is missing an export</td><td><code>plugins/ci-status.mjs is not served: <wbr>a tool is description, inputSchema, run, <wbr>and this one exports no inputSchema</code></td></tr>
         </tbody>
       </table>
     </div>

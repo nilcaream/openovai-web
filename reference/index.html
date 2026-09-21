@@ -69,7 +69,7 @@
     <p>
       One POSIX shell script at <code>~/.local/share/openovai/openovai</code>, linked as
       <code>~/.local/bin/openovai</code>. Read from a pipe &mdash;
-      <code>curl -fsSL https://raw.githubusercontent.com/nilcaream/openovai/main/openovai | sh</code>
+      <code>curl -fsSL <wbr>https://raw.githubusercontent.com/nilcaream/openovai/main/openovai <wbr>| sh</code>
       &mdash; it installs itself there and says so; if <code>~/.local/bin</code> is not on
       <code>PATH</code> it prints the line to add to your shell profile and never edits one. Run
       from its place it resolves a release, prints it, downloads it once under
@@ -82,7 +82,7 @@
         <tbody>
           <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.16.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
           <tr><td><code>openovai 0.16.0 &hellip;</code><br><code>openovai --version 0.16.0 &hellip;</code></td><td>that release</td></tr>
-          <tr><td><code>openovai [version] --root &hellip; --user &hellip; --leader &hellip; --leader-model &hellip; --worker-model &hellip; --port &hellip; --auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
+          <tr><td><code>openovai [version] <wbr>--root &hellip; <wbr>--user &hellip; <wbr>--leader &hellip; <wbr>--leader-model &hellip; <wbr>--worker-model &hellip; <wbr>--port &hellip; <wbr>--auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
         </tbody>
       </table>
     </div>
@@ -103,7 +103,7 @@
           <tr><td><code>ovai restart</code></td><td>stop, then start; prints the new address</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from the scaffold; refuses a name a tool cannot have, a built-in name, and a name whose file is already there</td></tr>
           <tr><td><code>ovai login</code></td><td>under <code>--auth login</code>, opens a browser once and keeps the credential inside the instance; refuses under <code>inherit</code> and says so</td></tr>
-          <tr><td><code>ovai update [--downgrade] [--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, a file a fresh install would seed and this instance has not got seeded once, everything of yours left alone; refuses while the server or any session of the instance runs, naming the <code>kill</code> line for each; refuses to go backwards without <code>--downgrade</code></td></tr>
+          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, a file a fresh install would seed and this instance has not got seeded once, everything of yours left alone; refuses while the server or any session of the instance runs, naming the <code>kill</code> line for each; refuses to go backwards without <code>--downgrade</code></td></tr>
         </tbody>
       </table>
     </div>

@@ -163,7 +163,11 @@ p { margin: 0; }
 a { color: inherit; text-decoration-color: var(--line-firm); text-underline-offset: 0.2em; }
 a:hover { text-decoration-color: currentColor; }
 
-code { font-family: var(--mono); font-size: 0.9em; }
+/* A code token never breaks inside itself — not at a hyphen, not at a slash. A code long enough
+ * to need wrapping says where with <wbr>, between arguments or clauses; a line breaks there and
+ * nowhere else.
+ */
+code { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
 
 /* ---- the tag, the marks, the buttons ------------------------------------ */
 
@@ -343,12 +347,14 @@ code { font-family: var(--mono); font-size: 0.9em; }
   font-size: 0.86em;
 }
 
-/* Tables: the reference page is mostly these. A wide one scrolls in its own box. */
+/* Tables: the reference page is mostly these. The columns share the width by what they hold:
+ * no column is held on one line, so the prose column gets the room and a command in a cell
+ * wraps between its arguments. A table wider than its column scrolls in its own box.
+ */
 .table { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 0.875rem; line-height: 1.5rem; }
 th, td { text-align: left; vertical-align: top; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); }
 th { font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); }
-td:first-child { white-space: nowrap; }
 
 /* Cards: the front page's grid of what you get, and any other list that wants to be boxes. */
 .cards {

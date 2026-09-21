@@ -395,8 +395,10 @@ td:first-child { white-space: nowrap; }
 /* A diagram in words: a terminal box that is not a command. */
 .diagram pre { font-size: 0.8rem; line-height: 1.25rem; }
 
-/* Steps: the install page is a numbered read. */
-.steps { counter-reset: step; list-style: none; padding: 0; margin-bottom: 0; }
+/* Steps: the install page is a numbered read. It is not a prose list — ol.steps outweighs
+ * .prose ol, so the list keeps no indent of its own and each step's box fills the step.
+ */
+ol.steps { counter-reset: step; list-style: none; padding: 0; margin-bottom: 0; }
 .steps > li { counter-increment: step; position: relative; padding-left: 2.5rem; }
 .steps > li + li { margin-top: 2rem; }
 .steps > li::before {

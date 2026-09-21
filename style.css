@@ -55,13 +55,15 @@
   --mark:      hsl(174 62% 84%);
   --mark-firm: hsl(174 46% 32%);
 
-  /* The page column is 60rem; running text stops at 32rem, which is about 70 characters a line
-   * in Plex Sans at 16px (measured, not a ch figure: the average character is narrower than the
-   * "0" that ch counts). --gap is the paragraph gap; --block the gap before a box; --section the
-   * space a section keeps above its heading, half of it below its last block.
+  /* One column, and everything in it fills it: text, boxes, tables, cards. The width is set by
+   * the widest thing that must not scroll — the install one-liner, 82 characters of Plex Mono at
+   * 14px, in its box, inside a numbered step, with the Copy button clear of the text — plus room
+   * for a fallback font while Plex loads. If the lines read long, this is the one token to
+   * narrow; nothing inside the column has a width of its own.
+   * --gap is the paragraph gap; --block the gap before a box; --section the space a section
+   * keeps above its heading, half of it below its last block.
    */
-  --col: 60rem;
-  --text-col: 32rem;
+  --col: 58rem;
   --gap: 1rem;
   --block: 1.5rem;
   --section: 3rem;
@@ -147,9 +149,6 @@ main > section > * + :where(figure, .term, .table, .cards, .callout) { margin-to
 main > section > h2 + * { margin-top: var(--block); }
 main > section > h3 + * { margin-top: 0.75rem; }
 
-/* Prose stays narrow even though boxes use the full column. */
-p, .marks { max-width: var(--text-col); }
-
 /* ---- type --------------------------------------------------------------- */
 
 h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; }
@@ -192,7 +191,7 @@ code { font-family: var(--mono); font-size: 0.9em; }
 }
 .marks-tight li + li { margin-top: 0.25rem; }
 
-.cta { display: flex; flex-wrap: wrap; gap: 0.75rem; max-width: none; }
+.cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
 .btn {
   display: inline-block;
@@ -315,8 +314,8 @@ code { font-family: var(--mono); font-size: 0.9em; }
 
 /* ---- docs pages ----------------------------------------------------------
  *
- * A docs page is one column of prose with boxes in it. The boxes use the full column; the text
- * stays at --text-col, as on the front page.
+ * A docs page is one column of prose with boxes in it, and the text and the boxes are the same
+ * width: the column's.
  */
 
 /* Headings keep twice as much above as below, so each sits with the text it opens: h2 opens a
@@ -325,10 +324,10 @@ code { font-family: var(--mono); font-size: 0.9em; }
  */
 .prose > * + h2 { margin-top: var(--section); }
 .prose > * + h3 { margin-top: 2rem; }
-.prose ul, .prose ol { max-width: var(--text-col); padding-left: 1.5rem; margin-bottom: 0; }
+.prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 0; }
 .prose li + li { margin-top: 0.5rem; }
 .prose li > ul { margin-top: 0.5rem; }
-.prose dl { max-width: var(--text-col); margin-bottom: 0; }
+.prose dl { margin-bottom: 0; }
 .prose dt { font-family: var(--mono); font-size: 0.88rem; font-weight: 500; margin-top: 0.75rem; }
 .prose dd { margin: 0.25rem 0 0 0; }
 .prose hr { border: 0; border-top: 1px solid var(--line); margin-block: 3rem; }
@@ -354,7 +353,6 @@ td:first-child { white-space: nowrap; }
   list-style: none;
   padding: 0;
   margin-bottom: 0;
-  max-width: none;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
   gap: 1rem;
@@ -371,7 +369,6 @@ td:first-child { white-space: nowrap; }
 
 /* Callouts: a note is something to know, a warning is something that bites. */
 .callout {
-  max-width: var(--text-col);
   border-left: 3px solid var(--mark-firm);
   background: var(--bg-soft);
   padding: 0.75rem 1rem;
@@ -386,7 +383,6 @@ td:first-child { white-space: nowrap; }
 .media {
   margin-inline: 0;
   margin-bottom: 0;
-  max-width: none;
   border: 2px dashed var(--line-firm);
   border-radius: 4px;
   padding: 1.5rem 1rem;
@@ -400,7 +396,7 @@ td:first-child { white-space: nowrap; }
 .diagram pre { font-size: 0.8rem; line-height: 1.25rem; }
 
 /* Steps: the install page is a numbered read. */
-.steps { counter-reset: step; list-style: none; padding: 0; margin-bottom: 0; max-width: none; }
+.steps { counter-reset: step; list-style: none; padding: 0; margin-bottom: 0; }
 .steps > li { counter-increment: step; position: relative; padding-left: 2.5rem; }
 .steps > li + li { margin-top: 2rem; }
 .steps > li::before {

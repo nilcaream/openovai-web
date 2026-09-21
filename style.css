@@ -251,6 +251,10 @@ code { font-family: var(--mono); font-size: 0.9em; }
 
 .term b { font-weight: 500; background: var(--mark); color: var(--mark-firm); padding: 0 0.25em; }
 
+/* The button sits over the box's top-right corner; the text keeps clear of it, so a one-line
+ * command is never covered and never scrolls to get out from under it.
+ */
+.term-copy pre { padding-right: 4rem; }
 .term-copy .copy { position: absolute; top: 0.5rem; right: 0.5rem; background: var(--bg-term); }
 
 /* ---- bars --------------------------------------------------------------- */

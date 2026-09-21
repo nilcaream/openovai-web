@@ -293,15 +293,12 @@ code { font-family: var(--mono); font-size: 0.9em; }
  */
 
 .docs { border-top: 1px solid var(--line); font-size: 0.85rem; }
-.docs-in {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  align-items: baseline;
-  padding-block: 0.5rem;
-}
-.docs-in span { font-family: var(--mono); font-size: 0.76rem; color: var(--text-soft); }
-.docs-in a { text-decoration: none; color: var(--text-soft); padding-block: 0.25rem; }
+
+/* The links are inline, not flex items, so that when the row has to break — on a phone — the
+ * lines come out even (text-wrap: balance) instead of one link left over on the last line.
+ */
+.docs-in { padding-block: 0.5rem; text-wrap: balance; }
+.docs-in a { display: inline-block; text-decoration: none; color: var(--text-soft); padding-block: 0.25rem; margin-right: 0.75rem; }
 .docs-in a:hover { color: var(--text); }
 [data-page="how-it-works"] .docs-in a[href="/how-it-works/"],
 [data-page="install"]       .docs-in a[href="/install/"],
@@ -310,6 +307,7 @@ code { font-family: var(--mono); font-size: 0.9em; }
 [data-page="store"]         .docs-in a[href="/store/"],
 [data-page="plugins"]       .docs-in a[href="/plugins/"],
 [data-page="customization"] .docs-in a[href="/customization/"],
+[data-page="defaults"]      .docs-in a[href="/defaults/"],
 [data-page="faq"]           .docs-in a[href="/faq/"],
 [data-page="reference"]     .docs-in a[href="/reference/"] {
   color: var(--mark-firm);

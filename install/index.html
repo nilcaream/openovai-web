@@ -161,9 +161,11 @@
   <section class="wrap prose">
     <h2 id="needs">What it needs</h2>
     <p>
-      A Linux desktop. The rest the installer brings: the Node.js and Claude Code an instance runs
-      on are pinned, exactly, per release &mdash; chosen and tested when the release is cut &mdash;
-      fetched from a fixed address and checked against a checksum, and kept under
+      Linux, x86_64 or arm64, with <code>sh</code>, <code>curl</code> or <code>wget</code>,
+      <code>tar</code>, <code>sha256sum</code> and <code>uname</code>. Nothing else: no Node.js, no
+      npm, no Claude Code on the machine. The rest the installer brings: the Node.js and Claude
+      Code an instance runs on are pinned, exactly, per release &mdash; chosen and tested when the
+      release is cut &mdash; fetched from a fixed address and checked against a checksum, and kept under
       <code>~/.local/share/openovai/</code>, per user, outside every instance. Instances on one
       machine share those runtimes and reuse what is already there; an instance runs them by
       absolute path and never touches, nor uses, a Node.js or Claude Code the system already has.

@@ -180,10 +180,10 @@
   <section class="wrap prose">
     <h2 id="desks">Desks and handover</h2>
     <p>
-      A desk is a person. The desk file is written with <code>write_desk</code> &mdash; a title,
-      one line, what the seat is on; a status, one line, where it stands; and the body, the
-      sections &mdash; and the server writes the header line. It is how the User and the Leader
-      see what everybody is on without opening every panel.
+      A desk is a person. The desk file is edited in place, like any other file; its header line
+      is written with <code>write_desk</code> &mdash; a title, one line, what the seat is on; a
+      status, one line, where it stands &mdash; and calling it is what says the desk is current.
+      It is how the User and the Leader see what everybody is on without opening every panel.
     </p>
     <p>
       When a session's conversation passes the ceiling, the server sends it one event,

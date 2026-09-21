@@ -179,7 +179,7 @@
       <table>
         <thead><tr><th>value</th><th>governs</th><th>file</th><th>why fixed</th></tr></thead>
         <tbody>
-          <tr><td>120; 80; 64 KB</td><td><code>write_desk</code>: the title, the status, the body</td><td><code>chat/server.mjs</code></td><td>title and status share one header line; a desk has no business being longer</td></tr>
+          <tr><td>120; 80</td><td><code>write_desk</code>: the title, the status</td><td><code>chat/server.mjs</code></td><td>title and status share one header line</td></tr>
           <tr><td>100 000 characters</td><td>one message, from the composer or the <code>message</code> tool</td><td><code>chat/server.mjs</code></td><td>a message is a message, not a file</td></tr>
           <tr><td>200 characters</td><td>how much of a refused tool result the tooltip shows</td><td><code>chat/session.mjs</code></td><td>a tooltip</td></tr>
           <tr><td>a letter, then up to 31 letters, digits or <code>-</code>; <code>description</code>, <code>inputSchema</code>, <code>run</code></td><td>what a plugin file may be called; what it has to export</td><td><code>plugins.mjs</code></td><td><a href="/plugins/">the plugin contract</a>; the eleven built-in names are taken</td></tr>

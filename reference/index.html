@@ -188,13 +188,13 @@
           <tr><td><code>room</code></td><td>everyone</td><td>none</td><td>&mdash;</td></tr>
           <tr><td><code>recall</code></td><td>everyone</td><td><code>store</code> (<code>memory</code> | <code>knowledge</code>, required); exactly one of <code>query</code>, <code>id</code>, <code>all</code>; <code>kind</code> (<code>hard-rule</code> | <code>fact</code> | <code>trap</code>); <code>expired</code> (boolean, default false)</td><td>two of query, id and all, or none; <code>kind: hard-rule</code> on <code>knowledge</code>; the helper held for quota, not answering, or answering badly</td></tr>
           <tr><td><code>remember</code></td><td>everyone</td><td><code>store</code> (required), <code>kind</code>, <code>text</code>, <code>until</code> (an absolute ISO 8601 moment, words such as "for today", or <code>now</code> to retire), <code>replaces</code> (an id, or <code>none</code>), <code>reason</code> (with a named replacement), <code>restore</code> (an id, alone with <code>store</code>); Leader only: <code>source</code> (<code>user</code> | <code>team</code>), <code>scope</code> (<code>team</code> | <code>leader</code>)</td><td>a hard rule from a Worker; a rule over the cap; a text that restates a held record when <code>replaces</code> is left out, naming it; a replacement without a reason; the second of two writes replacing one record</td></tr>
-          <tr><td><code>write_desk</code></td><td>everyone</td><td><code>title</code> (one line, up to 120 characters), <code>status</code> (one line, up to 80, no <code>|</code>), <code>body</code> (markdown, up to 64 KB); all required</td><td>an empty title or status, a newline in either, a <code>|</code> in status, a body over 64 KB, any other key</td></tr>
+          <tr><td><code>write_desk</code></td><td>everyone</td><td><code>title</code> (one line, up to 120 characters), <code>status</code> (one line, up to 80, no <code>|</code>); both required; writes the header line alone, and the body below it is edited in place</td><td>an empty title or status, a newline in either, a <code>|</code> in status, any other key</td></tr>
           <tr><td><code>restart_session</code></td><td>everyone</td><td>none</td><td>the desk was not written since the event that asked, or since the turn began</td></tr>
           <tr><td><code>stop_session</code></td><td>everyone</td><td>none</td><td>the same</td></tr>
           <tr><td><code>park</code></td><td>Leader</td><td><code>interrupt</code> (boolean, default false), <code>deadline</code> (seconds, at least 5; default <code>park.deadline</code>)</td><td>a Worker calling it</td></tr>
           <tr><td><code>hire</code></td><td>Leader</td><td><code>name</code> (somebody who has a desk and stopped; left out, the roster names a new Worker), <code>model</code> (when not the usual one)</td><td>the quota gate holds hires; the Leader's own name; a name whose directory is under <code>desks/</code> without a desk file in it</td></tr>
           <tr><td><code>retire</code></td><td>Leader</td><td><code>name</code> (required): a Worker that has stopped</td><td>a name that is not one; the Leader's own; a name with no desk; a Worker still running; the server stopping</td></tr>
-          <tr><td><code>permission</code></td><td>Leader</td><td><code>rule</code> (<code>Bash(word:*)</code> or <code>Edit(/dir/**)</code>), <code>why</code> (what the User reads beside it); with neither, answers what the instance holds and what is pending</td><td>a rule in another shape; a rule already settled (say it to the User); a rule already asked on the panel; no <code>why</code></td></tr>
+          <tr><td><code>permission</code></td><td>Leader</td><td><code>rule</code> (as Claude Code's reference spells it: <code>Bash(word:*)</code>, <code>Bash(the whole command)</code>, <code>Edit(/dir/**)</code>, <code>Read(/dir/**)</code>, <code>Read(//dir/**)</code>, <code>WebFetch(domain:host)</code>, <code>WebSearch</code>, <code>mcp__server__tool</code>, <code>Agent(Name)</code>, or a bare tool name), <code>why</code> (what the User reads beside it); with neither, answers what the instance holds and what is pending</td><td>a rule Claude Code would not read; a rule already settled (say it to the User); a rule already asked on the panel; no <code>why</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -224,7 +224,7 @@
           <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or let it stop</td></tr>
           <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>any seat at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way</td></tr>
           <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>every Worker, from <code>park</code>; the Leader too from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
-          <tr><td><code>hard-rules</code></td><td><code>set</code></td><td>every running seat, in front of its next turn</td><td>follows the set as written; nothing to answer</td></tr>
+          <tr><td><code>hard-rules</code></td><td><code>set</code></td><td>every running seat, a child of its next queue</td><td>follows the set as written; nothing to answer</td></tr>
           <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
           <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
           <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code></td><td>the Leader, when a Worker stopped idle or into an exhausted window</td><td>notes it; <code>hire</code> brings it back when the work is still wanted</td></tr>
@@ -251,7 +251,6 @@
           <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
           <tr><td>allow</td><td><code>Edit(/desks/&lt;Leader&gt;/**)</code></td><td>the Leader's desk directory; every Worker hired gets the same pair for theirs, withdrawn at retire</td></tr>
           <tr><td>allow</td><td>one <code>Bash(&hellip;:*)</code> each for <code>git</code>, <code>mkdir</code>, <code>cd</code>, <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>, <code>cmp</code>, <code>sha256sum</code>, <code>grep</code>, <code>find</code>, <code>sed</code>, <code>awk</code>, <code>head</code>, <code>tail</code>, <code>wc</code>, <code>echo</code>, <code>chmod</code>, <code>touch</code>, <code>curl</code>, <code>npm</code></td><td>a seat's ordinary shell commands, matched by the command from its first character &mdash; a <code>git -C</code> spelling asks; a <code>cd &hellip; &amp;&amp; &hellip;</code> compound is let through by the hook when every side is allowed and none denied</td></tr>
-          <tr><td>deny</td><td><code>Edit(/desks/*/STATE.md)</code></td><td>a desk file is written through <code>write_desk</code>; a stray write is refused without a prompt</td></tr>
           <tr><td>deny</td><td>the instance's own account files</td><td>under <code>.local/</code></td></tr>
           <tr><td>deny</td><td><code>git push</code>, <code>sudo</code>, <code>ssh</code></td><td>a push is yours; a refusal wins over the <code>git</code> rule that would let it through, whatever the hook says</td></tr>
         </tbody>
@@ -331,14 +330,14 @@
       <table>
         <thead><tr><th>what</th><th>for</th></tr></thead>
         <tbody>
-          <tr><td>a Linux desktop</td><td>running an instance: the page is opened in your browser on <code>127.0.0.1</code></td></tr>
-          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them</td></tr>
+          <tr><td>Linux, x86_64 or arm64</td><td>running an instance: the page is opened in your browser on <code>127.0.0.1</code></td></tr>
+          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code>, <code>uname</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them</td></tr>
           <tr><td>an Anthropic account</td><td>signing the instance in, with <code>--auth login</code> or a token under <code>--auth inherit</code></td></tr>
         </tbody>
       </table>
     </div>
     <p>
-      Node.js and Claude Code are not requirements: each release pins the exact versions it was
+      Node.js, npm and Claude Code are not requirements: each release pins the exact versions it was
       tested with and the installer fetches them under <code>~/.local/share/openovai/</code>, per
       user, shared between instances, used by absolute path. Nothing global, no <code>sudo</code>.
     </p>

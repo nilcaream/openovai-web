@@ -84,8 +84,6 @@
     </ul>
     <p>And what it is born denying:</p>
     <ul>
-      <li>an edit or a write of any desk file by hand &mdash; a desk file is written through a tool,
-        and a stray write on one is refused by the harness without a prompt;</li>
       <li>the instance's own account files;</li>
       <li><code>git push</code>, <code>sudo</code> and <code>ssh</code>: a push is yours, and a
         refusal wins over the <code>git</code> rule that would let it through, whatever the hook
@@ -168,10 +166,17 @@
       The rules the instance holds are also settled in words, and the words are the User's. Say
       it to the Leader &mdash; "you will be autonomous, push without asking", "pip install is too
       much, ask me every time" &mdash; and the Leader answers in plain language first, then calls
-      <code>permission</code> once per rule: a rule in Claude Code's shape,
-      <code>Bash(git push:*)</code> for a command by its first word and prefix or
-      <code>Edit(/src/**)</code> for writes under a directory, anchored at the instance root, and
-      why, in words you read beside it.
+      <code>permission</code> once per rule: a rule as Claude Code's reference spells it &mdash;
+      <code>Bash(git push:*)</code> for a command by prefix, <code>Bash(the whole command)</code>
+      for one command exactly, <code>Edit(/src/**)</code> or <code>Read(/src/**)</code> for a
+      directory under the instance root, <code>Read(//dir/**)</code> for one outside it,
+      <code>WebFetch(domain:host)</code> for a host, <code>WebSearch</code>,
+      <code>mcp__server__tool</code> or <code>mcp__server__*</code> for a server's tools,
+      <code>Agent(Name)</code> for a subagent, or a bare tool name for every use of it &mdash; and
+      why, in words you read beside it. A rule Claude Code would not read is refused: a path on
+      <code>Write</code>, <code>Glob</code> or <code>NotebookEdit</code>, a glob before the
+      server's name, a star in the middle of a command, a path outside the instance for anything
+      but <code>Read</code>.
     </p>
     <figure class="media">
       <b>[media 12]</b>

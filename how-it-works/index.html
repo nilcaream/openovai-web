@@ -205,10 +205,12 @@
       anything.
     </p>
     <p>
-      A session answers one message at a time; each seat has its own queue, and the next line is
-      written only when the previous turn has ended. A server event queues like a turn, ahead of
-      the rest when it has to; the one exception is the interrupt, which stops the running turn
-      first and is the next thing the session reads.
+      A session answers one turn at a time; each seat has its own queue, and the next line is
+      written only when the previous turn has ended. Everything waiting for a seat goes as one
+      <code>&lt;queue&gt;</code> element, its children the frames as they arrived, each with
+      <code>at="HH:MM"</code>, so a session reads the whole delivery and when each part came. A
+      server event queues like any frame, ahead of the rest when it has to; the one exception is
+      the interrupt, which stops the running turn first and is the next thing the session reads.
     </p>
     <p>
       Who is calling a tool travels with the process. When the server starts a seat it mints a
@@ -225,9 +227,10 @@
     <p>
       A desk is a person. Each seat owns <code>desks/&lt;Name&gt;/</code>, holding one Markdown state
       file, <code>STATE.md</code>, the persona the process was started with, the conversation, and
-      whatever that person keeps there. The listing is the roster. The desk file is written with
-      one tool, <code>write_desk</code> &mdash; a title, a status, and the body &mdash; and by no other
-      way: a stray write on it is refused without a prompt.
+      whatever that person keeps there. The listing is the roster. The desk file is edited in
+      place with the file tools like any other file; its first line is the server's header, and
+      one tool, <code>write_desk</code> &mdash; a title and a status &mdash; writes that line and
+      says the desk is current.
     </p>
     <p>
       That file, not the session's memory, is what a replacement session reads to continue. A
@@ -275,7 +278,7 @@
           <tr><td><code>room</code></td><td>everyone</td><td>who works here: every seat, its role, its model, whether it is running, which one is you, where the quota stands</td></tr>
           <tr><td><code>recall</code></td><td>everyone</td><td>read the store: by meaning, by id, or all of it</td></tr>
           <tr><td><code>remember</code></td><td>everyone</td><td>write one record to the store</td></tr>
-          <tr><td><code>write_desk</code></td><td>everyone</td><td>the caller's own desk: title, status, body</td></tr>
+          <tr><td><code>write_desk</code></td><td>everyone</td><td>the header of the caller's own desk: title, status</td></tr>
           <tr><td><code>restart_session</code></td><td>everyone</td><td>end the caller's process and start a successor on the same desk</td></tr>
           <tr><td><code>stop_session</code></td><td>everyone</td><td>end the caller's process and its panel; the desk stays</td></tr>
           <tr><td><code>park</code></td><td>Leader</td><td>every running Worker writes its desk and stops, by a deadline</td></tr>

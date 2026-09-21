@@ -55,9 +55,13 @@
   --mark:      hsl(174 62% 84%);
   --mark-firm: hsl(174 46% 32%);
 
+  /* The page column is 60rem; running text stops at 32rem, which is about 70 characters a line
+   * in Plex Sans at 16px (measured, not a ch figure: the average character is narrower than the
+   * "0" that ch counts). --gap is the paragraph gap.
+   */
   --col: 60rem;
-  --text-col: 42rem;
-  --gap: 1.15rem;
+  --text-col: 32rem;
+  --gap: 1rem;
   --pad: clamp(1.25rem, 4vw, 2.5rem);
 
   --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -106,7 +110,7 @@ body {
   color: var(--text);
   font-family: var(--sans);
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 

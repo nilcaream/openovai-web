@@ -355,6 +355,7 @@ code { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
 table { border-collapse: collapse; width: 100%; font-size: 0.875rem; line-height: 1.5rem; }
 th, td { text-align: left; vertical-align: top; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); }
 th { font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); }
+table.whose td:nth-child(2) { white-space: nowrap; }  /* the whose column is one line per cell; the what column takes the rest */
 
 /* Cards: the front page's grid of what you get, and any other list that wants to be boxes. */
 .cards {

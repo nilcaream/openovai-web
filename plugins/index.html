@@ -157,7 +157,8 @@ export async function run({ branch }, { seat }) {
   if (build === undefined) {
     return { text: `no build of ${branch} on CI yet` };
   }
-  return { text: `${branch}: ${build.state}, build #${build.number}, log at ${build.url} (asked by ${seat})` };
+  return { text: `${branch}: ${build.state}, build #${build.number}, `
+               + `log at ${build.url} (asked by ${seat})` };
 }</pre>
     </figure>
     <p>Read it top to bottom, it is the contract in order:</p>

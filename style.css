@@ -57,11 +57,14 @@
 
   /* The page column is 60rem; running text stops at 32rem, which is about 70 characters a line
    * in Plex Sans at 16px (measured, not a ch figure: the average character is narrower than the
-   * "0" that ch counts). --gap is the paragraph gap.
+   * "0" that ch counts). --gap is the paragraph gap; --block the gap before a box; --section the
+   * space a section keeps above its heading, half of it below its last block.
    */
   --col: 60rem;
   --text-col: 32rem;
   --gap: 1rem;
+  --block: 1.5rem;
+  --section: 3rem;
   --pad: clamp(1.25rem, 4vw, 2.5rem);
 
   --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -123,24 +126,36 @@ body {
   padding-inline: var(--pad);
 }
 
+/* A section keeps --section above its heading and half of that below its last block, so the
+ * rule between two sections sits nearer the text it closes than the heading it precedes, and
+ * the whole gap from one section's last line to the next heading stays within three lines.
+ */
 main > section {
-  padding-block: clamp(2.5rem, 6vw, 4rem);
+  padding-block: var(--section) calc(var(--section) / 2);
   border-bottom: 1px solid var(--line);
 }
 
 main > section:last-child { border-bottom: 0; }
 
+/* The rhythm: a paragraph gap between things, a block gap before a box or after a heading,
+ * nothing above the first child. The top margin belongs to these rules alone: a list or a
+ * figure below resets its own bottom and side margins, never its top.
+ */
+main > section > :first-child { margin-top: 0; }
 main > section > * + * { margin-top: var(--gap); }
+main > section > * + :where(figure, .term, .table, .cards, .callout) { margin-top: var(--block); }
+main > section > h2 + * { margin-top: var(--block); }
+main > section > h3 + * { margin-top: 0.75rem; }
 
 /* Prose stays narrow even though boxes use the full column. */
 p, .marks { max-width: var(--text-col); }
 
 /* ---- type --------------------------------------------------------------- */
 
-h1, h2, h3 { line-height: 1.2; text-wrap: balance; margin: 0; font-weight: 600; }
-h1 { font-size: clamp(1.9rem, 5vw, 2.9rem); letter-spacing: -0.02em; }
-h2 { font-size: clamp(1.3rem, 3vw, 1.6rem); letter-spacing: -0.01em; }
-h3 { font-size: 1.05rem; margin-top: 2rem; }
+h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; }
+h1 { font-size: clamp(1.75rem, 1rem + 2vw, 2.25rem); line-height: 1.111; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; line-height: 1.333; letter-spacing: -0.01em; }
+h3 { font-size: 1.25rem; line-height: 1.2; }
 
 p { margin: 0; }
 .lead { font-size: clamp(1.05rem, 2vw, 1.2rem); color: var(--text-soft); }
@@ -165,7 +180,7 @@ code { font-family: var(--mono); font-size: 0.9em; }
   border-radius: 2px;
 }
 
-.marks { list-style: none; padding: 0; margin: 0; }
+.marks { list-style: none; padding: 0; margin-bottom: 0; }
 .marks li { position: relative; padding-left: 2.1rem; }
 .marks li + li { margin-top: 0.85rem; }
 .marks li::before {
@@ -209,7 +224,8 @@ code { font-family: var(--mono); font-size: 0.9em; }
 /* ---- the terminal boxes ------------------------------------------------- */
 
 .term {
-  margin: 0;
+  margin-inline: 0;
+  margin-bottom: 0;
   border: 1px solid var(--line-firm);
   border-radius: 4px;
   background: var(--bg-term);
@@ -303,14 +319,16 @@ code { font-family: var(--mono); font-size: 0.9em; }
  * stays at --text-col, as on the front page.
  */
 
-.prose > * + * { margin-top: var(--gap); }
-.prose h2 { margin-top: 2.6rem; padding-top: 0.4rem; }
-.prose h3 { margin-top: 1.8rem; }
-.prose h2 + *, .prose h3 + * { margin-top: 0.7rem; }
-.prose ul, .prose ol { max-width: var(--text-col); padding-left: 1.4rem; margin: 0; }
+/* Headings keep twice as much above as below, so each sits with the text it opens: h2 opens a
+ * section (the section's own padding is its space above, --block below), h3 2rem above and
+ * 0.75rem below — the space below is set with the rhythm rules above.
+ */
+.prose > * + h2 { margin-top: var(--section); }
+.prose > * + h3 { margin-top: 2rem; }
+.prose ul, .prose ol { max-width: var(--text-col); padding-left: 1.4rem; margin-bottom: 0; }
 .prose li + li { margin-top: 0.35rem; }
 .prose li > ul { margin-top: 0.35rem; }
-.prose dl { max-width: var(--text-col); margin: 0; }
+.prose dl { max-width: var(--text-col); margin-bottom: 0; }
 .prose dt { font-family: var(--mono); font-size: 0.88rem; font-weight: 500; margin-top: 0.8rem; }
 .prose dd { margin: 0.15rem 0 0 0; }
 .prose hr { border: 0; border-top: 1px solid var(--line); margin-block: 2rem; }
@@ -335,7 +353,7 @@ td:first-child { white-space: nowrap; }
 .cards {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin-bottom: 0;
   max-width: none;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
@@ -347,7 +365,7 @@ td:first-child { white-space: nowrap; }
   background: var(--bg-soft);
   padding: 1rem 1.1rem;
 }
-.card h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+.card h3 { margin: 0 0 0.4rem; font-size: 1rem; line-height: 1.5; }
 .card p { font-size: 0.92rem; color: var(--text-soft); }
 .card a { display: inline-block; margin-top: 0.6rem; font-family: var(--mono); font-size: 0.8rem; }
 
@@ -366,7 +384,8 @@ td:first-child { white-space: nowrap; }
 
 /* A media figure that is not recorded yet: a dashed box saying what goes there and why. */
 .media {
-  margin: 0;
+  margin-inline: 0;
+  margin-bottom: 0;
   max-width: none;
   border: 2px dashed var(--line-firm);
   border-radius: 4px;
@@ -381,7 +400,7 @@ td:first-child { white-space: nowrap; }
 .diagram pre { font-size: 0.8rem; line-height: 1.6; }
 
 /* Steps: the install page is a numbered read. */
-.steps { counter-reset: step; list-style: none; padding: 0; max-width: none; }
+.steps { counter-reset: step; list-style: none; padding: 0; margin-bottom: 0; max-width: none; }
 .steps > li { counter-increment: step; position: relative; padding-left: 2.6rem; }
 .steps > li + li { margin-top: 1.6rem; }
 .steps > li::before {

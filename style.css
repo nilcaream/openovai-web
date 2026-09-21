@@ -63,7 +63,7 @@
    * --gap is the paragraph gap; --block the gap before a box; --section the space a section
    * keeps above its heading, half of it below its last block.
    */
-  --col: 58rem;
+  --col: 63rem;
   --gap: 1rem;
   --block: 1.5rem;
   --section: 3rem;

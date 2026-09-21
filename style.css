@@ -65,7 +65,7 @@
   --gap: 1rem;
   --block: 1.5rem;
   --section: 3rem;
-  --pad: clamp(1.25rem, 4vw, 3rem);
+  --pad: clamp(1rem, 4vw, 3rem);
 
   --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -423,6 +423,17 @@ td:first-child { white-space: nowrap; }
 
 /* The two-line hero on the front page, and the tag under it. */
 .hero .line { font-family: var(--mono); font-size: 0.9rem; color: var(--mark-firm); }
+
+/* ---- small screens -------------------------------------------------------
+ *
+ * The big gaps shrink, the text does not: section space 3rem → 2rem, the gap before a box
+ * 1.5rem → 1rem, card padding 1rem all round; body stays 16px and the side padding is --pad's
+ * floor of 1rem.
+ */
+@media (max-width: 40em) {
+  :root { --section: 2rem; --block: 1rem; }
+  .card { padding: 1rem; }
+}
 
 /* ---- accessibility ------------------------------------------------------ */
 

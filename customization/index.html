@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Customization: make it yours — OpenOv AI</title>
-<meta name="description" content="Every knob an instance has, and no more than there are: what you append to the personas, every key of openovai.json with its default, the models, the permission rules that are yours, the two notification switches, the theme, a fixed port and the web app.">
+<meta name="description" content="Every knob an instance has, and no more than there are: the three files you add to the personas, every key of openovai.json with its default, the models, the permission rules that are yours, the two notification switches, the theme, a fixed port and the web app.">
 <link rel="canonical" href="https://openov.ai/customization/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/customization/">
@@ -63,26 +63,39 @@
     <p>
       A persona is rendered once, when a seat's process starts, from the templates the instance has
       at that moment, and kept beside that seat's conversation under <code>desks/&lt;Name&gt;/</code>.
-      What you add to it is yours: <code>customization/leader.md</code> or
-      <code>customization/worker.md</code> at the instance root is appended, as it is, to every
-      persona of that kind the instance renders. So an edit changes nothing for a process already
-      running, and reaches every process started after it &mdash; the next Worker hired, the Leader
-      after its next restart.
-    </p>
-    <p>
-      The place for what is true of your workspace and not of the product: the language the team
-      writes in, the shape of a commit message, where a design goes before it is built. Rules the
-      team should hold in front of every turn are better as <a href="/knowledge/">hard
-      rules</a>, which reach a running session too; a persona addition is read at start and never
-      again.
+      What you add to it is yours: three files at the instance root, each reaching the session in a
+      frame that names the file it came from. <code>customization/common.md</code> goes to every
+      session here and comes first, so the role's own file reads as the narrower thing under it;
+      <code>customization/leader.md</code> and <code>customization/worker.md</code> go to that kind
+      of session. A Leader is given the Worker's file after both, marked as the Worker's rather
+      than as its own, so that it knows what every Worker already holds and briefs the task rather
+      than the method. A Worker is never given the Leader's.
     </p>
     <figure class="term">
-<pre># customization/worker.md
-
+<pre>&lt;customization source="customization/worker.md"&gt;
 Commit messages are one line, imperative, under 72 characters, and say what changed rather
 than what you did. A design goes in your desk directory as design.md before any code is written,
-and you say so to the Leader before you start on it.</pre>
+and you say so to the Leader before you start on it.
+&lt;/customization&gt;</pre>
     </figure>
+    <p>
+      The content goes between the tags exactly as it was read &mdash; nothing trimmed, nothing
+      re-wrapped, no newline added and none taken away &mdash; because these are your words going
+      into every session, and a frame that tidied them would be worse than no frame. A file you
+      have not written is no frame at all; a file that is there and empty is a frame with nothing
+      in it, which is what it says. And because the persona is rendered when the process starts, an
+      edit changes nothing for a process already running and reaches every process started after it
+      &mdash; the next Worker hired, the Leader after its next restart.
+    </p>
+    <p>
+      This is where what your team is held to lives: the language the team writes in, the shape of
+      a commit message, where a design goes before it is built. The test for whether a line belongs
+      here is what kind of line it is &mdash; one that can be obeyed or broken is customization, and
+      one that is true or false is a <a href="/knowledge/">note</a>. The directory is yours, and a
+      session asks before it writes there: <code>Edit(/customization/**)</code> is in the
+      <a href="/permissions/">ask list</a>, so a session told to add a rule for the team stops for
+      your press.
+    </p>
   </section>
 
   <section class="wrap prose">
@@ -108,9 +121,8 @@ and you say so to the Leader before you start on it.</pre>
           <tr><td><code>schema</code>, <code>createdAt</code></td><td>&mdash;</td><td>the file's version and when the instance was installed; <code>ovai configuration</code> reports the second</td></tr>
           <tr><td colspan="3"><em>read when present</em></td></tr>
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code></td><td>the two stages of the <a href="/how-it-works/#quota">quota gate</a>, in percent of each window; the <code>7d</code> pair holds every weekly window, the one over all models and fable's own alike</td></tr>
-          <tr><td><code>hardRules</code></td><td><code>{ "count": 25, "length": 200 }</code></td><td>how many <a href="/knowledge/">hard rules</a> the store holds and how long one may be; a rule over the cap is refused with the cap</td></tr>
           <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when any seat is told to write its desk and stop</td></tr>
-          <tr><td><code>context</code></td><td><code>{ "ceiling": 160000 }</code></td><td>tokens: the request size at which a session is told <code>context-full</code> and hands over to a successor</td></tr>
+          <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code></td><td>tokens: the request size at which a session is first told how big it has grown, how often it is told again above that, and the size at which the telling turns into an instruction to hand over</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, and how long a server stop waits for the whole room</td></tr>
           <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code></td><td>minutes a Worker may wait on a card before the Leader is told once that somebody is waiting on your panel</td></tr>
         </tbody>
@@ -196,7 +208,7 @@ and you say so to the Leader before you start on it.</pre>
     </figure>
     <div class="callout">
       <b>Next</b>
-      <p><a href="/faq/">FAQ</a>: the ten questions a first evening raises, and what each one
+      <p><a href="/faq/">FAQ</a>: the eleven questions a first evening raises, and what each one
         means.</p>
     </div>
   </section>

@@ -279,7 +279,7 @@ export async function run({ branch }, { seat }) {
       A tool of yours runs inside the server process, so the permission system never sees it:
       there is no card for a plugin call, and no rule to grant, because <code>mcp__openovai</code>
       is granted already. That is the point &mdash; a session calls your tracker the way it calls
-      <code>recall</code> &mdash; and it is also the whole of the trust model: whatever the file can
+      <code>index</code> &mdash; and it is also the whole of the trust model: whatever the file can
       reach, a session that calls it reaches. Write the refusals in; give the tool the least it
       needs; keep a credential out of the session's hands by keeping it out of the answer. And note
       what a plugin is not: a tool a session chooses to call, never a way to the person. The page

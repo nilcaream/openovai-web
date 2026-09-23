@@ -99,13 +99,29 @@
   </section>
 
   <section class="wrap prose">
+    <h2 id="customization">I changed <code>customization/</code> and nothing happened</h2>
+    <p>
+      Expected, and the same is true of <code>openovai.json</code> and
+      <code>knowledge/common.md</code>. A persona is rendered when a seat's process starts, from the
+      files the instance has at that moment, and the server reads its own configuration when it
+      starts. So an edit reaches every process started after it and none of the ones already
+      running: the next Worker hired has it, and the Leader has it after its next restart. To give
+      it to the seats that are up, <code>ovai restart</code> &mdash; which interrupts whatever they
+      are mid-way through, so it is worth a moment when nobody is deep in something.
+    </p>
+  </section>
+
+  <section class="wrap prose">
     <h2 id="quiet">A Worker went quiet, said "back in a moment", or disappeared</h2>
     <p>
       Three different things. <em>Quiet</em>: the Leader is told about a silent Worker at 10 and at
       50 minutes; at 55 any seat is told it goes cold at 60, writes its desk and stops. A seat on a
       turn &mdash; a card waiting included &mdash; is never idle. <em>Back in a moment</em>: its
-      context passed the ceiling; it wrote its desk and restarted, and a successor is starting on the
-      same desk, in the same panel, with whatever was queued carried over. <em>Disappeared</em>: a
+      conversation had grown past the size it wraps up at, so it wrote its desk and restarted itself.
+      A successor is already going on from that desk, in the same panel, with whatever was queued
+      carried over; it announces itself to nobody, and the restart is a row in
+      <code>runtime.log</code> with the context the session before it was carrying.
+      <em>Disappeared</em>: a
       Worker whose process has gone is dimmed with its text box closed and removed from the page
       thirty seconds later; the desk stays, and the Leader's <code>hire</code> on that name brings
       it back on the same desk with its rows. Ask the Leader; it was told each time.

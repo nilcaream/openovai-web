@@ -74,6 +74,9 @@
         <code>projects/</code> and <code>temp/</code> &mdash; one rule each, and the same for a
         seat's own desk directory: a desk is a working directory, and everyone hired later gets
         the rule for theirs;</li>
+      <li>editing and writing <code>knowledge/</code>, one rule of the same shape: what the
+        workspace knows is written by whoever learnt the thing, at the moment they learnt it, and a
+        session that had to ask before recording what it just measured would record nothing;</li>
       <li>a seat's ordinary shell commands: <code>git</code>, <code>mkdir</code>, <code>cd</code>,
         <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>,
         <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>,
@@ -88,6 +91,17 @@
       <li><code>git push</code>, <code>sudo</code> and <code>ssh</code>: a push is yours, and a
         refusal wins over the <code>git</code> rule that would let it through, whatever the hook
         says.</li>
+    </ul>
+    <p>And the two it is born asking for, both of them files that reach every session:</p>
+    <ul>
+      <li><code>Edit(/customization/**)</code> &mdash; your own lines, written once and outliving
+        every version, so a session that would rewrite them waits for your press, the Leader
+        included. Asked rather than denied: a denial is absolute, the call would never reach a
+        panel, and the files could then be changed from nowhere inside the instance at all.</li>
+      <li><code>Edit(/knowledge/common.md)</code> &mdash; the one note handed to every session at
+        its start, so a change to it reaches every seat rather than the one that made it. It is
+        narrower than the grant above and matches a file that grant already matches: the two
+        overlap there on purpose, and the narrower ask is the one consulted.</li>
     </ul>
     <p>
       Every path rule starts with <code>/</code>, which anchors it at the instance root, so a
@@ -233,9 +247,10 @@
         exclude.</li>
       <li><b>API keys.</b> <code>ANTHROPIC_API_KEY</code> and <code>ANTHROPIC_AUTH_TOKEN</code> are
         removed from what an instance runs with, whichever way it signs in.</li>
-      <li><b>The built-in memory.</b> The instance's Claude Code home turns it off, so the
-        <a href="/knowledge/">store</a> is the only thing that outlives a conversation &mdash; and it is
-        read the same by everyone.</li>
+      <li><b>The built-in memory.</b> The instance's Claude Code home turns it off, so what
+        outlives a conversation is what somebody wrote down: a seat's desk, and the
+        <a href="/knowledge/">knowledge</a> directory. Both are plain files, and both are read the
+        same by everyone.</li>
       <li><b>What a reply can do to the page.</b> Raw HTML is escaped, a link is kept only on
         <code>http(s)</code> and <code>mailto</code>, an image is shown as a link: nothing a session
         says makes the page fetch anything.</li>
@@ -254,8 +269,8 @@
     </p>
     <div class="callout">
       <b>Next</b>
-      <p><a href="/knowledge/">Knowledge</a>: the one thing that outlives every desk, and
-        why nothing in it is silently overwritten.</p>
+      <p><a href="/knowledge/">Knowledge</a>: what this workspace knows, as a flat directory of
+        notes every seat may write.</p>
     </div>
   </section>
 

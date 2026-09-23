@@ -83,7 +83,7 @@
           With no arguments the release's installer asks its questions: where the instance lives,
           who it works for, the Leader's name, the models, the port, how it signs in. Before
           anything else <code>openovai</code> says which version it resolved &mdash;
-          <code>openovai 0.16.0 (latest)</code> &mdash; downloads that release once, fetches the
+          <code>openovai 0.17.0 (latest)</code> &mdash; downloads that release once, fetches the
           Node.js and Claude Code it pins, and hands over to its installer. The directory has to be
           empty or new.
         </p>
@@ -134,7 +134,7 @@
       of its own, the version.</p>
     <dl>
       <dt>openovai [version]</dt>
-      <dd><code>openovai 0.16.0 &hellip;</code> or <code>openovai --version 0.16.0 &hellip;</code>
+      <dd><code>openovai 0.17.0 &hellip;</code> or <code>openovai --version 0.17.0 &hellip;</code>
         takes that release; absent, the newest release on GitHub at that moment, printed before
         anything is done. Asked interactively, the choice offers <code>latest</code> and the
         versions already downloaded.</dd>
@@ -235,7 +235,7 @@ cd openovai
       whole, and a file of yours that a fresh install of this version would have seeded and this
       instance has not got is seeded once. When the new release pins a newer Node.js or Claude
       Code, those are fetched beside the ones already there, and an instance still on the older
-      release keeps using the older ones. Desks, conversations,
+      release keeps using the older ones. Desks, conversations, <code>knowledge/</code>,
       <code>customization/</code>, <code>plugins/</code>, <code>openovai.json</code>, the settings
       and the Claude Code home are left alone. There is no rollback: taking the release again is
       the fix.
@@ -272,8 +272,9 @@ cd openovai
           <tr><td><code>ovai status</code></td><td><code>not running</code> (exit 3), or <code>running at &lt;url&gt; (pid, since)</code> &mdash; found out by asking the address, not by trusting a file</td></tr>
           <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, by a deadline &mdash; then closes the server; not running is not a failure</td></tr>
           <tr><td><code>ovai restart</code></td><td>the two in a row, and prints the new address</td></tr>
-          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential, every desk with what it runs on, where the store is</td></tr>
+          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential, and every desk with what it runs on</td></tr>
           <tr><td><code>ovai login</code></td><td>signs the instance in, once, under <code>--auth login</code></td></tr>
+          <tr><td><code>ovai claude</code></td><td>opens Claude Code on this instance, to reach its own commands &mdash; its configuration is the instance's rather than yours. Quitting it does not make a change live: a seat reads its configuration when it starts, so <code>ovai restart</code> is what picks it up, and that interrupts whatever the seats are doing. The Leader is told at the next start that admin mode ran and which of the instance's configuration files changed, by name</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from a scaffold &mdash; see <a href="/plugins/">plugins</a></td></tr>
           <tr><td><code>ovai update</code></td><td>takes the latest release, as above</td></tr>
         </tbody>

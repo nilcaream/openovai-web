@@ -308,7 +308,7 @@ code { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
 [data-page="install"]       .docs-in a[href="/install/"],
 [data-page="team"]          .docs-in a[href="/team/"],
 [data-page="permissions"]   .docs-in a[href="/permissions/"],
-[data-page="store"]         .docs-in a[href="/store/"],
+[data-page="knowledge"]     .docs-in a[href="/knowledge/"],
 [data-page="plugins"]       .docs-in a[href="/plugins/"],
 [data-page="customization"] .docs-in a[href="/customization/"],
 [data-page="defaults"]      .docs-in a[href="/defaults/"],

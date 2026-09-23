@@ -52,8 +52,8 @@
     <h1>The Leader and the Workers</h1>
     <p class="lead">
       Three actors. The User steers the team through the Leader, in plain words. The Leader
-      hires, delegates, relays, settles what the instance may do and writes the hard rules; it
-      does no project work. Workers do the work, one task each, and stop when it ships.
+      hires, delegates, relays, settles what the instance may do and keeps what every session here
+      is given; it does no project work. Workers do the work, one task each, and stop when it ships.
     </p>
   </section>
 
@@ -106,7 +106,9 @@
       you typed on a Worker's panel, and what; that one Worker said something to another; that a
       Worker has been silent for 10 minutes, and again at 50; that a Worker has been waiting on a
       card for ten minutes; that a Worker stopped idle, with its desk as it was last written; that
-      a hard rule changed. Told, not asked: nothing waits on the Leader for any of it.
+      admin mode ran, when it ended, and which of the instance's configuration files changed
+      &mdash; by name, and nothing of what is in them. Told, not asked: nothing waits on the Leader
+      for any of it.
     </p>
     <p>
       The rules the instance holds are settled through the Leader, in your words. Say "you will be
@@ -186,13 +188,18 @@
       It is how the User and the Leader see what everybody is on without opening every panel.
     </p>
     <p>
-      When a session's conversation passes the ceiling, the server sends it one event,
-      <code>context-full</code>. The session writes its desk, tells the Leader in one line that it
-      is restarting and where the work stands, calls <code>restart_session</code>, and says "back
-      in a moment". A successor starts on the same desk, in the same panel, with whatever was
-      queued for it carried over, and reads the desk first. Both <code>restart_session</code> and
-      <code>stop_session</code> refuse until the desk was written since the event that asked, so
-      the desk comes first, always.
+      A session is told how big it has grown, and decides for itself what to do about it. Past
+      200,000 tokens in a request the server sends it a <code>context</code> event carrying the size
+      it passed and the size it wraps up at, and tells it again every 20,000 above that &mdash; once
+      per size, never twice for the same one. Nothing is ended for it: it carries on, keeps its desk
+      current, and plans its restart for a moment that suits the work. Past 300,000 the same event
+      says to wrap up now: write the desk, call <code>restart_session</code>, say "back in a moment",
+      and there is nobody to tell. A successor starts on the same desk, in the same panel, with
+      whatever was queued for it carried over. It is turned by a <code>restarted</code> event, reads
+      the desk, goes on from what that says to do next, and announces the restart to nobody &mdash;
+      the desk is the whole of what carried over, and the restart is in the log. Both
+      <code>restart_session</code> and <code>stop_session</code> refuse until the desk was written
+      after the event that asked, so the desk comes first, always.
     </p>
     <figure class="media">
       <b>[media 10]</b>

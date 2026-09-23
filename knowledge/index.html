@@ -93,10 +93,12 @@
       A note opens with four fields and nothing else, then the body, which is ordinary Markdown.
     </p>
     <figure class="term">
-<pre>summary: How this instance is deployed, and who may press it
-tags: deployment, release, ci
-sources: projects/shop/deploy.sh, https://example.com/runbook, &lt;user&gt;
+<pre>---
+summary: How this instance is deployed, and who may press it
+tags: [deployment, release, ci]
+sources: [projects/shop/deploy.sh, https://example.com/runbook, &lt;user&gt;]
 updated: 2026-09-18
+---
 
 The build runs on&hellip;</pre>
     </figure>
@@ -160,6 +162,7 @@ The build runs on&hellip;</pre>
     </p>
     <figure class="term">
 <pre>&lt;knowledge source="knowledge/common.md"&gt;
+---
 summary: What everybody here needs on their first turn
 &hellip;
 &lt;/knowledge&gt;</pre>

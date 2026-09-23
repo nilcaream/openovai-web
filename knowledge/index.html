@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What the workspace knows — OpenOv AI</title>
+<meta name="description" content="knowledge/ is a directory of Markdown notes, one topic per file, written and edited by every session with the file tools it already has. The four fields a note opens with, the two tools that read the directory, and the one note every session is given at its start.">
+<link rel="canonical" href="https://openov.ai/knowledge/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://openov.ai/knowledge/">
+<meta property="og:title" content="What the workspace knows — OpenOv AI">
+<meta property="og:description" content="A directory of notes, not a thing behind a tool: the note format, index and validate, and the common note every session starts with.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-page="knowledge">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="/">openov<span class="mark-dim">.ai</span></a>
+    <nav>
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="https://github.com/nilcaream/openovai">GitHub</a>
+      <button type="button" id="theme" class="ghost" hidden aria-label="Switch colour theme">Theme</button>
+    </nav>
+  </div>
+  <nav class="docs" aria-label="Documentation">
+    <div class="wrap docs-in">
+      <a href="/how-it-works/">How it works</a>
+      <a href="/install/">Install</a>
+      <a href="/team/">Leader and Workers</a>
+      <a href="/permissions/">Permissions</a>
+      <a href="/knowledge/">Knowledge</a>
+      <a href="/plugins/">Plugins</a>
+      <a href="/customization/">Customization</a>
+      <a href="/defaults/">Defaults</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/reference/">Reference</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="wrap hero">
+    <h1>What the workspace knows</h1>
+    <p class="lead">
+      A desk is one task and goes away with it. A conversation is shorter still. So an instance
+      keeps one thing that outlives both, and it is a directory you can open:
+      <code>knowledge/</code>, at the instance root, one Markdown note per topic, written and
+      edited by every session with the file tools it already has.
+    </p>
+    <p>
+      <a href="#note">the note</a> &middot; <a href="#tools">index and validate</a> &middot;
+      <a href="#common">the common note</a> &middot; <a href="#writing">who writes here</a>
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="directory">A directory, not a thing behind a tool</h2>
+    <p>
+      A fresh instance has <code>knowledge/</code> and nothing in it. It fills with notes, and a note
+      is a file: readable with <code>cat</code>, searchable with <code>grep</code>, editable with the
+      same tools a session uses on any other file, and yours to copy out of the instance whenever you
+      want it somewhere else. The instance's Claude Code home turns the built-in memory off, so this
+      directory and your <a href="/customization/">customization files</a> are what outlives a
+      conversation.
+    </p>
+    <figure class="term">
+<pre>&lt;root&gt;/knowledge/
+  common.md              handed to every session at its start
+  deployment.md          one topic
+  the-payments-api.md    one topic
+  who-runs-the-build.md  one topic</pre>
+    </figure>
+    <p>
+      Facts only. A note says what is true and where that came from; what the team is
+      <em>held to</em> is <a href="/customization/">customization</a>, in your words, where you can
+      read it. The one test is the same one that sorts any line: a line that can be obeyed or broken
+      belongs in customization, and a line that is true or false belongs here.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="note">The note</h2>
+    <p>
+      A note opens with four fields and nothing else, then the body, which is ordinary Markdown.
+    </p>
+    <figure class="term">
+<pre>summary: How this instance is deployed, and who may press it
+tags: deployment, release, ci
+sources: projects/shop/deploy.sh, https://example.com/runbook, &lt;user&gt;
+updated: 2026-09-18
+
+The build runs on&hellip;</pre>
+    </figure>
+    <div class="table">
+      <table>
+        <thead><tr><th>field</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>summary</code></td><td>one line: what the note is about, for somebody deciding whether to open it</td></tr>
+          <tr><td><code>tags</code></td><td>at least three, lowercase and hyphenated, no duplicates; they are what a search matches on, so they are a decision the writer makes rather than a word that happens to be in the text</td></tr>
+          <tr><td><code>sources</code></td><td>where it came from: a path from the instance root, a URL, or <code>&lt;user&gt;</code> when you said it</td></tr>
+          <tr><td><code>updated</code></td><td>the date it last changed, and never a date in the future</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The head is those four fields and nothing else, and the filename is lowercase and hyphenated
+      like the tags. That is the whole contract, and <code>validate</code> is what reads it back.
+    </p>
+    <p>
+      There is no id, no status and no expiry, because there is nothing for them to do: a note that
+      is wrong is edited, and a note that is dead is deleted. One topic per file. A note that has
+      grown two topics is two files.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="tools">index and validate</h2>
+    <p>
+      Two tools are served over the directory, and neither keeps anything of its own: both are built
+      from the files every time they are called, so a note changed a moment ago is the note the next
+      call sees. Both go to every seat.
+    </p>
+    <div class="table">
+      <table>
+        <thead><tr><th>call</th><th>what it answers</th></tr></thead>
+        <tbody>
+          <tr><td><code>index()</code></td><td>the header: how many notes there are, when the directory last changed, every tag with its count, and any file it could not read</td></tr>
+          <tr><td><code>index(tags)</code></td><td>the notes carrying a tag, the ones carrying more of what was asked first</td></tr>
+          <tr><td><code>validate</code></td><td>the whole directory against the rules above, one line per problem, each saying the rule it breaks</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <code>index</code> matches on tags and never on filenames or summaries. That is the point of
+      it: a search means what somebody decided when they wrote the note, and words are what
+      <code>grep</code> is for. A session looking for a phrase greps the directory like any other;
+      a session looking for a subject asks for the tag.
+    </p>
+    <p>
+      <code>validate</code> answers with the rule each problem breaks, so a session fixes what it
+      wrote without going to find the contract. The <a href="/reference/#tools">reference</a> has
+      both with their arguments.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="common">The common note</h2>
+    <p>
+      One note is the framework's business. <code>knowledge/common.md</code> is handed to every
+      session at its start, after your customization files, in a frame that names it:
+    </p>
+    <figure class="term">
+<pre>&lt;knowledge source="knowledge/common.md"&gt;
+summary: What everybody here needs on their first turn
+&hellip;
+&lt;/knowledge&gt;</pre>
+    </figure>
+    <p>
+      It is an ordinary note otherwise, and it is the Leader's to gather: the team, the business, the
+      lingo, where things are, and which notes a newcomer reads first. Because it is handed to
+      everybody, the instance is born asking before it changes &mdash;
+      <code>Edit(/knowledge/common.md)</code> is in the <a href="/permissions/">ask list</a>, so a
+      session that would rewrite that one file stops for your press while the rest of the directory
+      stays open to write. No file, no frame, no error: a workspace that has learnt nothing yet reads
+      exactly as an empty one does.
+    </p>
+    <p>
+      A change to it reaches the sessions started after it and no others. When something has to reach
+      a session that is already running, tell it in words, or stop the seat and hire it again.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="writing">Who writes here</h2>
+    <p>
+      Every seat. <code>Edit(/knowledge/**)</code> is one of the rules a fresh instance is born with,
+      so a Worker that has just measured something writes it down where it found it out, without
+      asking anybody and without a tool of its own. The Leader's part is not a gate on the directory;
+      it is the common note, and knowing what is in the rest.
+    </p>
+    <p>
+      What belongs here is what somebody would otherwise have to find out twice: the measurement and
+      what it was measured on, the trap and what it cost, where a thing lives. What does not belong
+      here is anything that is true only of one round &mdash; that goes on a
+      <a href="/team/#desks">desk</a>, which is what a desk is for.
+    </p>
+    <div class="callout">
+      <b>Next</b>
+      <p><a href="/customization/">Customization</a>: the three files that say what this team is held
+        to, and every key of <code>openovai.json</code>.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bar bar-foot">
+  <div class="wrap bar-in">
+    <span>MIT licensed. &copy; 2026 Nil Caream.</span>
+    <nav>
+      <a href="https://github.com/nilcaream/openovai">Source</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/NOTES.md">Releases</a>
+      <a href="https://github.com/nilcaream/openovai/blob/main/CONTRIBUTING.md">Contributing</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Everything below is an enhancement. With JavaScript off the page is complete:
+// the theme follows prefers-color-scheme and the install command is selectable text.
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme");
+
+  try {
+    var saved = localStorage.getItem("theme");
+    if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  } catch (e) { /* private mode, blocked storage: the media query still decides */ }
+
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", function () {
+      var dark = getComputedStyle(root).getPropertyValue("--is-dark").trim() === "1";
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) { /* nothing to do */ }
+    });
+  }
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    var pre = document.getElementById(button.getAttribute("data-copy") + "-cmd");
+    if (!pre || !navigator.clipboard) return;
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        var was = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () { button.textContent = was; }, 1200);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

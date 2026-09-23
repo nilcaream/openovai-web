@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How it works — OpenOv AI</title>
-<meta name="description" content="One instance, one directory: a server that hosts every session on one page, one Claude Code process per seat, tools over a per-process secret, desks on disk, and a store every session reads.">
+<meta name="description" content="One instance, one directory: a server that hosts every session on one page, one Claude Code process per seat, tools over a per-process secret, desks on disk, and a directory of notes every session reads.">
 <link rel="canonical" href="https://openov.ai/how-it-works/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/how-it-works/">
 <meta property="og:title" content="How it works — OpenOv AI">
-<meta property="og:description" content="The server, the page, the sessions, the tools, the desks, the store and the lifecycle, in five minutes.">
+<meta property="og:description" content="The server, the page, the sessions, the tools, the desks, what the workspace knows and the lifecycle, in five minutes.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <!-- Fonts are served from this site. The page makes no third-party request of any kind. -->
 <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -36,7 +36,7 @@
       <a href="/install/">Install</a>
       <a href="/team/">Leader and Workers</a>
       <a href="/permissions/">Permissions</a>
-      <a href="/store/">Memory and knowledge</a>
+      <a href="/knowledge/">Knowledge</a>
       <a href="/plugins/">Plugins</a>
       <a href="/customization/">Customization</a>
       <a href="/defaults/">Defaults</a>
@@ -53,7 +53,8 @@
     <p class="lead">
       One instance is one directory. In it: a server that hosts every session on one page, one
       Claude Code process per seat, a set of tools those processes reach over a secret of their
-      own, a desk per person, and a store every session reads. Five minutes, before any command.
+      own, a desk per person, and a directory of notes every session reads. Five minutes, before any
+      command.
     </p>
   </section>
 
@@ -73,7 +74,7 @@
   runtime.json      the running server: url, pid, since
   runtime.log       what the server said, one row per line
   plugins/          tools the instance serves itself, one file each; yours
-  store/            what the workspace knows: memory/ and knowledge/, one file per record
+  knowledge/        what the workspace knows: one Markdown note per topic
   customization/    what you add to the personas; yours, never touched
   desks/&lt;Name&gt;/     one directory per person: STATE.md, persona.md, conversation.json
   archive/          retired desks, moved whole
@@ -85,8 +86,8 @@
     </figure>
     <p>
       In groups: the product is <code>bin/</code> and <code>lib/</code>; the instance's own is
-      <code>openovai.json</code>, the runtime files, <code>plugins/</code>, <code>store/</code> and
-      <code>customization/</code>; the people are <code>desks/</code> and <code>archive/</code>;
+      <code>openovai.json</code>, the runtime files, <code>plugins/</code>, <code>knowledge/</code>
+      and <code>customization/</code>; the people are <code>desks/</code> and <code>archive/</code>;
       your material is <code>reference/</code>, <code>projects/</code> and <code>temp/</code>;
       Claude Code's is <code>.claude/</code> and <code>.local/</code>.
     </p>
@@ -100,7 +101,7 @@
                               Leader          Worker           Worker      one Claude Code process per seat
                               desks/Max/      desks/Paul/      desks/Jane/ one desk per person, on disk
                                    └──────────────┼──────────────┘
-                                          store/ (memory, knowledge)      what outlives every desk
+                                          knowledge/                      what outlives every desk
                                           plugins/                        tools of your own</pre>
     </figure>
   </section>
@@ -119,7 +120,10 @@
       Every row of <code>runtime.log</code> has the same four columns &mdash; the moment, the event,
       the seat, the tool-call id &mdash; then the text. There are no levels: the event is the level.
       The three rows of one tool call share its id, so one <code>grep</code> is a call's whole
-      life. No request is ever logged.
+      life. No request is ever logged. The log says what became of the sessions as well as what they
+      did: a Worker hired and what it runs on, a desk filed away and where it went, a restart with
+      how full the session that restarted was, and every time the account's usage crosses a
+      threshold.
     </p>
     <figure class="term">
 <pre>2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200
@@ -131,8 +135,10 @@
     </figure>
     <p>
       <code>ovai stop</code> parks the room first &mdash; every session is told to write its desk
-      and stop, the Leader included, with a deadline &mdash; then closes the server. Stopping what
-      is not running says <code>not running</code> and is not a failure.
+      and stop, the Leader included, with a deadline &mdash; then closes the server. It waits for
+      the sessions and nothing else: anything else a seat left running is named by the seat that
+      left it, with one line that ends all of them. Stopping what is not running says
+      <code>not running</code> and is not a failure.
     </p>
   </section>
 
@@ -220,6 +226,13 @@
       answered with one body whatever was tried. Names are for people; secrets are for the
       machinery.
     </p>
+    <p>
+      Every session runs with the seat it is in its environment, and so does everything it starts
+      &mdash; a browser it drove, a server it left serving a preview, a shell parked on something.
+      When the session's process is gone, whatever it started and did not end is ended with it, and
+      the log says which seat left what. A long run is a call a session waits on, not a process left
+      behind.
+    </p>
   </section>
 
   <section class="wrap prose">
@@ -234,32 +247,37 @@
     </p>
     <p>
       That file, not the session's memory, is what a replacement session reads to continue. A
-      session writes its desk as it goes; when its conversation fills up it writes the desk once
-      more, ends, and a fresh one starts on the same desk, in the same panel, with whatever was
-      queued for it carried over. Nothing is summarised away. A Worker whose round is done is
-      retired: its desk is filed whole under <code>archive/</code>, never deleted, and its name is
-      the roster's again.
+      session writes its desk as it goes; when its conversation has filled it writes the desk once
+      more, ends at a moment of its own choosing, and a fresh one starts on the same desk, in the
+      same panel, with whatever was queued for it carried over. Nothing is summarised away. The
+      successor is turned by a frame of its own &mdash; <code>restarted</code>, ahead of whatever
+      was waiting for the seat &mdash; so it goes on from what the desk says to do next without
+      anybody having to speak to it first. A Worker whose round is done is retired: its desk is
+      filed whole under <code>archive/</code>, never deleted, and its name is the roster's again.
     </p>
   </section>
 
   <section class="wrap prose">
-    <h2 id="store">The store</h2>
+    <h2 id="knowledge">What the workspace knows</h2>
     <p>
       A desk is one task and goes away with it. A conversation is shorter still. So an instance
-      keeps one thing that outlives both, and every session reads the same one. <code>memory</code>
-      is about the team &mdash; hard rules, facts, traps &mdash; and <code>knowledge</code> is about
-      the project. Two tools reach it: <code>recall</code> reads, by meaning, by id, or the whole of
-      a store; <code>remember</code> writes one record. Nothing is ever deleted or edited in place:
-      a record that changes is superseded by a new one that names it. The instance's Claude Code
-      home turns the built-in memory off, so the store is the only thing that outlives a
-      conversation.
+      keeps one thing that outlives both, and every session reads the same one:
+      <code>knowledge/</code>, a flat directory of Markdown notes at the instance root, one topic
+      per file. A note opens with four fields &mdash; a <code>summary</code> line, at least three
+      <code>tags</code>, the <code>sources</code> it came from, the date it was <code>updated</code>
+      &mdash; and is written and edited by every seat with the file tools it already has. The
+      instance's Claude Code home turns the built-in memory off, so this directory and your
+      customization files are what outlives a conversation.
     </p>
     <p>
-      Where a request needs understanding rather than a grep &mdash; which records answer a query,
-      whether a new text restates a record already held &mdash; the tool asks a helper: Claude Code
-      run once, with no tools and nothing persisted, from an empty directory outside the instance.
-      It proposes; the tool checks the answer and applies every rule itself.
-      <a href="/store/">Memory and knowledge</a> has the whole of it.
+      Two tools are served over it, and neither keeps anything of its own: both are built from the
+      files at every call. <code>index()</code> gives the header &mdash; how many notes, when the
+      directory last changed, every tag with its count &mdash; and <code>index(tags)</code> lists the
+      notes carrying a tag, matching on tags and never on filenames, because words are what
+      <code>grep</code> is for. <code>validate</code> checks the directory against those rules and
+      answers one line per problem, each naming the rule it breaks. One note is the framework's
+      business: <code>knowledge/common.md</code> is handed to every session at its start, in a frame
+      that names it. <a href="/knowledge/">What the workspace knows</a> has the whole of it.
     </p>
   </section>
 
@@ -276,8 +294,8 @@
         <tbody>
           <tr><td><code>message</code></td><td>everyone</td><td>say something to another session; comes back the moment the other seat has it</td></tr>
           <tr><td><code>room</code></td><td>everyone</td><td>who works here: every seat, its role, its model, whether it is running, which one is you, where the quota stands</td></tr>
-          <tr><td><code>recall</code></td><td>everyone</td><td>read the store: by meaning, by id, or all of it</td></tr>
-          <tr><td><code>remember</code></td><td>everyone</td><td>write one record to the store</td></tr>
+          <tr><td><code>index</code></td><td>everyone</td><td>what is in <code>knowledge/</code>: the header, or the notes carrying a tag</td></tr>
+          <tr><td><code>validate</code></td><td>everyone</td><td>check every note against the rules, one line per problem</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td>the header of the caller's own desk: title, status</td></tr>
           <tr><td><code>restart_session</code></td><td>everyone</td><td>end the caller's process and start a successor on the same desk</td></tr>
           <tr><td><code>stop_session</code></td><td>everyone</td><td>end the caller's process and its panel; the desk stays</td></tr>
@@ -304,8 +322,11 @@
     </p>
     <figure class="term diagram">
       <figcaption>four events, one answer each</figcaption>
-<pre>context-full   the turn's request passed the ceiling (160k tokens by default)
-               → write_desk, restart_session: a successor starts on the same desk, same panel, queue carried
+<pre>context        the conversation as sent passed the warning size (200k tokens by default),
+               and again at every step above it (20k): 220k, 240k, and on
+  warning      → carry on, keep the desk current, plan your own restart for a moment that suits the work
+  error        from the error size (300k) → write_desk, restart_session: a successor starts on the
+               same desk, same panel, queue carried, and is turned by a restarted frame of its own
 
 idle           the Leader is told about a silent Worker at 10 and at 50 minutes;
                at 55 the seat is told it goes cold at 60
@@ -319,6 +340,13 @@ quota-low      the account's 5h or 7d window is nearly spent (thresholds in open
 park           you said this is it for the day; or ovai stop, or any signal to the server
                → every Worker writes its desk and stops, by a deadline (20 seconds by default)</pre>
     </figure>
+    <p>
+      Nothing is enforced at any context size: when a session restarts stays the session's own
+      decision, and the event carries the size reached and all three sizes, so a session can see
+      what it is counting toward. An event that asks nothing of a session does not cancel an ending
+      the server is already waiting on: a seat told at 55 minutes to write its desk and stop is
+      still ended at 60, whatever else it is told in between.
+    </p>
     <p>
       A seat on a turn &mdash; a permission stop included &mdash; is never idle. A stop keeps the desk
       and the panel's rows; anything addressed to the Leader starts it again, and <code>hire</code>

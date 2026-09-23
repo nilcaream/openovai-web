@@ -36,7 +36,7 @@
       <a href="/install/">Install</a>
       <a href="/team/">Leader and Workers</a>
       <a href="/permissions/">Permissions</a>
-      <a href="/store/">Memory and knowledge</a>
+      <a href="/knowledge/">Knowledge</a>
       <a href="/plugins/">Plugins</a>
       <a href="/customization/">Customization</a>
       <a href="/defaults/">Defaults</a>
@@ -81,18 +81,17 @@
           <tr><td></td><td><code>--source</code>, <code>--force</code></td><td>never asked: where the toolkit is, and whether to install into a directory that is not empty</td></tr>
           <tr><td><code>openovai.json</code>, written by the installer</td><td><code>user</code>, <code>leader</code>, <code>models</code>, <code>port</code>, <code>auth</code></td><td>the answers above</td></tr>
           <tr><td><code>openovai.json</code>, read when present</td><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> minutes</td></tr>
-          <tr><td></td><td><code>context</code></td><td><code>{ "ceiling": 160000 }</code> tokens</td></tr>
+          <tr><td></td><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> tokens</td></tr>
           <tr><td></td><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code> seconds</td></tr>
           <tr><td></td><td><code>permission</code></td><td><code>{ "wait": 10 }</code> minutes</td></tr>
           <tr><td></td><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> percent</td></tr>
-          <tr><td></td><td><code>hardRules</code></td><td><code>{ "count": 25, "length": 200 }</code></td></tr>
           <tr><td>one Worker's desk</td><td><code>desks/&lt;Name&gt;/MODEL</code>, written by <code>hire</code> when a model was named</td><td>absent: the usual one, <code>models.worker</code></td></tr>
           <tr><td>the environment</td><td><code>XDG_DATA_HOME</code></td><td><code>~/.local/share</code>; the runtimes live under <code>&lt;data&gt;/openovai/</code></td></tr>
           <tr><td></td><td><code>OPENOVAI_NODE_DIST</code></td><td><code>https://nodejs.org/dist</code> &mdash; where Node.js is fetched from</td></tr>
           <tr><td></td><td><code>CLAUDE_CODE_OAUTH_TOKEN</code></td><td>read only under <code>--auth inherit</code>; removed from every seat's environment otherwise</td></tr>
           <tr><td><code>.claude/settings.json</code> and <code>.claude/allowed.md</code></td><td>the permission rules: allow, deny, ask</td><td><a href="/permissions/">the seeded set</a>; yours from the first card on</td></tr>
-          <tr><td>the store</td><td>the hard rules, facts and traps</td><td>empty</td></tr>
-          <tr><td><code>customization/</code></td><td><code>leader.md</code>, <code>worker.md</code> appended to the personas</td><td>empty</td></tr>
+          <tr><td><code>knowledge/</code></td><td>one Markdown note per topic, written and edited by every seat</td><td>empty, but for the <code>common.md</code> every session is given</td></tr>
+          <tr><td><code>customization/</code></td><td><code>common.md</code>, <code>leader.md</code>, <code>worker.md</code>, each framed into the sessions it is for</td><td>empty</td></tr>
           <tr><td><code>plugins/</code></td><td>one <code>.mjs</code> per tool the instance serves itself</td><td>empty</td></tr>
           <tr><td>the browser, per page</td><td>the theme; the two notification switches</td><td>light; both off</td></tr>
           <tr><td><code>ovai update</code></td><td><code>--from &lt;url or directory&gt;</code>, <code>--downgrade</code></td><td>the latest release on GitHub; never older than the instance is on</td></tr>
@@ -100,7 +99,7 @@
       </table>
     </div>
     <p>
-      The six keys read when present are honoured and nowhere else: the installer does not write
+      The five keys read when present are honoured and nowhere else: the installer does not write
       them, the terminal does not ask for them, and <code>ovai configuration</code> does not print
       them. A value of the wrong shape falls back to the default for that key.
     </p>
@@ -115,14 +114,8 @@
       one model by name or refuses another, on purpose: a workspace that may be installed on a model
       has to be able to hire onto it, and a list would be a second answer to what the account can
       run. A model the account has not got is refused by the harness at the first turn, not by the
-      instance. The default for both seats is <code>opus</code>.
-    </p>
-    <p>
-      One model is not yours to pick: the store's judge, the small run that reads a
-      <code>remember</code> against the records it holds and says whether it restates one. It runs
-      on <code>sonnet</code> at medium effort with a minute to answer, fixed in the code, so that
-      every workspace judges a record the same way. No seat is given an effort level; the harness's
-      own default applies.
+      instance. The default for both seats is <code>opus</code>, and no seat is given an effort
+      level: the harness's own default applies.
     </p>
   </section>
 
@@ -152,7 +145,7 @@
         <tbody>
           <tr><td>the roster: Paul, Jane, Jack, Pete, Anna, Mark, Lucy, Tom, Eva, Sam, Nora, Ben, Mia, Leo, Zoe, Max, Ivy, Finn, Ada, Noah, Ella, Owen, Ruby, Hugo, Iris, Otto, Lena, Axel, Nina, Theo</td><td>what a Worker is called when the Leader names nobody: the least recently used free name, in this order</td><td><code>desks.mjs</code></td><td>the same thirty in every instance, so a name means one person for as long as thirty names allow</td></tr>
           <tr><td>a letter, then up to 31 letters, digits, <code>_</code> or <code>-</code></td><td>what a name is: the User's, the Leader's, a Worker's</td><td><code>desks.mjs</code></td><td>a name is a directory under <code>desks/</code> and a word in every message</td></tr>
-          <tr><td><code>Leader</code>, <code>Worker</code>; <code>user</code>, <code>team</code>; <code>team</code>, <code>leader</code></td><td>the two roles; where a record came from; who a record is for</td><td><code>store.mjs</code></td><td>the vocabulary every persona and every tool is written in</td></tr>
+          <tr><td><code>Leader</code>, <code>Worker</code></td><td>the two roles</td><td><code>desks.mjs</code></td><td>the vocabulary every persona and every tool is written in</td></tr>
         </tbody>
       </table>
     </div>
@@ -168,7 +161,7 @@
           <tr><td>10 seconds</td><td>a tool call slow enough to get a row of its own on the panel</td><td><code>chat/server.mjs</code></td><td>the same reason</td></tr>
           <tr><td>500 ms; 3</td><td>how long a word on the tool line stays up; how many wait behind it</td><td><code>chat/panels.mjs</code></td><td>readable at a glance, and nothing lost</td></tr>
           <tr><td>30 seconds</td><td>how long a stopped Worker's panel stays on the page</td><td><code>chat/panels.mjs</code></td><td>long enough to read how it ended</td></tr>
-          <tr><td>30 minutes; 2 seconds; 10 seconds</td><td>how long a tool call may take over the tools connection (a park, the store's judge); how long an interrupted turn is given to say so; how long a seat that asked to stop is given to end its turn</td><td><code>chat/session.mjs</code></td><td>bounds on the harness, measured or guessed and said so in the code</td></tr>
+          <tr><td>30 minutes; 2 seconds; 10 seconds</td><td>how long a tool call may take over the tools connection (a park); how long an interrupted turn is given to say so; how long a seat that asked to stop is given to end its turn</td><td><code>chat/session.mjs</code></td><td>bounds on the harness, measured or guessed and said so in the code</td></tr>
           <tr><td>5 seconds; 60 seconds; 5 minutes; 10 seconds</td><td>how often the head's usage is looked at while a page is open; how old a reading may get; how long a failed reading is left alone; the request's timeout</td><td><code>chat/server.mjs</code>, <code>chat/usage.mjs</code></td><td>one endpoint, asked politely</td></tr>
           <tr><td>30 seconds; 60 seconds</td><td>how long <code>ovai start</code> waits for the server to answer; how long a release fetch is given</td><td><code>ovai.mjs</code>, <code>release.mjs</code></td><td>a server binds in a second; the rest is a machine under load</td></tr>
         </tbody>
@@ -183,7 +176,7 @@
           <tr><td>100 000 characters</td><td>one message, from the composer or the <code>message</code> tool</td><td><code>chat/server.mjs</code></td><td>a message is a message, not a file</td></tr>
           <tr><td>200 characters</td><td>how much of a refused tool result the tooltip shows</td><td><code>chat/session.mjs</code></td><td>a tooltip</td></tr>
           <tr><td>a letter, then up to 31 letters, digits or <code>-</code>; <code>description</code>, <code>inputSchema</code>, <code>run</code></td><td>what a plugin file may be called; what it has to export</td><td><code>plugins.mjs</code></td><td><a href="/plugins/">the plugin contract</a>; the eleven built-in names are taken</td></tr>
-          <tr><td><code>memory</code>, <code>knowledge</code>; <code>hard-rule</code>, <code>fact</code>, <code>trap</code>; ids <code>m&hellip;</code> and <code>k&hellip;</code></td><td>the two stores, the kinds each holds, how a record is named</td><td><code>store.mjs</code></td><td>the shape of <a href="/store/">what a workspace knows</a></td></tr>
+          <tr><td>four fields and nothing else; at least three lowercase hyphenated tags, no duplicates; sources that are paths from the instance root, URLs or <code>&lt;user&gt;</code>; a date that is not in the future; a lowercase hyphenated filename</td><td>what a note under <code>knowledge/</code> is, and what <code>validate</code> reads back</td><td><code>chat/server.mjs</code></td><td>the shape of <a href="/knowledge/">what the workspace knows</a>: a contract short enough to hold in your head is one every seat keeps</td></tr>
         </tbody>
       </table>
     </div>
@@ -205,13 +198,14 @@
       <table>
         <thead><tr><th>value</th><th>governs</th><th>file</th><th>why fixed</th></tr></thead>
         <tbody>
-          <tr><td><code>desks/</code> <code>reference/</code> <code>projects/</code> <code>temp/</code> <code>archive/</code> <code>store/</code> <code>plugins/</code> <code>customization/</code> <code>.claude/</code> <code>.local/</code></td><td>the directories an instance is made of</td><td><code>install.mjs</code>, <code>desks.mjs</code>, <code>store.mjs</code>, <code>claude.mjs</code></td><td>every grant and every persona names them; a rename is a fork, not a setting</td></tr>
+          <tr><td><code>desks/</code> <code>reference/</code> <code>projects/</code> <code>temp/</code> <code>archive/</code> <code>knowledge/</code> <code>plugins/</code> <code>customization/</code> <code>.claude/</code> <code>.local/</code></td><td>the directories an instance is made of</td><td><code>install.mjs</code>, <code>desks.mjs</code>, <code>claude.mjs</code></td><td>every grant and every persona names them; a rename is a fork, not a setting</td></tr>
           <tr><td><code>openovai.json</code>, <code>instructions.json</code>, <code>runtime.json</code>, <code>runtime.log</code>; <code>STATE.md</code>, <code>conversation.json</code>, <code>persona.md</code>, <code>MODEL</code> in a desk</td><td>the files the toolkit writes</td><td><code>seed.mjs</code>, <code>instructions.mjs</code>, <code>chat/runtime.mjs</code>, <code>desks.mjs</code></td><td>the <a href="/reference/#root">root, file by file</a></td></tr>
+          <tr><td><code>knowledge/common.md</code></td><td>the one note handed to every session at its start, in a frame that names it</td><td><code>desks.mjs</code></td><td>a workspace needs one page a newcomer is given rather than has to find; the rest of the directory is searched, not handed out</td></tr>
           <tr><td><code>workspace</code></td><td>the one directory name Claude Code files the instance's transcripts under, whatever path the instance sits at</td><td><code>claude.mjs</code></td><td>so an instance moved or copied still finds its own threads: no absolute path anywhere in it</td></tr>
           <tr><td><code>CLAUDE.md</code>, <code>CLAUDE.local.md</code>, <code>.claude/CLAUDE.md</code>, <code>.claude/rules/**</code></td><td>the instruction files a seat does not obey from any directory under the three trees</td><td><code>instructions.mjs</code></td><td>a cloned repository's instructions are its author's, not this workspace's; the instance root's own are read</td></tr>
           <tr><td><code>autoContinueAtUsageLimit</code> on; <code>autoMemoryEnabled</code> off; attribution off</td><td>the harness's own settings for the instance's account</td><td><code>seed.mjs</code></td><td>a seat waiting on a dialog at a keyboard nobody sits at has left the room; a second memory is a second answer; a commit is the seat's</td></tr>
-          <tr><td>the seeded allow and deny rules, and the compound hook</td><td>what a fresh instance never stops for, and what no seat does with a tool</td><td><code>desks.mjs</code>, <code>seed.mjs</code>, <code>hooks/compound.mjs</code></td><td>the seed is fixed; the file it seeds <a href="/permissions/">is yours from then on</a></td></tr>
-          <tr><td>the two personas and the desk template</td><td>what every Leader and every Worker is told at start</td><td><code>templates/</code></td><td><code>customization/</code> appends; the mechanism the personas describe is the toolkit's</td></tr>
+          <tr><td>the seeded allow, ask and deny rules, and the compound hook</td><td>what a fresh instance never stops for, what it stops for, and what no seat does with a tool</td><td><code>desks.mjs</code>, <code>seed.mjs</code>, <code>hooks/compound.mjs</code></td><td>the seed is fixed; the file it seeds <a href="/permissions/">is yours from then on</a></td></tr>
+          <tr><td>the two personas and the desk template</td><td>what every Leader and every Worker is told at start</td><td><code>templates/</code></td><td><code>customization/</code> is framed in beside them; the mechanism the personas describe is the toolkit's</td></tr>
         </tbody>
       </table>
     </div>
@@ -220,10 +214,10 @@
       <table>
         <thead><tr><th>value</th><th>governs</th><th>file</th><th>why fixed</th></tr></thead>
         <tbody>
-          <tr><td>one exact Node.js, one exact Claude Code</td><td>what every instance of a release runs on</td><td><code>RUNTIME</code></td><td>the pair is chosen and tested when a release is cut; a fix in either reaches you through the next release, never through a range resolved at install</td></tr>
+          <tr><td>Node.js 24.21.0, Claude Code 2.1.280</td><td>what every instance of this release runs on</td><td><code>RUNTIME</code></td><td>the pair is chosen and tested when a release is cut; a fix in either reaches you through the next release, never through a range resolved at install</td></tr>
           <tr><td><code>bin/</code>, <code>lib/</code></td><td>the payload: what <code>ovai update</code> replaces whole</td><td><code>payload.mjs</code></td><td>everything else is yours and is left as it is; a file of yours a fresh install would have seeded is seeded, once</td></tr>
           <tr><td>the latest release on GitHub</td><td>where <code>openovai</code> and <code>ovai update</code> look when told nothing</td><td><code>release.mjs</code></td><td><code>--from</code> is the other answer</td></tr>
-          <tr><td><code>help</code> <code>status</code> <code>configuration</code> <code>start</code> <code>stop</code> <code>restart</code> <code>plugin</code> <code>login</code> <code>update</code></td><td>the <code>ovai</code> commands</td><td><code>ovai.mjs</code></td><td><a href="/reference/#ovai">the reference</a> has each one</td></tr>
+          <tr><td><code>help</code> <code>status</code> <code>configuration</code> <code>start</code> <code>stop</code> <code>restart</code> <code>plugin</code> <code>login</code> <code>claude</code> <code>update</code></td><td>the <code>ovai</code> commands</td><td><code>ovai.mjs</code></td><td><a href="/reference/#ovai">the reference</a> has each one</td></tr>
         </tbody>
       </table>
     </div>

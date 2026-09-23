@@ -36,7 +36,7 @@
       <a href="/install/">Install</a>
       <a href="/team/">Leader and Workers</a>
       <a href="/permissions/">Permissions</a>
-      <a href="/store/">Memory and knowledge</a>
+      <a href="/knowledge/">Knowledge</a>
       <a href="/plugins/">Plugins</a>
       <a href="/customization/">Customization</a>
       <a href="/defaults/">Defaults</a>
@@ -80,8 +80,8 @@
       <table>
         <thead><tr><th>form</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.16.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
-          <tr><td><code>openovai 0.16.0 &hellip;</code><br><code>openovai --version 0.16.0 &hellip;</code></td><td>that release</td></tr>
+          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.17.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
+          <tr><td><code>openovai 0.17.0 &hellip;</code><br><code>openovai --version 0.17.0 &hellip;</code></td><td>that release</td></tr>
           <tr><td><code>openovai [version] <wbr>--root &hellip; <wbr>--user &hellip; <wbr>--leader &hellip; <wbr>--leader-model &hellip; <wbr>--worker-model &hellip; <wbr>--port &hellip; <wbr>--auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
         </tbody>
       </table>
@@ -97,13 +97,14 @@
         <tbody>
           <tr><td><code>ovai help</code></td><td>the usage; <code>--help</code> and <code>-h</code> the same</td></tr>
           <tr><td><code>ovai status</code></td><td><code>running at &lt;url&gt; (pid, since)</code>, or <code>not running</code>; reads <code>runtime.json</code> and then tries the address, so a record a killed server left behind is found out by asking</td></tr>
-          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, where the store is</td></tr>
+          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, and the runtime row: the pinned Node.js and Claude Code and the directory they live in</td></tr>
           <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address, <code>http://127.0.0.1:&lt;port&gt;</code>; a taken port is named with the process holding it; a server already running is reported and left alone</td></tr>
-          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, with <code>park.timeout</code> as the deadline &mdash; then closes the server; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
+          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, with <code>park.timeout</code> as the deadline &mdash; then closes the server; it waits for the sessions and nothing else, and anything else a seat left running is named with one line that ends all of them; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
           <tr><td><code>ovai restart</code></td><td>stop, then start; prints the new address</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from the scaffold; refuses a name a tool cannot have, a built-in name, and a name whose file is already there</td></tr>
           <tr><td><code>ovai login</code></td><td>under <code>--auth login</code>, opens a browser once and keeps the credential inside the instance; refuses under <code>inherit</code> and says so</td></tr>
-          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, a file a fresh install would seed and this instance has not got seeded once, everything of yours left alone; refuses while the server or any session of the instance runs, naming the <code>kill</code> line for each; refuses to go backwards without <code>--downgrade</code></td></tr>
+          <tr><td><code>ovai claude</code></td><td><code>open Claude Code on this instance, to reach its own commands</code>: a real Claude Code session on the instance's own configuration, at your terminal, so <code>/mcp</code>, <code>/plugin</code> and whatever Claude Code gains next write this instance's account rather than yours. Not a seat: no desk, no name in the room, no way to speak to anybody here, and every question it has it asks you. Quit it when you are done; a seat reads its configuration when it starts, so <code>ovai restart</code> is what makes a change live for the people working here</td></tr>
+          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, a file a fresh install would seed and this instance has not got seeded once, everything of yours left alone; refuses for a session &mdash; a process running the code the update replaces &mdash; naming the <code>kill</code> line for each, and goes on past anything else a seat left running; refuses to go backwards without <code>--downgrade</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -128,14 +129,14 @@
         <thead><tr><th>path</th><th>whose</th><th>what</th></tr></thead>
         <tbody>
           <tr><td><code>bin/ovai</code></td><td>the product</td><td>the one command</td></tr>
-          <tr><td><code>lib/</code></td><td>the product</td><td>everything else the release ships, its version in <code>lib/VERSION</code>; replaced whole on update</td></tr>
+          <tr><td><code>lib/</code></td><td>the product</td><td>everything else the release ships, its version in <code>lib/VERSION</code> and the runtimes it pins in <code>lib/RUNTIME</code>; replaced whole on update</td></tr>
           <tr><td><code>openovai.json</code></td><td>the instance</td><td>its description of itself; <a href="#json">the keys</a></td></tr>
           <tr><td><code>instructions.json</code></td><td>the instance</td><td>the settings document every session is started with: the instruction files above the instance it is not to read; written at every start</td></tr>
           <tr><td><code>runtime.json</code></td><td>the instance</td><td>the running server: url, pid, since</td></tr>
           <tr><td><code>runtime.log</code></td><td>the instance</td><td>what the server said, one row per line, every run appended; <a href="#log">the columns</a></td></tr>
           <tr><td><code>plugins/</code></td><td>the instance</td><td>tools it serves itself, one file each; yours, kept across updates</td></tr>
-          <tr><td><code>store/</code></td><td>the instance</td><td>what the workspace knows: <code>memory/</code> and <code>knowledge/</code>, one file per record</td></tr>
-          <tr><td><code>customization/</code></td><td>the instance</td><td>what you add to the personas, one file per kind; never touched</td></tr>
+          <tr><td><code>knowledge/</code></td><td>the instance</td><td>what the workspace knows: one Markdown note per topic, written by every seat; <a href="/knowledge/">the note format</a></td></tr>
+          <tr><td><code>customization/</code></td><td>the instance</td><td>what you add to the personas: <code>common.md</code>, <code>leader.md</code>, <code>worker.md</code>; never touched</td></tr>
           <tr><td><code>desks/&lt;Name&gt;/</code></td><td>the people</td><td>one directory per person: <code>STATE.md</code>, <code>persona.md</code>, <code>conversation.json</code>, <code>MODEL</code> when one was named, and whatever that person keeps there; the listing is the roster</td></tr>
           <tr><td><code>archive/</code></td><td>the people</td><td>retired desks, moved whole: <code>&lt;day&gt;-&lt;Name&gt;-&lt;slug of the final title&gt;/</code>; appears at the first retire</td></tr>
           <tr><td><code>reference/</code></td><td>your material</td><td>kept to look at: documents, sources, clones for analysis; never worked on</td></tr>
@@ -163,9 +164,8 @@
           <tr><td><code>user</code>, <code>leader</code>, <code>models.leader</code>, <code>models.worker</code>, <code>port</code>, <code>auth</code></td><td>written by the installer; no default</td></tr>
           <tr><td><code>schema</code>, <code>createdAt</code></td><td>written by the installer</td></tr>
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> &mdash; percent</td></tr>
-          <tr><td><code>hardRules</code></td><td><code>{ "count": 25, "length": 200 }</code></td></tr>
           <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> &mdash; minutes</td></tr>
-          <tr><td><code>context</code></td><td><code>{ "ceiling": 160000 }</code> &mdash; tokens</td></tr>
+          <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> &mdash; tokens</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code> &mdash; seconds</td></tr>
           <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code> &mdash; minutes</td></tr>
         </tbody>
@@ -186,8 +186,8 @@
         <tbody>
           <tr><td><code>message</code></td><td>everyone</td><td><code>to</code> (who), <code>text</code> (what); both required</td><td>the other seat has no process; a seat held by the quota gate has it and reads it at the reset</td></tr>
           <tr><td><code>room</code></td><td>everyone</td><td>none</td><td>&mdash;</td></tr>
-          <tr><td><code>recall</code></td><td>everyone</td><td><code>store</code> (<code>memory</code> | <code>knowledge</code>, required); exactly one of <code>query</code>, <code>id</code>, <code>all</code>; <code>kind</code> (<code>hard-rule</code> | <code>fact</code> | <code>trap</code>); <code>expired</code> (boolean, default false)</td><td>two of query, id and all, or none; <code>kind: hard-rule</code> on <code>knowledge</code>; the helper held for quota, not answering, or answering badly</td></tr>
-          <tr><td><code>remember</code></td><td>everyone</td><td><code>store</code> (required), <code>kind</code>, <code>text</code>, <code>until</code> (an absolute ISO 8601 moment, words such as "for today", or <code>now</code> to retire), <code>replaces</code> (an id, or <code>none</code>), <code>reason</code> (with a named replacement), <code>restore</code> (an id, alone with <code>store</code>); Leader only: <code>source</code> (<code>user</code> | <code>team</code>), <code>scope</code> (<code>team</code> | <code>leader</code>)</td><td>a hard rule from a Worker; a rule over the cap; a text that restates a held record when <code>replaces</code> is left out, naming it; a replacement without a reason; the second of two writes replacing one record</td></tr>
+          <tr><td><code>index</code></td><td>everyone</td><td><code>tags</code> (left out: the header &mdash; how many notes, when the directory last changed, every tag with its count, and any file it could not read; given: the notes carrying those tags, the ones carrying more of what was asked first)</td><td>&mdash;; a file it cannot read is named in the header rather than failing the call</td></tr>
+          <tr><td><code>validate</code></td><td>everyone</td><td>none</td><td>&mdash;; every problem is one line of the answer, naming the rule it breaks</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td><code>title</code> (one line, up to 120 characters), <code>status</code> (one line, up to 80, no <code>|</code>); both required; writes the header line alone, and the body below it is edited in place</td><td>an empty title or status, a newline in either, a <code>|</code> in status, any other key</td></tr>
           <tr><td><code>restart_session</code></td><td>everyone</td><td>none</td><td>the desk was not written since the event that asked, or since the turn began</td></tr>
           <tr><td><code>stop_session</code></td><td>everyone</td><td>none</td><td>the same</td></tr>
@@ -213,18 +213,20 @@
     <h2 id="events">Server events</h2>
     <p>
       A frame the server sets itself, <code>&lt;server-event type="&hellip;"&gt;</code>, queued like a
-      turn and ahead of the rest when it has to be. Nothing inside a message can pose as one.
+      turn and ahead of the rest when it has to be. Nothing inside a message can pose as one. There
+      are ten.
     </p>
     <div class="table">
       <table>
         <thead><tr><th>type</th><th>attributes</th><th>to</th><th>what the session does</th></tr></thead>
         <tbody>
-          <tr><td><code>context-full</code></td><td><code>context</code>, <code>ceiling</code></td><td>the seat over the ceiling, once</td><td><code>write_desk</code>, <code>restart_session</code>, "back in a moment"; a successor starts on the same desk with the queue carried</td></tr>
+          <tr><td><code>context</code></td><td><code>stage</code> (<code>warning</code> | <code>error</code>), the size reached, and all three sizes</td><td>the seat whose conversation as sent passed the warning size, and again at every step above it</td><td>below the error size: carry on, keep the desk current, plan its own restart. From the error size: <code>write_desk</code>, <code>restart_session</code>. Nothing is enforced at any size</td></tr>
+          <tr><td><code>restarted</code></td><td>&mdash;</td><td>the successor, as its first frame, behind whatever was waiting for the seat and in the same turn as it</td><td>goes on from what the desk says to do next, and never redoes what it says is done; a successor with nothing in flight says nothing at all</td></tr>
           <tr><td><code>quota-low</code></td><td><code>stage</code> (<code>warning</code> | <code>critical</code>), <code>window</code> (<code>5h</code> | <code>7d</code> | <code>7d-fable</code>), <code>resets</code>; <code>model="fable"</code> for fable's own window; <code>interrupted="true"</code> when the turn was stopped for it</td><td>every running seat at the first stage, seats on that model only for fable's window</td><td>a Worker writes its desk and stops; the Leader tells the User and stays; at the second stage a Worker still running is interrupted and told again</td></tr>
           <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or let it stop</td></tr>
-          <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>any seat at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way</td></tr>
+          <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>any seat at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way, whatever else it is told in between</td></tr>
           <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>every Worker, from <code>park</code>; the Leader too from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
-          <tr><td><code>hard-rules</code></td><td><code>set</code></td><td>every running seat, a child of its next queue</td><td>follows the set as written; nothing to answer</td></tr>
+          <tr><td><code>admin-closed</code></td><td><code>ended</code>, <code>changed</code>: which of the four configuration files the session watched changed, by name and nothing of what is in them</td><td>the Leader, at the server's next start after an <code>ovai claude</code> session ended</td><td>told, not asked; nothing waits on it. The telling is the server's, never the admin session's</td></tr>
           <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
           <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
           <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code></td><td>the Leader, when a Worker stopped idle or into an exhausted window</td><td>notes it; <code>hire</code> brings it back when the work is still wanted</td></tr>
@@ -232,6 +234,12 @@
         </tbody>
       </table>
     </div>
+    <p>
+      A change to <code>customization/</code> or to <code>knowledge/common.md</code> reaches the
+      sessions started after it and no others: there is no frame that hands a running session a
+      change to its standing instructions. When something has to reach a session that is running,
+      tell it in words, or stop the seat and hire it again.
+    </p>
   </section>
 
   <section class="wrap prose">
@@ -249,8 +257,11 @@
           <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the eleven tools and every plugin</td></tr>
           <tr><td>allow</td><td><code>Read(/**)</code></td><td>reading any file</td></tr>
           <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
+          <tr><td>allow</td><td><code>Edit(/knowledge/**)</code></td><td>every seat writes what the workspace knows, where it found it out</td></tr>
           <tr><td>allow</td><td><code>Edit(/desks/&lt;Leader&gt;/**)</code></td><td>the Leader's desk directory; every Worker hired gets the same pair for theirs, withdrawn at retire</td></tr>
           <tr><td>allow</td><td>one <code>Bash(&hellip;:*)</code> each for <code>git</code>, <code>mkdir</code>, <code>cd</code>, <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>, <code>cmp</code>, <code>sha256sum</code>, <code>grep</code>, <code>find</code>, <code>sed</code>, <code>awk</code>, <code>head</code>, <code>tail</code>, <code>wc</code>, <code>echo</code>, <code>chmod</code>, <code>touch</code>, <code>curl</code>, <code>npm</code></td><td>a seat's ordinary shell commands, matched by the command from its first character &mdash; a <code>git -C</code> spelling asks; a <code>cd &hellip; &amp;&amp; &hellip;</code> compound is let through by the hook when every side is allowed and none denied</td></tr>
+          <tr><td>ask</td><td><code>Edit(/customization/**)</code></td><td>a session that would rewrite what every session here is told stops for your press &mdash; every seat, the Leader with the rest, since one settings file serves them all</td></tr>
+          <tr><td>ask</td><td><code>Edit(/knowledge/common.md)</code></td><td>narrower than the allow above: the one note handed to every session at its start, while the rest of <code>knowledge/</code> stays open to write</td></tr>
           <tr><td>deny</td><td>the instance's own account files</td><td>under <code>.local/</code></td></tr>
           <tr><td>deny</td><td><code>git push</code>, <code>sudo</code>, <code>ssh</code></td><td>a push is yours; a refusal wins over the <code>git</code> rule that would let it through, whatever the hook says</td></tr>
         </tbody>
@@ -269,7 +280,7 @@
     <p>Every row has the same four columns, single spaces, then the text. No request is ever logged.</p>
     <figure class="term">
 <pre>&lt;moment&gt; &lt;event&gt; &lt;seat&gt; &lt;id&gt; &lt;text…&gt;
-2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.16.0
+2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.17.0
 2026-09-20T02:15:41.530+02:00 called Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk
 2026-09-20T02:15:41.532+02:00 tool Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms
 2026-09-20T02:15:44.210+02:00 queued Paul - message #54, 1 waiting
@@ -280,8 +291,8 @@
       <table>
         <thead><tr><th>column</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page, the desks and the store keep</td></tr>
-          <tr><td>event</td><td>one word, and the event is the level: <code>started</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>queued</code>, <code>wrote</code>, <code>held</code>, <code>released</code>, <code>parked</code>, <code>stopped</code>, <code>plugins</code>, among others</td></tr>
+          <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page and the desks keep</td></tr>
+          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>interrupt</code>, <code>dropped</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
           <tr><td>seat</td><td>the session the row is about; <code>-</code> for the server itself</td></tr>
           <tr><td>id</td><td>the tool-use id on <code>called</code>, <code>tool</code> and <code>failed</code>, else <code>-</code>; <code>grep toolu_&hellip; runtime.log</code> is a call's whole life, and the three rows name the tool in full, as Claude Code does</td></tr>
         </tbody>
@@ -294,6 +305,15 @@
       <code>idle</code>, <code>park</code>, <code>idle-forced</code>, <code>park-deadline</code>
       &mdash; or, for one that ended on its own, how: <code>exit 1</code>, <code>SIGKILL</code>. The
       server's own going out is the last row of its run, <code>stopped - - SIGTERM</code>.
+    </p>
+    <p>
+      A day can be read back from the file. <code>hired</code> says a Worker was started on a desk,
+      what it runs on, and whether the desk was new or one it had. <code>retired</code> says a desk
+      was filed away, the model that round ran on, and where the desk went. <code>restart</code>
+      says how full the session that restarted was, in tokens, so "it filled up" is a number rather
+      than a story. <code>quota</code> says which usage window crossed a threshold, the percentage
+      it stood at, when it resets, and the model when the window is one model's own.
+      <code>leftovers</code> says what a seat left running was ended with its session.
     </p>
   </section>
 
@@ -338,8 +358,10 @@
     </div>
     <p>
       Node.js, npm and Claude Code are not requirements: each release pins the exact versions it was
-      tested with and the installer fetches them under <code>~/.local/share/openovai/</code>, per
-      user, shared between instances, used by absolute path. Nothing global, no <code>sudo</code>.
+      tested with, in <code>lib/RUNTIME</code>, and the installer fetches them under
+      <code>~/.local/share/openovai/</code>, per user, shared between instances, used by absolute
+      path. This release pins Node.js 24.21.0 and Claude Code 2.1.280. Nothing global, no
+      <code>sudo</code>.
     </p>
   </section>
 

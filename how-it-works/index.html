@@ -158,22 +158,31 @@
     <figure class="shot">
       <a class="light" href="/media/media-3.png"><img src="/media/media-3.png" width="1084" height="35" alt=""></a>
       <a class="dark" href="/media/media-3-dark.png"><img src="/media/media-3-dark.png" width="1084" height="35" alt=""></a>
-      <figcaption>the Leader's head: model, context, state, version and the usage windows, then the theme, notification and messages switches</figcaption>
+      <figcaption>the Leader's head: model, context, version and the usage windows, then the theme, notification, messages and auto mode switches</figcaption>
     </figure>
     <p>
-      A panel is a head &mdash; a dot, the name, the model, the context in k once known, and what
-      the session is doing: listening, working, waiting for you &mdash; a transcript, and a text
-      box. Enter sends, Shift+Enter is a newline. The dot is green between turns, amber while a turn
-      runs, red once the process is gone. The head of the Leader's panel carries, after the
-      connection word, the version the server runs &mdash; <code>0.21.0</code>, or the eight
-      characters of the commit on a build of <code>main</code> &mdash; then the account's usage
-      windows &mdash; the session window with the time to its reset, the weekly window over all
-      models, and the weekly window of the one model that has its own, like <code>8% (3h) · all 86%
-      (6d) · fable 20% (6d)</code>, read every 5 minutes while any session runs, with each window's
-      reset in its tooltip &mdash; and the toggle between light and dark. A third switch on that
-      head, after the two notification switches, hides the messages between the Leader and the
-      Workers, and one Worker's to another, from the Leader's panel; what you typed to a Worker
-      stays, and a hidden row a click reaches is shown opened until it is folded.
+      A panel is a head &mdash; a dot, the name, the model, the context in k once known, and on a
+      Worker what its session is doing: listening, working, waiting for you, with the number of
+      prompts when more than one &mdash; a transcript, and a text box. Enter sends, Shift+Enter is
+      a newline. The dot is green between turns, amber while a turn runs, red once the process is
+      gone, grey on a Leader with no process. The Leader's head has no state word: its dot, the
+      line at the foot of its panel and the cards in it say it, and that line says
+      <code>Disconnected</code>, with every dot red and no state word on any head, while the page
+      has lost the server's stream. The head of the Leader's panel carries, after the model, the
+      version the server runs &mdash; <code>0.23.0</code>, or the eight characters of the commit on
+      a build of <code>main</code> &mdash; then the account's usage windows &mdash; the session
+      window with the time to its reset, the weekly window over all models, and the weekly window
+      of the one model that has its own, like
+      <code>8% (3h) · all 86% (6d) · fable 20% (6d)</code>, kept across restarts, read every 5
+      minutes while a page is open, drawn dimmed once it is a quarter of an hour old, with each
+      window's reset and the time of the reading in its tooltip &mdash; and the toggle between
+      light and dark. A third switch on that head,
+      after the two notification switches, hides the messages between the Leader and the Workers,
+      and one Worker's to another, from the Leader's panel; what you typed to a Worker stays, and
+      a hidden row a click reaches is shown opened until it is folded. The last two switches turn
+      on Claude Code's auto mode, one for the Leader's session and one for the Workers', where a
+      classifier settles a call no rule settles instead of a popup; both are off at every start
+      and kept nowhere.
     </p>
     <p>
       A panel with no rows shows nothing: it stays empty until the seat's first row arrives. A row
@@ -193,7 +202,7 @@
     <figure class="shot">
       <a class="light" href="/media/media-4.png"><img src="/media/media-4.png" width="406" height="1072" alt=""></a>
       <a class="dark" href="/media/media-4-dark.png"><img src="/media/media-4-dark.png" width="406" height="1072" alt=""></a>
-      <figcaption>a Worker's panel: what it says, and a line for each tool it uses</figcaption>
+      <figcaption>a Worker's panel: what it says, the notes it makes between calls, and a line for each tool it uses</figcaption>
     </figure>
     <p>
       Replies are rendered as markdown. Raw HTML in a reply is escaped, and so is the text after it,
@@ -451,10 +460,12 @@ park           you said this is it for the day; or ovai stop, or any signal to t
       from the account's usage endpoint. Two threshold pairs in <code>openovai.json</code> cover
       them, <code>quota: { "5h": [90, 95], "7d": [97, 99] }</code> by default: a warning stage and a
       critical one for each. One event, <code>quota-low</code>, is sent at both stages and says
-      which window and when it resets. The windows are read every 5 minutes while any session runs,
-      and at a turn's end and a page load when the last read is a minute old, so the gate and the
-      line in the Leader's head are current with no page open. That line reads its percentages with
-      the token Claude Code keeps in <code>.credentials.json</code> in the instance's home. On macOS
+      which window and when it resets. The account's usage endpoint is read every 5 minutes while a
+      page is open, and at a turn's end and a page load when the last read is a minute old, so the
+      read at a turn's end keeps the gate current with no page open. The line in the Leader's head
+      keeps its last reading across a restart and is drawn dimmed once that is a quarter of an
+      hour old. That line reads its percentages with the token Claude Code keeps in
+      <code>.credentials.json</code> in the instance's home. On macOS
       Claude Code keeps the sign-in in the Keychain, which ovai does not read, so there the head
       shows no usage line and the log says why once. The gate still holds sessions at the 5-hour and
       7-day limits from what each turn reports; the weekly window of a single model, which only that

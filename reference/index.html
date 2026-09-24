@@ -80,8 +80,8 @@
       <table>
         <thead><tr><th>form</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.19.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
-          <tr><td><code>openovai 0.19.0 &hellip;</code><br><code>openovai --version 0.19.0 &hellip;</code></td><td>that release</td></tr>
+          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.20.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
+          <tr><td><code>openovai 0.20.0 &hellip;</code><br><code>openovai --version 0.20.0 &hellip;</code></td><td>that release</td></tr>
           <tr><td><code>openovai [version] <wbr>--root &hellip; <wbr>--user &hellip; <wbr>--leader &hellip; <wbr>--leader-model &hellip; <wbr>--worker-model &hellip; <wbr>--port &hellip; <wbr>--auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
         </tbody>
       </table>
@@ -97,14 +97,14 @@
         <tbody>
           <tr><td><code>ovai help</code></td><td>the usage; <code>--help</code> and <code>-h</code> the same</td></tr>
           <tr><td><code>ovai status</code></td><td><code>running at &lt;url&gt; (pid, since)</code>, or <code>not running</code>; reads <code>runtime.json</code> and then tries the address, so a record a killed server left behind is found out by asking</td></tr>
-          <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, and the runtime row: the pinned Node.js and Claude Code and the directory they live in</td></tr>
+          <tr><td><code>ovai configuration</code></td><td>what this instance is: version (a release, or the 8-character commit of a build), who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, and the runtime row: the pinned Node.js and Claude Code and the directory they live in</td></tr>
           <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address, <code>http://127.0.0.1:&lt;port&gt;</code>; a taken port is named with the process holding it; a server already running is reported and left alone. The server and every seat it starts drop what Claude Code put on the session it was typed in &mdash; its id, pid, entry point, effort, messaging socket and token &mdash; and the shell's <code>PWD</code> and <code>OLDPWD</code></td></tr>
           <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every Worker is closed and the Leader writes its desk and stops, with <code>park.timeout</code> as the deadline &mdash; then closes the server; it waits for the sessions and nothing else, and anything else a seat left running is named with one line that ends all of them; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
           <tr><td><code>ovai restart</code></td><td>stop, then start; prints the new address</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from the scaffold; refuses a name a tool cannot have, a built-in name, and a name whose file is already there</td></tr>
           <tr><td><code>ovai login</code></td><td>under <code>--auth login</code>, opens a browser once and keeps the credential inside the instance; refuses under <code>inherit</code> and says so</td></tr>
           <tr><td><code>ovai claude</code></td><td><code>open Claude Code on this instance, to reach its own commands</code>: a real Claude Code session on the instance's own configuration, at your terminal, so <code>/mcp</code>, <code>/plugin</code> and whatever Claude Code gains next write this instance's account rather than yours. Not a seat: no desk, no name in the room, no way to speak to anybody here, and every question it has it asks you. Quit it when you are done; a seat reads its configuration when it starts, so <code>ovai restart</code> is what makes a change live for the people working here</td></tr>
-          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, a file a fresh install would seed and this instance has not got seeded once, everything of yours left alone; refuses for a session &mdash; a process running the code the update replaces &mdash; naming the <code>kill</code> line for each, and goes on past anything else a seat left running; refuses to go backwards without <code>--downgrade</code></td></tr>
+          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, then finished by the version it brought in, with <code>bin/ovai update --finish</code> from the new payload &mdash; which fetches the new runtime, takes away what the new version retires, seeds once a file a fresh install would seed and this instance has not got, wires the hooks and turns attribution off &mdash; everything of yours left alone. On the version the instance is already on it runs the same finish. Refuses for a session &mdash; a process running the code the update replaces &mdash; naming the <code>kill</code> line for each, and goes on past anything else a seat left running; refuses to go backwards without <code>--downgrade</code>. <code>--from</code> a directory that is a git checkout takes a build: only on <code>main</code> with nothing <code>git status --porcelain</code> lists, else refused in one line that says which; the instance is then on the first 8 characters of that commit's hash, the version <code>ovai configuration</code>, the page and the server's health show. A build has no order: a release is always taken onto it, another commit always, and the same commit replaces nothing and runs the finish. A directory that is not a checkout, an unpacked release, is taken as a release. Going back with <code>--downgrade</code> to a version before 0.20.0 says that the hooks in <code>.claude/settings.json</code> name <code>lib/hooks/run.sh</code>, which that version does not have, and must be rewired by hand</td></tr>
         </tbody>
       </table>
     </div>
@@ -167,7 +167,6 @@
           <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> &mdash; minutes</td></tr>
           <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> &mdash; tokens; <code>step</code> is the Leader's own, a Worker's size reaching the Leader at the warning and the error only</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code> &mdash; seconds</td></tr>
-          <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code> &mdash; minutes</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code> &mdash; seconds; <a href="#typing">the typing hold</a></td></tr>
         </tbody>
       </table>
@@ -289,7 +288,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
         <tbody>
           <tr><td><code>context</code></td><td><code>stage</code> (<code>warning</code> | <code>error</code>), the size reached, and all three sizes</td><td>the Leader, when its own conversation as sent passed the warning size, and again at every step above it; measured at every request of a turn</td><td>below the error size: carry on, keep the desk current, plan its own restart. From the error size: <code>write_desk</code>, <code>restart_session</code>. Nothing is enforced at any size</td></tr>
           <tr><td><code>context</code></td><td><code>who</code>, <code>stage</code>, the size reached, the error size</td><td>the Leader, about a Worker, at the warning size and at the error size only; the Worker is not told</td><td>at the error size, <code>restart_worker</code> at a moment that suits the Worker's work</td></tr>
-          <tr><td><code>restarted</code></td><td>&mdash;</td><td>the successor, as its first frame, behind whatever was waiting for the seat and in the same turn as it</td><td>goes on from what the desk says to do next, and never redoes what it says is done; a successor with nothing in flight says nothing at all</td></tr>
+          <tr><td><code>restarted</code></td><td>&mdash;</td><td>the successor, as its first frame, behind whatever was waiting for the seat and in the same turn as it</td><td>goes on from what the desk says to do next, and never redoes what it says is done; a successor with nothing in flight answers <code>&lt;noop/&gt;</code>, and the panel shows nothing</td></tr>
           <tr><td><code>quota-low</code></td><td><code>stage</code> (<code>warning</code> | <code>critical</code>), <code>window</code> (<code>5h</code> | <code>7d</code> | <code>7d-fable</code>), <code>resets</code>; <code>model="fable"</code> for fable's own window</td><td>every running seat at the first stage, seats on that model only for fable's window; the Leader at the second</td><td>a Worker keeps its desk current and carries on; the Leader tells the User, stops the Workers whose work can wait, and stays. At the second stage every Worker on the window is interrupted and closed instead, and the Leader's turns are held</td></tr>
           <tr><td><code>quota-reset</code></td><td><code>window</code>; <code>model</code> when it is one model's own</td><td>the Leader, when a window that reached a stage has reset; a Leader not running is started by it. A park forgets the resets to come, and a server restart before the reset loses them</td><td>brings back the Workers that stopped on the window, with <code>hire</code> on their desks</td></tr>
           <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or <code>stop_worker</code> it; at 55 the server closes it</td></tr>
@@ -304,7 +303,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
           <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
           <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
           <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code>: <code>stop</code> (<code>stop_worker</code>), <code>stop-deadline</code> (the same, with no desk in time), <code>restart</code> (<code>restart_worker</code>; the successor is running), <code>idle</code>, <code>idle-forced</code>, <code>quota</code>, <code>first-turn-failed</code> (the service refused the Worker's very first turn; its words are the body)</td><td>the Leader, when a Worker has gone</td><td>notes it; <code>hire</code> brings it back when the work is still wanted. After <code>first-turn-failed</code>, tells the User what the service said before hiring on that desk again</td></tr>
-          <tr><td><code>permission</code></td><td><code>who</code>, <code>waiting</code>, and the call</td><td>the Leader, once a Worker has waited <code>permission.wait</code> minutes on a card; also when a rule the Leader asked for was settled</td><td>tells the User somebody is waiting, or gives the work to somebody else</td></tr>
+          <tr><td><code>permission</code></td><td><code>who</code>, <code>minutes</code>, and the call as the body; for a settled rule <code>decision</code> and <code>who</code>, and the rule</td><td>the Leader, when a Worker's card timed out &mdash; <code>minutes</code> is 10, or 2 when one of the Worker's subagents made the call; also when a rule the Leader asked for was settled</td><td>tells the User what the Worker asked for, or gives the work to somebody else</td></tr>
         </tbody>
       </table>
     </div>
@@ -343,13 +342,14 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
       </table>
     </div>
     <p>
-      Also seeded: <code>attribution</code> with an empty <code>commit</code> and <code>pr</code> and
-      <code>sessionUrl</code> false, so a commit says what its message says; the hook
-      <code>lib/hooks/compound.mjs</code> before every Bash call, a subagent's included; and the hook
-      <code>lib/hooks/subagent.mjs</code> when a subagent starts, which hands it
-      <code>customization/common.md</code> in the frame a seat reads it in, and nothing when there is
-      none. The instance's Claude Code home
-      turns the built-in memory off.
+      Also seeded: <code>attribution</code> with an empty <code>commit</code> and <code>pr</code>
+      and <code>sessionUrl</code> false, so a commit says what its message says; the hook
+      <code>lib/hooks/compound.mjs</code> before every Bash call, a subagent's included; and the
+      hook <code>lib/hooks/subagent.mjs</code> when a subagent starts, which hands it
+      <code>customization/common.md</code> in the frame a seat reads it in, and nothing when there
+      is none. Both are named as <code>sh "${CLAUDE_PROJECT_DIR}/lib/hooks/run.sh" compound</code>
+      and <code>&hellip; subagent</code>, which runs them on the Node.js the instance's version
+      pins. The instance's Claude Code home turns the built-in memory off.
     </p>
   </section>
 
@@ -364,11 +364,11 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     </p>
     <figure class="term">
 <pre>&lt;moment&gt; &lt;event&gt; &lt;seat&gt; &lt;id&gt; &lt;text…&gt;
-2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.19.0
-2026-09-20T02:15:41.530+02:00 called Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk
-2026-09-20T02:15:41.532+02:00 tool Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms
-2026-09-20T02:15:44.210+02:00 queued Paul - message #54, 1 waiting
-2026-09-20T03:02:10.884+02:00 stopped Paul - idle
+2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid
+41200 host box user ana version 0.20.0 2026-09-20T02:15:41.530+02:00 called Max
+toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk 2026-09-20T02:15:41.532+02:00 tool Max
+toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms 2026-09-20T02:15:44.210+02:00
+queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul - idle
 2026-09-20T03:40:00.117+02:00 stopped - - SIGTERM</pre>
     </figure>
     <div class="table">
@@ -441,8 +441,8 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
       <table>
         <thead><tr><th>what</th><th>for</th></tr></thead>
         <tbody>
-          <tr><td>Linux, x86_64 or arm64</td><td>running an instance: the page is opened in your browser on <code>127.0.0.1</code></td></tr>
-          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code>, <code>uname</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them</td></tr>
+          <tr><td>Linux or macOS, x86_64 or arm64; on Windows, WSL 2 as on Linux, with the instance in the Linux file system and off <code>/mnt/c</code></td><td>running an instance: the page is opened in your browser on <code>127.0.0.1</code></td></tr>
+          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code> or <code>shasum</code>, <code>uname</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them</td></tr>
           <tr><td>an Anthropic account</td><td>signing the instance in, with <code>--auth login</code> or a token under <code>--auth inherit</code></td></tr>
         </tbody>
       </table>

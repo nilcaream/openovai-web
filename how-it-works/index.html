@@ -163,24 +163,28 @@
     <p>
       A panel is a head &mdash; a dot, the name, the model, the context in k once known, and what
       the session is doing: listening, working, waiting for you &mdash; a transcript, and a text
-      box. Enter sends, Shift+Enter is a newline. The dot is green between turns, amber while a
-      turn runs, red once the process is gone. The head of the Leader's panel carries the account's
-      usage windows &mdash; the session window with the time to its reset, the weekly window over
-      all models, and the weekly window of the one model that has its own, like
-      <code>8% (3h) · all 86% (6d) · fable 20% (6d)</code>, read every 5 minutes while any
-      session runs, with each window's reset in its tooltip &mdash; and the toggle between light
-      and dark. A third switch on that head, after the two notification switches, hides the
-      messages between the Leader and the Workers, and one Worker's to another, from the Leader's
-      panel; what you typed to a Worker stays, and a hidden row a click reaches is shown opened
-      until it is folded.
+      box. Enter sends, Shift+Enter is a newline. The dot is green between turns, amber while a turn
+      runs, red once the process is gone. The head of the Leader's panel carries, after the
+      connection word, the version the server runs &mdash; <code>0.20.0</code>, or the eight
+      characters of the commit on a build of <code>main</code> &mdash; then the account's usage
+      windows &mdash; the session window with the time to its reset, the weekly window over all
+      models, and the weekly window of the one model that has its own, like <code>8% (3h) · all 86%
+      (6d) · fable 20% (6d)</code>, read every 5 minutes while any session runs, with each window's
+      reset in its tooltip &mdash; and the toggle between light and dark. A third switch on that
+      head, after the two notification switches, hides the messages between the Leader and the
+      Workers, and one Worker's to another, from the Leader's panel; what you typed to a Worker
+      stays, and a hidden row a click reaches is shown opened until it is folded.
     </p>
     <p>
       A panel with no rows shows nothing: it stays empty until the seat's first row arrives. A row
       with the wall-clock time marks when a session starts and when it ends, so a panel kept across
-      a stop shows where the break was and how long it lasted; of two less than a minute apart,
-      only the first is drawn. Every row is masked before it is kept: a key, a token or a password
-      in a command is written as <code>***</code>, on the panel and in <code>runtime.log</code>
-      alike.
+      a stop shows where the break was and how long it lasted; of two less than a minute apart, only
+      the first is drawn. Every row is masked before it is kept: a key, a token or a password in a
+      command is written as <code>***</code>, on the panel and in <code>runtime.log</code> alike. A
+      tool line such as <code>Reading &hellip;</code> names a file inside the instance from its root
+      and any other file by its absolute path. Scrolled more than 80&nbsp;px above the newest row,
+      any panel shows <code>&darr; latest</code>, and a click on it takes you to the newest row; on
+      the Leader's panel it says <code>&darr; new messages</code> once a row lands below you.
     </p>
     <figure class="shot">
       <a class="light" href="/media/media-4.png"><img src="/media/media-4.png" width="406" height="1072" alt=""></a>
@@ -203,14 +207,38 @@
       asks, which reads as a form &mdash; its options in a column, Other last with a line of its
       own to type in, and Send and Cancel.
     </p>
+    <p id="files">
+      A file a reply or a message names opens read-only in a tab of its own. A backticked path, or a
+      markdown link to one, is a link when the file view would show that file, and plain code when
+      it would not; in <code>path:12</code> the path is the link and the line stays in the words.
+      Paths are read from the instance root, which is why every session is told to name a file or a
+      directory by its whole path from there, and one outside the instance by its absolute path. The
+      view is <code>/view/&lt;path from the instance root&gt;</code>: a markdown file drawn the way
+      a reply is, a code file in one block coloured by its language with its lines numbered, any
+      other text in a plain block, and a <b>View source</b> button for the file's text as it is. A
+      file larger than 256&nbsp;KiB opens as its source alone; the view shows up to 1&nbsp;MiB of
+      UTF-8 text, and <a href="/permissions/#files">never some files</a>.
+    </p>
+    <p>
+      A link to a web page (<code>.html</code>, <code>.htm</code>) opens it in the default browser
+      as a <code>file://</code> tab, the way a double click in a file manager does, so the files it
+      loads beside it load too. A link to an image (<code>.png</code>, <code>.jpg</code>,
+      <code>.jpeg</code>, <code>.gif</code>, <code>.webp</code>, <code>.bmp</code>,
+      <code>.svg</code>) opens it in the image viewer, and a path to a directory &mdash;
+      <code>temp/shots/</code> or <code>temp/shots</code> &mdash; opens it in the file manager. The
+      server hands the real path to the desktop's opener, <code>xdg-open</code> or <code>open</code>
+      on macOS; when the opener is missing or fails, the panel says so beside the link. The view
+      shows none of these three and says where each opens.
+    </p>
     <p>
       The page draws from one stream. It opens an <code>EventSource</code> on <code>/events</code>
       and gets a snapshot, then the rows of every panel, then live: a row as it lands, a seat as it
       starts, ends, takes or finishes a turn, a question as it is asked. A page that reconnects asks
-      for what it missed. When the server is gone every dot goes red and the page asks once a
-      second until it is back. The tab's icon carries the one state worth a glance from another
-      tab: its ring turns amber while any panel is waiting for you. The page installs as a web app,
-      which is what a fixed port is for.
+      for what it missed. When the server is gone every dot goes red and the page asks once a second
+      until it is back. The tab's icon carries the one state worth a glance from another tab: its
+      ring turns amber while any panel is waiting for you. The page installs as a web app, which is
+      what a fixed port is for, named as the page's title names it, such as <code>OpenOv AI
+      ~/workspace</code>, so the apps of two instances are told apart in a launcher.
     </p>
     <p>
       What you write is kept in <code>desks/&lt;Name&gt;/conversation.json</code> inside the
@@ -221,9 +249,12 @@
   <section class="wrap prose">
     <h2 id="sessions">Sessions and turns</h2>
     <p>
-      A seat is one process, started on the instance's own Claude Code home, reading turn after
-      turn from its stdin in one conversation until the seat is ended. Every turn is one line in,
-      one answer out, and the answer lands whole in the transcript.
+      A seat is one process, started on the instance's own Claude Code home, reading turn after turn
+      from its stdin in one conversation until the seat is ended. Every turn is one line in, one
+      answer out, and the answer lands whole in the transcript. A turn with nothing in it for the
+      panel is answered with exactly <code>&lt;noop/&gt;</code>: it is kept in the conversation,
+      marked, and the panel shows nothing for it. A reply that has words and then ends in
+      <code>&lt;noop/&gt;</code> shows its words, since they were sent.
     </p>
     <p>
       The server is the only writer of that stdin, and every line carries a frame the server sets
@@ -405,11 +436,16 @@ park           you said this is it for the day; or ovai stop, or any signal to t
       The server reads the usage windows Claude Code reports with every turn &mdash; the session
       window and the weekly one &mdash; and the weekly window of the one model that has its own,
       from the account's usage endpoint. Two threshold pairs in <code>openovai.json</code> cover
-      them, <code>quota: { "5h": [90, 95], "7d": [97, 99] }</code> by default: a warning stage and
-      a critical one for each. One event, <code>quota-low</code>, is sent at both stages and says
-      which window and when it resets. The windows are read every 5 minutes while any session
-      runs, and at a turn's end and a page load when the last read is a minute old, so the gate and
-      the line in the Leader's head are current with no page open.
+      them, <code>quota: { "5h": [90, 95], "7d": [97, 99] }</code> by default: a warning stage and a
+      critical one for each. One event, <code>quota-low</code>, is sent at both stages and says
+      which window and when it resets. The windows are read every 5 minutes while any session runs,
+      and at a turn's end and a page load when the last read is a minute old, so the gate and the
+      line in the Leader's head are current with no page open. That line reads its percentages with
+      the token Claude Code keeps in <code>.credentials.json</code> in the instance's home. On macOS
+      Claude Code keeps the sign-in in the Keychain, which ovai does not read, so there the head
+      shows no usage line and the log says why once. The gate still holds sessions at the 5-hour and
+      7-day limits from what each turn reports; the weekly window of a single model, which only that
+      line reads, is not guarded there.
     </p>
     <p>
       At the warning every running seat is told. A Worker keeps its desk current and carries on;

@@ -51,11 +51,12 @@
   <section class="wrap hero">
     <h1>Permissions and safety</h1>
     <p class="lead">
-      A session asks before it uses a tool the instance has not settled. What the instance allows
-      it simply does; what it denies it never gets to try; and anything left undecided stops the
-      run and appears on that session's panel as a card, in the session's own words. Nothing on
-      that path times out: you can leave the page and come back to find the team waited, not
-      wandered.
+      A session asks before it uses a tool the instance has not settled. What the instance allows it
+      simply does; what it denies it never gets to try; and anything left undecided stops the run
+      and appears on that session's panel as a card, in the session's own words. A card nobody
+      answers is a Deny after ten minutes, or two for a subagent's call, and the session is told
+      that nobody answered: it goes on with what it can do without the call and asks for it again
+      when you are back.
     </p>
   </section>
 
@@ -74,8 +75,8 @@
       <li>reading any file;</li>
       <li>editing and writing under the three trees that are yours &mdash; <code>reference/</code>,
         <code>projects/</code> and <code>temp/</code> &mdash; one rule each, and the same for a
-        seat's own desk directory: a desk is a working directory, and everyone hired later gets
-        the rule for theirs;</li>
+        seat's own desk directory: a desk is where a seat keeps its work, and everyone hired later
+        gets the rule for theirs;</li>
       <li>editing and writing <code>knowledge/</code>, one rule of the same shape: what the
         workspace knows is written by whoever learnt the thing, at the moment they learnt it, and a
         session that had to ask before recording what it just measured would record nothing;</li>
@@ -119,20 +120,26 @@
     <p>
       A call the instance has not settled stops the run and appears on that session's panel:
       <code>Paul wants to use Bash</code>, the command and the reason the session gave for it, or
-      the path it was going to write. Three answers:
+      the path it was going to write. A call one of the session's subagents made says so under the
+      heading, in the words the session started the subagent with &mdash; <code>from its subagent
+      Explore &mdash; &ldquo;find the card CSS&rdquo;</code> &mdash; or <code>from a subagent</code>
+      where the server did not see that subagent start. Three answers, always in this order:
     </p>
     <dl>
       <dt>Allow</dt>
       <dd>lets that call through, once.</dd>
+      <dt>Always allow</dt>
+      <dd>where the request says plainly what the whole class of calls is, the card lists the rules
+        it saves under <code>Always allow saves:</code>, one to a line &mdash;
+        <code>Bash(node:*)</code>, a command by its first word (<code>git</code> by its subcommand:
+        <code>Bash(git push:*)</code>), or <code>Edit(/projects/app/**)</code>, a write by the
+        directory it was in &mdash; and pressing it lets the call through and leaves the instance
+        allowing that shape.</dd>
       <dt>Deny</dt>
-      <dd>takes the sentence you type beside it, and the session is told to take that as an
-        instruction rather than to look for another way round.</dd>
-      <dt>Always allow &hellip;</dt>
-      <dd>where the request says plainly what the whole class of calls is, a third button carries
-        the rule &mdash; <b>Always allow <code>Bash(node:*)</code></b>, a command by its first word
-        (<code>git</code> by its subcommand: <code>Bash(git push:*)</code>), or <b>Always allow
-        <code>Edit(/projects/app/**)</code></b>, a write by the directory it was in &mdash; and
-        pressing it lets the call through and leaves the instance allowing that shape.</dd>
+      <dd>takes the sentence you type beside it. The call's error reads <code>Ana denied this call
+        on the panel: "&hellip;"</code>, under your name, and every session is told that a Deny
+        comes back that way, is your answer rather than something the call's output made up, and is
+        to be taken as an instruction rather than a reason to look for another way round.</dd>
     </dl>
     <figure class="shot">
       <a class="light" href="/media/media-11.png"><img src="/media/media-11.png" width="406" height="1072" alt=""></a>
@@ -143,9 +150,20 @@
       A command whose first word is a path or a variable gets no button, and neither does a write
       outside the instance &mdash; <code>/tmp</code> included, which is why a Worker keeps its files
       inside the instance &mdash; nor a tool the server serves, which is granted already. A run that
-      ends before it was answered takes its question down with it. After ten minutes the server
-      tells the Leader once that somebody is waiting on their panel; and while the page is not
-      visible, the browser can notify you that a card appeared, if you turned that on.
+      ends before it was answered takes its question down with it. While the page is not visible,
+      the browser can notify you that a card appeared, if you turned that on.
+    </p>
+    <p>
+      A card that holds a session's call, a permission card or a question, is a Deny after ten
+      minutes nobody answers it, or after two when one of the session's subagents made the call: a
+      subagent is not built to be stopped, and the session's prompt cache lives five minutes. It
+      leaves the panel as an answered card does, the panel says <code>Waited 634 seconds for
+      permission, timed out: &hellip;</code>, and the session gets, as the call's error, that you
+      did not answer the card within that time. That Deny is nobody's answer: the session goes on
+      with what it can do without the call, says what waits on it, and asks for it again once you
+      are back, never looking for a way round it. The clock is read once a minute, so a card goes
+      within a minute after its time. When it was a Worker's card, the Leader is told it timed out.
+      The Leader and the Workers are held to it alike.
     </p>
     <p>
       Where no rule is composed for a command, the button would carry the one Claude Code itself
@@ -185,8 +203,12 @@
     </p>
     <p>
       And a hook, <code>lib/hooks/compound.mjs</code>, runs before every Bash call, a subagent's
-      included, before any question is asked. It reads the command as text and cuts it into sides
-      the way the card does:
+      included, before any question is asked. Both hooks are named in the settings as <code>sh
+      "${CLAUDE_PROJECT_DIR}/lib/hooks/run.sh" compound</code> (or <code>subagent</code>), which
+      runs them on the Node.js the instance's version pins, not on whatever <code>node</code> the
+      session's <code>PATH</code> has; an update replaces the older commands with these and keeps
+      any hook of your own. It reads the command as text and cuts it into sides the way the card
+      does:
     </p>
     <ul>
       <li>Every side a command the instance's own allow list holds, and no side one its deny list
@@ -248,10 +270,11 @@
       Each call is one card on the Leader's panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every
       time</b>; the press writes the rule to that list in the instance's settings, takes it off the
       other two, and reaches the Leader as an event, so a Worker hired to push is hired after the
-      push is allowed. Called with no rule, <code>permission</code> answers what the instance holds
-      and what is still pending &mdash; the Leader reports from that, never from a settings file.
-      Every rule granted by a press is written down in <code>.claude/allowed.md</code>, one line per
-      rule with the list it went to, who asked, when and what for.
+      push is allowed. A rule card holds no call, and never times out. Called with no rule,
+      <code>permission</code> answers what the instance holds and what is still pending &mdash; the
+      Leader reports from that, never from a settings file. Every rule granted by a press is written
+      down in <code>.claude/allowed.md</code>, one line per rule with the list it went to, who
+      asked, when and what for.
     </p>
     <figure class="shot">
       <a href="/media/media-13.png"><img src="/media/media-13.png" width="1077" height="384" alt=""></a>
@@ -271,13 +294,25 @@
       Only the outermost frame is the server's, by construction.
     </p>
     <p>
-      Who is calling a tool travels with the process, not with a name. When the server starts a
-      seat it mints a secret &mdash; 32 random bytes &mdash; hands it to the process in its
-      environment, and keys the tool route by it. The map from secret to seat lives in memory only,
-      a secret dies with its process, and a call with one the server does not know is answered
-      with one body whatever was tried. The request log prints the secret as the word
-      <code>&lt;secret&gt;</code> wherever a path carries one. The page has a secret of its own
-      that opens no tool route.
+      Who is calling a tool travels with the process, not with a name. When the server starts a seat
+      it mints a secret &mdash; 32 random bytes &mdash; hands it to the process in its environment,
+      and keys the tool route by it. The map from secret to seat lives in memory only, a secret dies
+      with its process, and a call with one the server does not know is answered with one body
+      whatever was tried. The request log prints the secret as the word <code>&lt;secret&gt;</code>
+      wherever a path carries one. The page has a secret of its own that opens no tool route, and
+      sets it as a cookie for its own port (<code>HttpOnly</code>, <code>SameSite=Strict</code>).
+    </p>
+    <p>
+      The server answers only to its own address. A request whose <code>Host</code> is not
+      <code>127.0.0.1:&lt;port&gt;</code> or <code>localhost:&lt;port&gt;</code> is refused with 421
+      on every route, the page included; a request that changes something &mdash; anything but
+      <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> &mdash; and carries an
+      <code>Origin</code> is refused with 403 unless that origin is
+      <code>http://127.0.0.1:&lt;port&gt;</code> or <code>http://localhost:&lt;port&gt;</code>. That
+      closes one gap: a web page whose own name was pointed at <code>127.0.0.1</code> could
+      otherwise load the page, read its secret and drive every seat. It closes nothing else: any
+      process or user on the machine that connects to the port directly still gets the page and its
+      secret from <code>GET /</code>.
     </p>
   </section>
 
@@ -298,10 +333,49 @@
         <a href="/knowledge/">knowledge</a> directory. Both are plain files, and both are read the
         same by everyone.</li>
       <li><b>What a reply can do to the page.</b> Raw HTML is escaped, a link is kept only on
-        <code>http(s)</code> and <code>mailto</code>, an image is shown as a link: nothing a session
+        <code>http(s)</code>, <code>mailto</code> and a path the file view would show or the desktop
+        would open, <a href="#files">below</a>, and an image is shown as a link: nothing a session
         says makes the page fetch anything.</li>
-      <li><b>Where the page listens.</b> On <code>127.0.0.1</code> only.</li>
+      <li><b>Where the page listens.</b> On <code>127.0.0.1</code> only, answering to its own
+        address and <code>localhost</code> on its port.</li>
     </ul>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="files">Files a reply names</h2>
+    <p>
+      A path in a reply is a link only to what the checks let through, and the server runs the same
+      checks on every row it sends, to decide which paths the page links, and again when a link is
+      opened. A path is read from the instance root and nowhere else. It is shown or opened only
+      when its real path, symlinks followed, is inside the instance, and never when it is the
+      instance's Claude Code home (<code>.local/</code>), a <code>.git</code> directory, a
+      <code>.env</code> or <code>.env.*</code> file, or a <code>.credentials.json</code>, however
+      the name is cased. The <a href="/how-it-works/#files">file view</a> shows a regular file of at
+      most 1 MiB of UTF-8 text, answers only a request that carries the page's cookie, allows no
+      inline script or style on its page, and is not cached.
+    </p>
+    <p>
+      A web page, an image or a directory opens on the desktop instead, and that is the one route
+      that starts a program on the machine, so it is narrowed further:
+    </p>
+    <ul>
+      <li>it takes only a <code>POST</code> whose <code>Origin</code> is the server's own and that
+        carries the page's cookie;</li>
+      <li>a web page must be a file the view would show, and its real path must end in
+        <code>.html</code> or <code>.htm</code>; an image's real path must end in <code>.png</code>,
+        <code>.jpg</code>, <code>.jpeg</code>, <code>.gif</code>, <code>.webp</code>,
+        <code>.bmp</code> or <code>.svg</code>; so a name that leads to a <code>.desktop</code> file
+        opens nothing;</li>
+      <li>a directory must be inside the instance by its real path, so a symlink to a directory
+        outside it opens nothing;</li>
+      <li>the desktop's opener &mdash; <code>xdg-open</code>, or <code>open</code> on macOS &mdash;
+        is given the absolute path as an argument, not a shell line.</li>
+    </ul>
+    <p>
+      This closes the ways in that these checks name, and nothing else. A page opened this way runs
+      as a local file in the browser, with whatever that browser lets a <code>file://</code> page
+      do.
+    </p>
   </section>
 
   <section class="wrap prose">

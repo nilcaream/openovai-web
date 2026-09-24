@@ -62,16 +62,20 @@
     <h2 id="personas">The personas</h2>
     <p>
       A persona is rendered once, when a seat's process starts, from the templates the instance has
-      at that moment, and kept beside that seat's conversation under <code>desks/&lt;Name&gt;/</code>.
+      at that moment, and kept beside that seat's conversation under
+      <code>desks/&lt;Name&gt;/</code>. Every part of it says where it came from. It opens with
+      ovai's own mechanics for every seat, in <code>&lt;ovai
+      source="lib/templates/common.md"&gt;</code>, then the role's template in <code>&lt;ovai
+      source="lib/templates/leader.md"&gt;</code> (or <code>worker.md</code>), then what you add.
       What you add to it is yours: three files at the instance root, each reaching the session in a
       frame that names the file it came from. <code>customization/common.md</code> goes to every
       session here and comes first, so the role's own file reads as the narrower thing under it;
       <code>customization/leader.md</code> and <code>customization/worker.md</code> go to that kind
-      of session. A Leader is given the Worker's file after both, marked as the Worker's rather
-      than as its own, so that it knows what every Worker already holds and briefs the task rather
-      than the method. A Worker is never given the Leader's. A subagent a session starts is handed
-      <code>customization/common.md</code> alone, by a hook, in the same frame and word for word:
-      it is neither the Leader nor a Worker, so the role files stay with the seats.
+      of session. A Leader is given the Worker's file after both, marked as the Worker's rather than
+      as its own, so that it knows what every Worker already holds and briefs the task rather than
+      the method. A Worker is never given the Leader's. A subagent a session starts is handed
+      <code>customization/common.md</code> alone, by a hook, in the same frame and word for word: it
+      is neither the Leader nor a Worker, so the role files stay with the seats.
     </p>
     <figure class="term">
 <pre>&lt;customization source="customization/worker.md"&gt;
@@ -127,7 +131,6 @@ and you say so to the Leader before you start on it.
           <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when a silent Worker is closed and a silent Leader told to write its desk and stop</td></tr>
           <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code></td><td>tokens: the request size at which the Leader is first told how big it has grown, how often it is told again above that, and the size at which the telling turns into an instruction to hand over; for a Worker, the two sizes at which the Leader is told how big that Worker has grown, the second being when to restart it</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, how long a server stop waits for the whole room, and how much longer <code>ovai stop</code> waits past that for the sessions to go</td></tr>
-          <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code></td><td>minutes a Worker may wait on a card before the Leader is told once that somebody is waiting on your panel</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code></td><td>seconds: a seat waits for you while you type in its box. <code>quiet</code> is how long after your last keystroke you still count as typing, <code>cap</code> the longest a waiting turn is held; <code>0</code> in either turns the hold off, and a value that is not a number or is below 0 is taken as the default. <a href="/reference/#typing">What is held, with a worked timeline</a></td></tr>
         </tbody>
       </table>
@@ -209,12 +212,15 @@ and you say so to the Leader before you start on it.
   <section class="wrap prose">
     <h2 id="port">A fixed port, and the page as an app</h2>
     <p>
-      <code>--port 0</code> at install means whatever is free, and <code>ovai start</code> prints the
-      address it actually got. Pick a number when you want the same one every time: a bookmark, or
-      the page installed as a web app. The page ships a manifest and three icons &mdash; one of them
-      for a platform that masks icons to its own shape &mdash; so the browser's "install" puts it
-      on your desktop like any app, which is what a fixed port is for. The port is on
-      <code>127.0.0.1</code> only, whatever the number.
+      <code>--port 0</code> at install means whatever is free, and <code>ovai start</code> prints
+      the address it actually got. Pick a number when you want the same one every time: a bookmark,
+      or the page installed as a web app. The page ships a manifest and three icons &mdash; one of
+      them for a platform that masks icons to its own shape &mdash; so the browser's "install" puts
+      it on your desktop like any app, which is what a fixed port is for. The app is named as the
+      page's title names it, such as <code>OpenOv AI ~/workspace</code>, so the apps of two
+      instances are told apart in a launcher; an app installed before takes the name when the
+      browser next reads the manifest. The port is on <code>127.0.0.1</code> only, whatever the
+      number.
     </p>
     <figure class="shot">
       <a href="/media/media-19.png"><img src="/media/media-19.png" width="320" height="200" alt=""></a>

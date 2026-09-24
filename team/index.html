@@ -101,28 +101,31 @@
       Then the Leader briefs: a message to the Worker, which comes back the moment the Worker has
       it, and the Leader's turn goes on. What the Worker says back arrives later, as a message the
       other way, and the Leader decides what of it reaches you. What cannot wait for the Worker's
-      turn to end goes <code>urgent</code>, and reaches it at its next tool call. While the Leader's
-      turn runs, one line above its panel reads what it is at &mdash; thinking, or the call it has
-      out.
+      turn to end goes <code>urgent</code>, reaches it at its next tool call, and reads <code>To
+      Paul (urgent)</code> on the Leader's panel. While the Leader's turn runs, one line reads what
+      it is at &mdash; thinking, or the call it has out. It floats in the lower right corner of the
+      last message and takes no room, so nothing moves when it comes or goes, and it disappears
+      while the pointer is over it, so the corner it covers can be read.
     </p>
     <p>
-      What the Leader says to you is for you: a turn with nothing in it for you ends without a
-      word, a Worker's checkpoint stays between the Leader and the Worker, and where things stand
-      is the whole open list each time, never one written earlier. Inline code is kept for a name,
-      a path or a short command; quoted or proposed text is a blockquote, and longer code a fenced
-      block.
+      What the Leader says to you is for you: a turn with nothing in it for you is answered with
+      <code>&lt;noop/&gt;</code> and the panel shows nothing for it, and a Worker's checkpoint stays
+      between the Leader and the Worker. When you ask where things stand, and when the Leader asks
+      you what to take next, it gives the whole open list, never one written earlier. Inline code is
+      kept for a name, a path or a short command; quoted or proposed text is a blockquote, and
+      longer code a fenced block.
     </p>
     <p>
-      Through the day the server tells the Leader what it needs to know and nothing more: that
-      you typed on a Worker's panel, and what; that one Worker said something to another; that a
-      Worker has been silent for 10 minutes, and again at 50; that a Worker has been waiting on a
-      card for ten minutes; how much of its context a Worker has used, at the warning size and at
-      the size to restart it at; that a Worker says it is done; that a Worker has gone, and why
-      &mdash; stopped or restarted by the Leader, idle, a spent window &mdash; with its desk as it
-      was last written; that the service refused a Worker's turn, in the service's own words; that
-      a spent window has reset; that admin mode ran, when it ended, and which of the instance's configuration files changed
-      &mdash; by name, and nothing of what is in them. Told, not asked: nothing waits on the Leader
-      for any of it.
+      Through the day the server tells the Leader what it needs to know and nothing more: that you
+      typed on a Worker's panel, and what; that one Worker said something to another; that a Worker
+      has been silent for 10 minutes, and again at 50; that a Worker's card timed out, after 10
+      minutes or 2 for a subagent's call; how much of its context a Worker has used, at the warning
+      size and at the size to restart it at; that a Worker says it is done; that a Worker has gone,
+      and why &mdash; stopped or restarted by the Leader, idle, a spent window &mdash; with its desk
+      as it was last written; that the service refused a Worker's turn, in the service's own words;
+      that a spent window has reset; that admin mode ran, when it ended, and which of the instance's
+      configuration files changed &mdash; by name, and nothing of what is in them. Told, not asked:
+      nothing waits on the Leader for any of it.
     </p>
     <p>
       The rules the instance holds are settled through the Leader, in your words. Say "you will be
@@ -146,12 +149,13 @@
     <h2 id="worker">What a Worker does</h2>
     <p>
       One task at a time. A Worker is started on its desk with a persona rendered at that moment,
-      reads its desk first, and works from there: the desk directory is its working directory, so
-      what the work produces &mdash; a design, a finding, notes &mdash; is kept beside the desk
-      file. It writes the desk with a tool at every point the work moves, not only at the end,
-      because a written desk is what survives and anything worked out and not written is gone
-      with the session. Its files stay inside the instance: <code>/tmp</code> is outside it, so
-      every use would stop on a card for you.
+      reads its desk first, and works from there: what the work produces &mdash; a design, a
+      finding, notes &mdash; is kept on its desk, beside the desk file, and every file it names is
+      named by its whole path from the instance root, where every session runs. It writes the desk
+      with a tool at every point the work moves, not only at the end, because a written desk is what
+      survives and anything worked out and not written is gone with the session. Its files stay
+      inside the instance: <code>/tmp</code> is outside it, so every use would stop on a card for
+      you.
     </p>
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on

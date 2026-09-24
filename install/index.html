@@ -82,10 +82,9 @@
         <p>
           With no arguments the release's installer asks its questions: where the instance lives,
           who it works for, the Leader's name, the models, the port, how it signs in. Before
-          anything else <code>openovai</code> says which version it resolved &mdash;
-          <code>openovai 0.19.0 (latest)</code> &mdash; downloads that release once, fetches the
-          Node.js and Claude Code it pins, and hands over to its installer. The directory has to be
-          empty or new.
+          anything else <code>openovai</code> says which version it resolved &mdash; <code>openovai
+          0.20.0 (latest)</code> &mdash; downloads that release once, fetches the Node.js and Claude
+          Code it pins, and hands over to its installer. The directory has to be empty or new.
         </p>
         <figure class="media">
           <b>[media 5]</b>
@@ -134,7 +133,7 @@
       of its own, the version.</p>
     <dl>
       <dt>openovai [version]</dt>
-      <dd><code>openovai 0.19.0 &hellip;</code> or <code>openovai --version 0.19.0 &hellip;</code>
+      <dd><code>openovai 0.20.0 &hellip;</code> or <code>openovai --version 0.20.0 &hellip;</code>
         takes that release; absent, the newest release on GitHub at that moment, printed before
         anything is done. Asked interactively, the choice offers <code>latest</code> and the
         versions already downloaded.</dd>
@@ -162,11 +161,13 @@
   <section class="wrap prose">
     <h2 id="needs">What it needs</h2>
     <p>
-      Linux, x86_64 or arm64, with <code>sh</code>, <code>curl</code> or <code>wget</code>,
-      <code>tar</code>, <code>sha256sum</code> and <code>uname</code>. Nothing else: no Node.js, no
-      npm, no Claude Code on the machine. The rest the installer brings: the Node.js and Claude
-      Code an instance runs on are pinned, exactly, per release &mdash; chosen and tested when the
-      release is cut &mdash; fetched from a fixed address and checked against a checksum, and kept under
+      Linux or macOS, x86_64 or arm64, with <code>sh</code>, <code>curl</code> or <code>wget</code>,
+      <code>tar</code>, <code>sha256sum</code> (or <code>shasum</code>, as a Mac has it) and
+      <code>uname</code>. On Windows, ovai runs in WSL 2 as on Linux, with the instance kept in the
+      Linux file system and off <code>/mnt/c</code>. Nothing else: no Node.js, no npm, no Claude
+      Code on the machine. The rest the installer brings: the Node.js and Claude Code an instance
+      runs on are pinned, exactly, per release &mdash; chosen and tested when the release is cut
+      &mdash; fetched from a fixed address and checked against a checksum, and kept under
       <code>~/.local/share/openovai/</code>, per user, outside every instance. Instances on one
       machine share those runtimes and reuse what is already there; an instance runs them by
       absolute path and never touches, nor uses, a Node.js or Claude Code the system already has.
@@ -215,9 +216,12 @@ cd openovai
              --leader-model opus --worker-model sonnet --port 7799 --auth login</pre>
     </div>
     <p>
-      <code>--source</code> is where to install from: a clone, or an unpacked release. The
-      instance copies <code>bin/</code> and <code>lib/</code> in, so it never reaches back to where
-      it was installed from.
+      <code>--source</code> is where to install from: a clone, or an unpacked release. The instance
+      copies <code>bin/</code> and <code>lib/</code> in, so it never reaches back to where it was
+      installed from. A clone with nothing <code>git status --porcelain</code> lists, on any branch,
+      puts the instance on the commit it was installed from: its version is the first 8 characters
+      of that commit's hash. A clone with changes, or a directory that is not a clone, is installed
+      on the <code>lib/VERSION</code> it carries.
     </p>
   </section>
 
@@ -230,23 +234,43 @@ cd openovai
 <pre>~/workspace/bin/ovai update</pre>
     </div>
     <p>
-      It asks GitHub for the latest release, and if that is newer than the version this instance
-      is on it takes it: the payload &mdash; <code>bin/</code> and <code>lib/</code> &mdash; is replaced
-      whole, and a file of yours that a fresh install of this version would have seeded and this
-      instance has not got is seeded once. When the new release pins a newer Node.js or Claude
-      Code, those are fetched beside the ones already there, and an instance still on the older
-      release keeps using the older ones. Desks, conversations, <code>knowledge/</code>,
-      <code>customization/</code>, <code>plugins/</code>, <code>openovai.json</code> and the Claude
-      Code home are left alone. The settings are left alone but for two things: the two hooks are
-      wired into a settings file that lacks them, and commit attribution is turned off in one that
-      says nothing about it; no rule is added. There is no rollback: taking the release again is
-      the fix.
+      It asks GitHub for the latest release, and if that is newer than the version this instance is
+      on it takes it: the payload &mdash; <code>bin/</code> and <code>lib/</code> &mdash; is
+      replaced whole, and the rest is done by the version it brought in: it runs <code>bin/ovai
+      update --finish</code> from the payload it just put in place, which fetches the new runtime,
+      takes away what the new version retires, seeds once a file of yours that a fresh install of
+      this version would have seeded and this instance has not got, and wires the hooks. On the
+      version the instance is already on, <code>ovai update</code> runs that same finish. Taking
+      0.20.0 is still finished by the version before it, so run <code>ovai update</code> a second
+      time once it is through. When the new release pins a newer Node.js or Claude Code, those are
+      fetched beside the ones already there, and an instance still on the older release keeps using
+      the older ones. Desks, conversations, <code>knowledge/</code>, <code>customization/</code>,
+      <code>plugins/</code>, <code>openovai.json</code> and the Claude Code home are left alone. The
+      settings are left alone but for two things: the two hooks are wired into a settings file that
+      lacks them, older commands for them replaced and any hook of your own kept, and commit
+      attribution is turned off in one that says nothing about it; no rule is added. There is no
+      rollback: taking the release again is the fix.
     </p>
     <p>
       It refuses while the server is running, and while any session of this instance is running
       &mdash; found on the machine and named with the <code>kill</code> that ends it. It refuses to
       go backwards by name; <code>--downgrade</code> takes an older release anyway, and
       <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub.
+    </p>
+    <p>
+      <code>--from</code> a clone takes a build of <code>main</code>, named by its commit. The clone
+      must be on <code>main</code> with nothing <code>git status --porcelain</code> lists, or the
+      update refuses in one line that says which. The instance is then on the first 8 characters of
+      that commit's hash, and that is its version wherever ovai shows one: <code>ovai
+      configuration</code>, the page, the server's health. A hash has no order, so a release is
+      always taken onto a build, with no <code>--downgrade</code>; another commit is always taken;
+      the same commit replaces nothing and runs the finish. Going back with <code>--downgrade</code>
+      to a version before 0.20.0 leaves the hooks in <code>.claude/settings.json</code> naming
+      <code>lib/hooks/run.sh</code>, which the older version does not have: the downgrade says so,
+      and they are rewired by hand. An instance on 0.19.0 reads a clone as the release its
+      <code>lib/VERSION</code> names, so its first build is taken with the clone's own updater:
+      <code>node &lt;clone&gt;/lib/ovai.mjs --root &lt;instance&gt; update --from
+      &lt;clone&gt;</code>.
     </p>
     <figure class="shot">
       <a href="/media/media-7.png"><img src="/media/media-7.png" width="874" height="425" alt=""></a>

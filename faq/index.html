@@ -91,10 +91,13 @@
       &mdash; found on the machine by the Claude Code home it carries. Each one is named with the
       <code>kill &lt;pid&gt;</code> line that ends it, and the process's command line after it as a
       comment, so a session of yours can be told from a process that merely carried the instance's
-      home; the line still pastes. <code>ovai stop</code> first parks the room properly &mdash; every
-      Worker and the Leader write their desks &mdash; and then the update goes through. It also refuses to go
-      backwards by name: <code>--downgrade</code> takes an older release anyway, and
-      <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub.
+      home; the line still pastes. <code>ovai stop</code> first parks the room properly &mdash;
+      every Worker and the Leader write their desks &mdash; and then the update goes through. It
+      also refuses to go backwards by name: <code>--downgrade</code> takes an older release anyway,
+      and <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub. A
+      <code>--from</code> clone is refused, in one line that says which, when it is not on
+      <code>main</code> or has anything <code>git status --porcelain</code> lists. On macOS the
+      sessions are found with <code>ps</code>, as Linux finds them in <code>/proc</code>.
     </p>
   </section>
 
@@ -161,12 +164,15 @@
   <section class="wrap prose">
     <h2 id="waiting">A session was waiting on me and I did not see it</h2>
     <p>
-      Nothing on that path times out: the run waits for as long as you take, and after ten minutes
-      the Leader is told once that somebody is waiting on their panel. To be told yourself, turn
-      the exclamation-mark switch on the Leader's head on: a card appearing on any panel then
-      reaches you through the browser's notifications while the page is not visible, and a click on
-      it brings that panel into view. From another tab, the page's icon carries a ring while any
-      panel is waiting for you. Both are described under
+      A card waits ten minutes, or two when one of the session's subagents made the call, and is
+      then a Deny: the panel says <code>Waited &hellip; seconds for permission, timed out:
+      &hellip;</code>, and the session goes on with what it can do without the call, says what waits
+      on it, and asks for it again once you are back. When it was a Worker's card, the Leader is
+      told it timed out. To be told while it still waits, turn the exclamation-mark switch on the
+      Leader's head on: a card appearing on any panel then reaches you through the browser's
+      notifications while the page is not visible, and a click on it brings that panel into view.
+      From another tab, the page's icon carries a ring while any panel is waiting for you. Both are
+      described under
       <a href="/customization/#notifications">notifications</a>.
     </p>
   </section>
@@ -197,22 +203,31 @@
   <section class="wrap prose">
     <h2 id="macos">Can it run on macOS?</h2>
     <p>
-      The requirement is a Linux desktop; that is what it is built and run on, and nothing else is
-      claimed. The pieces are ordinary &mdash; a POSIX shell script, Node.js, Claude Code, a page on
-      <code>127.0.0.1</code> &mdash; but the pinned runtimes are fetched for Linux, and no other
-      platform has been measured. When one has, this page will say so.
+      The installer takes macOS as well as Linux: it fetches the <code>darwin-arm64</code> or
+      <code>darwin-x64</code> Node.js, Claude Code comes from the same <code>npm install</code>, and
+      where there is no <code>sha256sum</code> the archive is checked with <code>shasum -a
+      256</code>. On a Mac ovai finds its own processes with <code>ps</code> and the port's holder
+      with <code>lsof</code>. The usage line in the Leader's head stays empty there, since Claude
+      Code keeps the sign-in in the Keychain, which ovai does not read; the quota gate still holds
+      at the 5-hour and 7-day limits, and the log says why the line is empty. The Mac paths have
+      been checked with stand-ins on Linux and not yet run on a Mac. On Windows, ovai runs in WSL 2
+      as on Linux, with the instance in the Linux file system and off <code>/mnt/c</code>; that has
+      not been tried either.
     </p>
   </section>
 
   <section class="wrap prose">
     <h2 id="safe">Is it safe to leave running?</h2>
     <p>
-      The page listens on <code>127.0.0.1</code> only. A session does what the instance allows,
-      never gets to try what it denies &mdash; <code>git push</code>, <code>sudo</code> and
-      <code>ssh</code> from birth &mdash; and stops on a card for anything undecided, for as long as
-      you take. A Worker idle for 55 minutes is closed, and a Leader idle that long writes its desk
-      and stops. A tool of the server's is one
-      permission rule; a tool of yours under <code>plugins/</code> is one you wrote. The
+      The page listens on <code>127.0.0.1</code> only and answers only to its own address; that
+      closes the gap of a web page whose name was pointed at <code>127.0.0.1</code>, and nothing
+      else: a process on the machine that connects to the port still gets the page. ovai has had no
+      security hardening beyond that. A session does what the instance allows, never gets to try
+      what it denies &mdash; <code>git push</code>, <code>sudo</code> and <code>ssh</code> from
+      birth &mdash; and stops on a card for anything undecided, which is a Deny after ten minutes
+      nobody answers. A Worker idle for 55 minutes is closed, and a Leader idle that long writes its
+      desk and stops. A tool of the server's is one permission rule; a tool of yours under
+      <code>plugins/</code> is one you wrote. The
       <a href="/permissions/">permissions page</a> has the seeded rules and the shape of the ones
       you add; what you leave the room allowed to do is what it can do while you are away.
     </p>

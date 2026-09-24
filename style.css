@@ -282,13 +282,13 @@ code { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; }
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: normal;
   text-decoration: none;
 }
-.mark img { display: block; width: 1.5rem; height: 1.5rem; flex: 0 0 auto; }
+.mark img { display: block; width: 1.75rem; height: 1.75rem; flex: 0 0 auto; }
 
 .bar-foot { color: var(--text-soft); font-size: 0.85rem; }
 

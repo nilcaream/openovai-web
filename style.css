@@ -404,6 +404,14 @@ table.whose td:nth-child(2) { white-space: nowrap; }  /* the whose column is one
 /* A recorded media figure: the shot at its own size, never wider than the column, the caption under it. */
 .shot { margin-inline: 0; margin-bottom: 0; }
 .shot img { display: block; max-width: 100%; height: auto; }
+/* A shot of the ovai page comes as a light and a dark file; the one matching the site's theme shows. */
+.shot > a.dark { display: none; }
+:root[data-theme="dark"] .shot > a.light { display: none; }
+:root[data-theme="dark"] .shot > a.dark { display: inline; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .shot > a.light { display: none; }
+  :root:not([data-theme="light"]) .shot > a.dark { display: inline; }
+}
 .shot figcaption { font-size: 0.92rem; color: var(--text-soft); margin-top: 0.5rem; }
 
 /* A diagram in words: a terminal box that is not a command. */

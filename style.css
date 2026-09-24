@@ -401,6 +401,11 @@ table.whose td:nth-child(2) { white-space: nowrap; }  /* the whose column is one
 .media b { display: block; font-family: var(--mono); font-size: 0.8rem; color: var(--mark-firm); margin-bottom: 0.25rem; }
 .media figcaption { font-size: 0.92rem; }
 
+/* A recorded media figure: the shot at its own size, never wider than the column, the caption under it. */
+.shot { margin-inline: 0; margin-bottom: 0; }
+.shot img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line-firm); border-radius: 4px; }
+.shot figcaption { font-size: 0.92rem; color: var(--text-soft); margin-top: 0.5rem; }
+
 /* A diagram in words: a terminal box that is not a command. */
 .diagram pre { font-size: 0.8rem; line-height: 1.25rem; }
 

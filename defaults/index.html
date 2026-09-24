@@ -117,6 +117,16 @@
       instance. The default for both seats is <code>opus</code>, and no seat is given an effort
       level: the harness's own default applies.
     </p>
+    <p>
+      Fast mode, the harness's <code>/fast</code>, runs Opus faster at a higher price per token,
+      billed from the account's usage credits. It is off for every seat, whatever the User's own
+      setting says: a seat runs in print mode, where the harness allows fast mode only when the
+      settings it is started with say <code>"fastMode": true</code>, and that setting switches it on
+      for the whole session rather than making it available. At the command line a person turns fast
+      mode on for the one session in front of them. Here the Leader starts Workers on demand, and ten
+      of them on fast mode could run up a large bill within minutes. Fast mode may come back later as
+      a choice per Worker, beside its model and effort.
+    </p>
   </section>
 
   <section class="wrap prose">

@@ -63,12 +63,12 @@
     <h2 id="birth">What a session may do from birth</h2>
     <p>
       A fresh instance seeds two settings files once and never touches them again, but for two
-      things: an update wires the compound hook, below, into a settings file that lacks it, and
-      turns the harness's commit attribution off in one that says nothing about it. It adds no
-      rule. What a fresh instance is born allowing:
+      things: an update wires the two hooks, <a href="#compound">below</a>, into a settings file
+      that lacks them, and turns the harness's commit attribution off in one that says nothing
+      about it. It adds no rule. What a fresh instance is born allowing:
     </p>
     <ul>
-      <li>the instance's own tool server, so the eleven tools cost one rule;</li>
+      <li>the instance's own tool server, so the fourteen tools cost one rule;</li>
       <li>Claude Code's <code>AskUserQuestion</code>, a session asking you a question, which is a
         card on its panel already;</li>
       <li>reading any file;</li>
@@ -142,7 +142,8 @@
     </figure>
     <p>
       A command whose first word is a path or a variable gets no button, and neither does a write
-      outside the instance, nor a tool the server serves, which is granted already. A run that
+      outside the instance &mdash; <code>/tmp</code> included, which is why a Worker keeps its files
+      inside the instance &mdash; nor a tool the server serves, which is granted already. A run that
       ends before it was answered takes its question down with it. After ten minutes the server
       tells the Leader once that somebody is waiting on their panel; and while the page is not
       visible, the browser can notify you that a card appeared, if you turned that on.
@@ -153,14 +154,18 @@
       is longer than 80 characters or holds <code>| &amp; ; &lt; &gt; $</code>, a backtick or a
       newline &mdash; a one-off nobody would keep as a rule &mdash; and Allow and Deny answer the
       call. The rules composed for the sides of a compound, <a href="#compound">below</a>, are
-      offered whatever the command's length. Once a card is answered after a wait,
-      the panel row that says how long it waited shows the call's first line; double-click it for
-      the whole call.
+      offered whatever the command's length, and none is drawn from inside a backtick or
+      <code>$(</code> span. A rule naming one file, <code>Edit(/knowledge/common.md)</code>, is never
+      offered as Always: it is the Leader's to settle, <a href="#rules">in words</a>. Once a card is
+      answered after a wait, the panel row that says how long it waited &mdash; <code>Waited 233
+      seconds for permission: &hellip;</code> &mdash; shows the call's first line; double-click it
+      for the whole call.
     </p>
     <p>
       A question a session asks you, Claude Code's <code>AskUserQuestion</code>, is a card of its
-      own: the question and its choices on the session's panel, answered there. It is allowed from
-      birth, since the question is already the thing you are asked.
+      own, answered on the session's panel as a form: a rule between questions, the options in a
+      column, Other as the last option with a line of its own to type in, and Send and Cancel. It
+      is allowed from birth, since the question is already the thing you are asked.
     </p>
   </section>
 
@@ -169,7 +174,8 @@
     <p>
       Claude Code matches a Bash rule against a command from its first character, so an instance
       that allows <code>git</code>, <code>cd</code> and <code>npm</code> would still be stopped on
-      <code>cd app &amp;&amp; npm test</code>: no one rule holds the whole. Two things meet that.
+      <code>cd app &amp;&amp; npm test</code>: no one rule holds the whole. Two hooks and the card meet
+      that.
     </p>
     <p>
       The card offers one rule per side: <code>cd app &amp;&amp; npm test &amp;&amp; make build</code>
@@ -179,20 +185,38 @@
       and the rest of its built-in read-only set).
     </p>
     <p>
-      And a hook runs before every Bash call, before any question is asked. It reads the command
-      as text, cuts it into sides the way the card does, and if every side is a command the
-      instance's own allow list holds, and no side is one its deny list refuses, it answers
-      <em>allow</em> &mdash; so a compound of allowed commands runs without a stop. Anything else it
-      answers nothing, and the harness asks as it always did. It never answers <em>deny</em>:
-      refusing is the rules' job. Where reading the command as text could hide a program &mdash; a
-      substitution, a here-document, a quote that is not closed &mdash; nothing is answered, which
-      is the safe way round. The list is read from the settings on every call, so a rule you
-      settle later is honoured at the next command, and a rule you take out stops counting.
+      And a hook, <code>lib/hooks/compound.mjs</code>, runs before every Bash call, a subagent's
+      included, before any question is asked. It reads the command as text and cuts it into sides
+      the way the card does:
+    </p>
+    <ul>
+      <li>Every side a command the instance's own allow list holds, and no side one its deny list
+        refuses: it answers <em>allow</em>, so a compound of allowed commands runs without a
+        stop.</li>
+      <li>The same, but with a backtick or <code>$(</code> in it, which Claude Code would read as a
+        program hidden in the line: it refuses, with a reason the session reads &mdash; put the
+        pattern in a file for <code>grep -f</code>, or the steps in a script &mdash; and the session
+        spells the command again. You are not asked.</li>
+      <li>More than one plain command &mdash; a pipe, a chain, a loop, an assignment,
+        <code>$(</code>, a here-document &mdash; with a side no rule allows: it refuses, with a
+        reason that says to create the script with the Write tool, in <code>temp/</code> or on the
+        desk, and run only <code>bash &lt;file&gt;</code>. The session writes the script and runs
+        it, and the card you are asked on, if any, shows one short line.</li>
+      <li>One plain command no rule allows, a line with a side the deny list refuses, and a line
+        the hook cannot read, such as a quote that is not closed: it answers nothing, and the
+        harness asks. Such a line is never sent toward a script, so a new program run on its own is
+        still yours to answer.</li>
+    </ul>
+    <p>
+      The list is read from the settings on every call, so a rule you settle later is honoured at
+      the next command, and a rule you take out stops counting.
     </p>
     <p>
-      A Worker keeps its own calls short. Anything longer than one command &mdash; a pipe, a chain,
-      a loop &mdash; it writes as a one-time script on its own desk and runs by its interpreter, so
-      the card you are asked on shows one short line, and the script stays there to read.
+      A subagent a session starts with the Agent tool is given none of the instance's rules by
+      Claude Code. A second hook, <code>lib/hooks/subagent.mjs</code>, runs when one starts and
+      hands it <code>customization/common.md</code>, word for word, in the frame a seat reads it
+      in; the role files stay with the seats, and with no <code>common.md</code> it is handed
+      nothing.
     </p>
   </section>
 
@@ -205,7 +229,9 @@
       <code>permission</code> once per rule: a rule as Claude Code's reference spells it &mdash;
       <code>Bash(git push:*)</code> for a command by prefix, <code>Bash(the whole command)</code>
       for one command exactly, <code>Edit(/src/**)</code> or <code>Read(/src/**)</code> for a
-      directory under the instance root, <code>Read(//dir/**)</code> for one outside it,
+      directory under the instance root, <code>Edit(/knowledge/common.md)</code> or
+      <code>Read(/notes/plan.md)</code> for one file there, <code>Read(//dir/**)</code> for a
+      directory outside it,
       <code>WebFetch(domain:host)</code> for a host, <code>WebSearch</code>,
       <code>mcp__server__tool</code> or <code>mcp__server__*</code> for a server's tools,
       <code>Agent(Name)</code> for a subagent, or a bare tool name for every use of it &mdash; and

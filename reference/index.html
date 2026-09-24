@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reference — OpenOv AI</title>
-<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance root file by file, the keys of openovai.json, the eleven tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
+<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance root file by file, the keys of openovai.json, the fourteen tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
 <link rel="canonical" href="https://openov.ai/reference/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/reference/">
@@ -52,7 +52,7 @@
     <h1>Reference</h1>
     <p class="lead">
       Everything with a name, in tables. The two commands, the instance root, the configuration
-      keys, the eleven tools and what they take, the events a session receives, the rules an
+      keys, the fourteen tools and what they take, the events a session receives, the rules an
       instance is born with, the log, the plugin contract, and what it needs to run.
     </p>
     <p>
@@ -80,8 +80,8 @@
       <table>
         <thead><tr><th>form</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.18.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
-          <tr><td><code>openovai 0.18.0 &hellip;</code><br><code>openovai --version 0.18.0 &hellip;</code></td><td>that release</td></tr>
+          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.19.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
+          <tr><td><code>openovai 0.19.0 &hellip;</code><br><code>openovai --version 0.19.0 &hellip;</code></td><td>that release</td></tr>
           <tr><td><code>openovai [version] <wbr>--root &hellip; <wbr>--user &hellip; <wbr>--leader &hellip; <wbr>--leader-model &hellip; <wbr>--worker-model &hellip; <wbr>--port &hellip; <wbr>--auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
         </tbody>
       </table>
@@ -98,8 +98,8 @@
           <tr><td><code>ovai help</code></td><td>the usage; <code>--help</code> and <code>-h</code> the same</td></tr>
           <tr><td><code>ovai status</code></td><td><code>running at &lt;url&gt; (pid, since)</code>, or <code>not running</code>; reads <code>runtime.json</code> and then tries the address, so a record a killed server left behind is found out by asking</td></tr>
           <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, and the runtime row: the pinned Node.js and Claude Code and the directory they live in</td></tr>
-          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address, <code>http://127.0.0.1:&lt;port&gt;</code>; a taken port is named with the process holding it; a server already running is reported and left alone</td></tr>
-          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, with <code>park.timeout</code> as the deadline &mdash; then closes the server; it waits for the sessions and nothing else, and anything else a seat left running is named with one line that ends all of them; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
+          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address, <code>http://127.0.0.1:&lt;port&gt;</code>; a taken port is named with the process holding it; a server already running is reported and left alone. The server and every seat it starts drop what Claude Code put on the session it was typed in &mdash; its id, pid, entry point, effort, messaging socket and token &mdash; and the shell's <code>PWD</code> and <code>OLDPWD</code></td></tr>
+          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every Worker is closed and the Leader writes its desk and stops, with <code>park.timeout</code> as the deadline &mdash; then closes the server; it waits for the sessions and nothing else, and anything else a seat left running is named with one line that ends all of them; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
           <tr><td><code>ovai restart</code></td><td>stop, then start; prints the new address</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from the scaffold; refuses a name a tool cannot have, a built-in name, and a name whose file is already there</td></tr>
           <tr><td><code>ovai login</code></td><td>under <code>--auth login</code>, opens a browser once and keeps the credential inside the instance; refuses under <code>inherit</code> and says so</td></tr>
@@ -165,7 +165,7 @@
           <tr><td><code>schema</code>, <code>createdAt</code></td><td>written by the installer</td></tr>
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> &mdash; percent</td></tr>
           <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> &mdash; minutes</td></tr>
-          <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> &mdash; tokens</td></tr>
+          <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> &mdash; tokens; <code>step</code> is the Leader's own, a Worker's size reaching the Leader at the warning and the error only</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code> &mdash; seconds</td></tr>
           <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code> &mdash; minutes</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code> &mdash; seconds; <a href="#typing">the typing hold</a></td></tr>
@@ -237,27 +237,31 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
   </section>
 
   <section class="wrap prose">
-    <h2 id="tools">The eleven tools</h2>
+    <h2 id="tools">The fourteen tools</h2>
     <p>
       Served over <code>POST /mcp/&lt;secret&gt;</code>, one secret per process, and named
-      <code>mcp__openovai__&lt;tool&gt;</code> to the session. Seven go to every seat; four are the
-      Leader's, and a Worker asking for one is refused in words.
+      <code>mcp__openovai__&lt;tool&gt;</code> to the session. Five go to every seat, one is the
+      Workers' and eight are the Leader's; a seat asking for one that is not its own is refused in
+      words.
     </p>
     <div class="table">
       <table>
         <thead><tr><th>tool</th><th>who</th><th>arguments</th><th>refused when</th></tr></thead>
         <tbody>
-          <tr><td><code>message</code></td><td>everyone</td><td><code>to</code> (who), <code>text</code> (what); both required. The Leader's alone: <code>checkpoint</code> (a whole number, at least 1), on an order to a Worker &mdash; after that many tool calls the server tells the Worker to report where it stands and carry on, and tells the Leader; it replaces a checkpoint still pending</td><td>the other seat has no process; a seat held by the quota gate has it and reads it at the reset; a <code>checkpoint</code> from a Worker, or one that is not a whole number of at least 1</td></tr>
+          <tr><td><code>message</code></td><td>everyone</td><td><code>to</code> (who), <code>text</code> (what); both required. The Leader's alone: <code>checkpoint</code> (a whole number, at least 1), on an order to a Worker &mdash; after that many tool calls the server tells the Worker to report where it stands and carry on, and tells the Leader; it replaces a checkpoint still pending; <code>urgent</code> (boolean) &mdash; the message reaches a Worker mid-turn, at its next tool call, rather than after the turn</td><td>the other seat has no process; a seat held by the quota gate has it and reads it at the reset; a <code>checkpoint</code> or <code>urgent</code> from a Worker, or a checkpoint that is not a whole number of at least 1</td></tr>
           <tr><td><code>room</code></td><td>everyone</td><td>none</td><td>&mdash;</td></tr>
           <tr><td><code>index</code></td><td>everyone</td><td><code>tags</code> (left out: the header &mdash; how many notes, when the directory last changed, every tag with its count, and any file it could not read; given: the notes carrying those tags, the ones carrying more of what was asked first)</td><td>&mdash;; a file it cannot read is named in the header rather than failing the call</td></tr>
           <tr><td><code>validate</code></td><td>everyone</td><td>none</td><td>&mdash;; every problem is one line of the answer, naming the rule it breaks</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td><code>title</code> (one line, up to 120 characters), <code>status</code> (one line, up to 80, no <code>|</code>); both required; writes the header line alone, and the body below it is edited in place</td><td>an empty title or status, a newline in either, a <code>|</code> in status, any other key</td></tr>
-          <tr><td><code>restart_session</code></td><td>everyone</td><td>none</td><td>the desk was not written since the event that asked, or since the turn began</td></tr>
-          <tr><td><code>stop_session</code></td><td>everyone</td><td>none</td><td>the same</td></tr>
-          <tr><td><code>park</code></td><td>Leader</td><td><code>interrupt</code> (boolean, default false), <code>deadline</code> (seconds, at least 5; default <code>park.deadline</code>)</td><td>a Worker calling it</td></tr>
-          <tr><td><code>hire</code></td><td>Leader</td><td><code>name</code> (somebody who has a desk and stopped; left out, the roster names a new Worker), <code>model</code> (when not the usual one)</td><td>the quota gate holds hires; the Leader's own name; a name whose directory is under <code>desks/</code> without a desk file in it</td></tr>
+          <tr><td><code>done</code></td><td>Worker</td><td><code>note</code> (one line, up to 200 characters, optional); the Leader is told with a <code>done</code> event and decides whether the Worker stops; it ends nothing, and the report still goes as a message</td><td>a note of more than one line or 200 characters; the Leader calling it</td></tr>
+          <tr><td><code>restart_session</code></td><td>Leader</td><td>none; ends the Leader's own process and starts a successor on its desk</td><td>the desk was not written since the event that asked, or since the turn began; a Worker calling it</td></tr>
+          <tr><td><code>stop_session</code></td><td>Leader</td><td>none; ends the Leader's own process</td><td>the same</td></tr>
+          <tr><td><code>stop_worker</code></td><td>Leader</td><td><code>name</code> (required), <code>interrupt</code> (boolean, default false: cut the turn the Worker is on first), <code>deadline</code> (seconds, at least 5; default 5 minutes after an interrupt, <code>park.deadline</code> otherwise). The Worker is told its session is closing, writes its desk, and goes when that turn is over; with no desk by the deadline, it goes with its desk as last written. Answers at once; the outcome comes as a <code>stopped</code> event</td><td>a name that is not one; the Leader's own name; a name with no desk; a Worker not running or already ending; while the room is parking; while the server is stopping; a deadline that is not a whole number of at least 5</td></tr>
+          <tr><td><code>restart_worker</code></td><td>Leader</td><td>as <code>stop_worker</code>; then a successor starts on the desk with whatever was queued for the Worker</td><td>as <code>stop_worker</code></td></tr>
+          <tr><td><code>park</code></td><td>Leader</td><td><code>interrupt</code> (boolean, default false), <code>deadline</code> (seconds, at least 5; default <code>park.deadline</code>); every running Worker is closed</td><td>a Worker calling it</td></tr>
+          <tr><td><code>hire</code></td><td>Leader</td><td><code>name</code> (somebody who has a desk and stopped; left out, the roster names a new Worker), <code>model</code> (when not the usual one; on a desk a Worker had, it runs on that model and the model is kept for the desk from then on, and without one the desk's own stands)</td><td>the quota gate holds hires; the Leader's own name; a name whose directory is under <code>desks/</code> without a desk file in it</td></tr>
           <tr><td><code>retire</code></td><td>Leader</td><td><code>name</code> (required): a Worker that has stopped</td><td>a name that is not one; the Leader's own; a name with no desk; a Worker still running; the server stopping</td></tr>
-          <tr><td><code>permission</code></td><td>Leader</td><td><code>rule</code> (as Claude Code's reference spells it: <code>Bash(word:*)</code>, <code>Bash(the whole command)</code>, <code>Edit(/dir/**)</code>, <code>Read(/dir/**)</code>, <code>Read(//dir/**)</code>, <code>WebFetch(domain:host)</code>, <code>WebSearch</code>, <code>mcp__server__tool</code>, <code>Agent(Name)</code>, or a bare tool name), <code>why</code> (what the User reads beside it); with neither, answers what the instance holds and what is pending</td><td>a rule Claude Code would not read; a rule already settled (say it to the User); a rule already asked on the panel; no <code>why</code></td></tr>
+          <tr><td><code>permission</code></td><td>Leader</td><td><code>rule</code> (as Claude Code's reference spells it: <code>Bash(word:*)</code>, <code>Bash(the whole command)</code>, <code>Edit(/dir/**)</code>, <code>Read(/dir/**)</code>, <code>Edit(/dir/file)</code> or <code>Read(/dir/file)</code> for one file, <code>Read(//dir/**)</code>, <code>WebFetch(domain:host)</code>, <code>WebSearch</code>, <code>mcp__server__tool</code>, <code>Agent(Name)</code>, or a bare tool name), <code>why</code> (what the User reads beside it); with neither, answers what the instance holds and what is pending</td><td>a rule Claude Code would not read; a rule already settled (say it to the User); a rule already asked on the panel; no <code>why</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -277,24 +281,29 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     <p>
       A frame the server sets itself, <code>&lt;server-event type="&hellip;"&gt;</code>, queued like a
       turn and ahead of the rest when it has to be. Nothing inside a message can pose as one. There
-      are twelve.
+      are sixteen.
     </p>
     <div class="table">
       <table>
         <thead><tr><th>type</th><th>attributes</th><th>to</th><th>what the session does</th></tr></thead>
         <tbody>
-          <tr><td><code>context</code></td><td><code>stage</code> (<code>warning</code> | <code>error</code>), the size reached, and all three sizes</td><td>the seat whose conversation as sent passed the warning size, and again at every step above it</td><td>below the error size: carry on, keep the desk current, plan its own restart. From the error size: <code>write_desk</code>, <code>restart_session</code>. Nothing is enforced at any size</td></tr>
+          <tr><td><code>context</code></td><td><code>stage</code> (<code>warning</code> | <code>error</code>), the size reached, and all three sizes</td><td>the Leader, when its own conversation as sent passed the warning size, and again at every step above it; measured at every request of a turn</td><td>below the error size: carry on, keep the desk current, plan its own restart. From the error size: <code>write_desk</code>, <code>restart_session</code>. Nothing is enforced at any size</td></tr>
+          <tr><td><code>context</code></td><td><code>who</code>, <code>stage</code>, the size reached, the error size</td><td>the Leader, about a Worker, at the warning size and at the error size only; the Worker is not told</td><td>at the error size, <code>restart_worker</code> at a moment that suits the Worker's work</td></tr>
           <tr><td><code>restarted</code></td><td>&mdash;</td><td>the successor, as its first frame, behind whatever was waiting for the seat and in the same turn as it</td><td>goes on from what the desk says to do next, and never redoes what it says is done; a successor with nothing in flight says nothing at all</td></tr>
-          <tr><td><code>quota-low</code></td><td><code>stage</code> (<code>warning</code> | <code>critical</code>), <code>window</code> (<code>5h</code> | <code>7d</code> | <code>7d-fable</code>), <code>resets</code>; <code>model="fable"</code> for fable's own window; <code>interrupted="true"</code> when the turn was stopped for it</td><td>every running seat at the first stage, seats on that model only for fable's window</td><td>a Worker writes its desk and stops; the Leader tells the User and stays; at the second stage a Worker still running is interrupted and told again</td></tr>
-          <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or let it stop</td></tr>
-          <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>any seat at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way, whatever else it is told in between</td></tr>
-          <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>every Worker, from <code>park</code>; the Leader too from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
+          <tr><td><code>quota-low</code></td><td><code>stage</code> (<code>warning</code> | <code>critical</code>), <code>window</code> (<code>5h</code> | <code>7d</code> | <code>7d-fable</code>), <code>resets</code>; <code>model="fable"</code> for fable's own window</td><td>every running seat at the first stage, seats on that model only for fable's window; the Leader at the second</td><td>a Worker keeps its desk current and carries on; the Leader tells the User, stops the Workers whose work can wait, and stays. At the second stage every Worker on the window is interrupted and closed instead, and the Leader's turns are held</td></tr>
+          <tr><td><code>quota-reset</code></td><td><code>window</code>; <code>model</code> when it is one model's own</td><td>the Leader, when a window that reached a stage has reset; a Leader not running is started by it. A park forgets the resets to come, and a server restart before the reset loses them</td><td>brings back the Workers that stopped on the window, with <code>hire</code> on their desks</td></tr>
+          <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or <code>stop_worker</code> it; at 55 the server closes it</td></tr>
+          <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>the Leader at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way, whatever else it is told in between</td></tr>
+          <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>the Leader, from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
+          <tr><td><code>closing</code></td><td><code>why</code> (<code>stop</code> | <code>restart</code> | <code>idle</code> | <code>quota</code> | <code>park</code>); for a spent window also <code>window</code> and <code>resets</code>; <code>interrupted="true"</code> when the turn was cut for it; <code>deadline</code> in seconds when it has one</td><td>a Worker, from <code>stop_worker</code>, <code>restart_worker</code>, <code>park</code>, at 55 minutes idle, and when its window is spent. Read at the start of a turn of its own, never into one under way</td><td>writes its desk with <code>write_desk</code> as the last thing in that turn; the session ends when the turn is over. With no desk by the deadline &mdash; counted from the turn that read it, and never cutting a turn &mdash; it ends with the desk as last written: 5 minutes for idle and a spent window, the park's own for a park. A later message does not take a close back; a word to a Worker closed for idling does. A close whose turn the service refuses ends at once</td></tr>
+          <tr><td><code>done</code></td><td><code>who</code>; the note, when there is one, is the body</td><td>the Leader, when a Worker calls <code>done</code></td><td>gives the Worker the next thing, or <code>stop_worker</code> when nothing more is wanted</td></tr>
+          <tr><td><code>died</code></td><td><code>who</code>; the service's words are the body</td><td>the Leader, when the service refused a turn of a Worker that has worked before; once, and not again until the Worker has answered a turn</td><td>the Worker keeps running; a failure that passes goes away at the next message, one that stays is the User's to hear</td></tr>
           <tr><td><code>admin-closed</code></td><td><code>ended</code>, <code>changed</code> (how many of the configuration files the session watched changed); the body names those files and what moved in them &mdash; marketplaces, plugins, skills, MCP servers, connectors, each permission rule (masked), and any other settings key by name &mdash; and nothing of what the files hold</td><td>the Leader, at the server's next start after an <code>ovai claude</code> session ended</td><td>told, not asked; nothing waits on it. Reads what matters before handing work out: a permission rule that moved changes what a Worker may do. The telling is the server's, never the admin session's</td></tr>
           <tr><td><code>checkpoint</code></td><td><code>calls</code>; to the Leader also <code>who</code></td><td>a Worker, once it has made the number of tool calls the Leader set on its order with <code>checkpoint</code>; the Leader at the same moment</td><td>the Worker reports to the Leader where the work stands, done or not, what is left and how many more calls it expects, then carries on unless told otherwise; the Leader is told, not asked</td></tr>
           <tr><td><code>undelivered</code></td><td><code>to</code>, and the words as they were sent</td><td>the sender of a message whose addressee's session ended before reading it; a Leader not running is started by it</td><td>says it again, to somebody else, or later</td></tr>
           <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
           <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
-          <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code></td><td>the Leader, when a Worker stopped idle or into an exhausted window</td><td>notes it; <code>hire</code> brings it back when the work is still wanted</td></tr>
+          <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code>: <code>stop</code> (<code>stop_worker</code>), <code>stop-deadline</code> (the same, with no desk in time), <code>restart</code> (<code>restart_worker</code>; the successor is running), <code>idle</code>, <code>idle-forced</code>, <code>quota</code>, <code>first-turn-failed</code> (the service refused the Worker's very first turn; its words are the body)</td><td>the Leader, when a Worker has gone</td><td>notes it; <code>hire</code> brings it back when the work is still wanted. After <code>first-turn-failed</code>, tells the User what the service said before hiring on that desk again</td></tr>
           <tr><td><code>permission</code></td><td><code>who</code>, <code>waiting</code>, and the call</td><td>the Leader, once a Worker has waited <code>permission.wait</code> minutes on a card; also when a rule the Leader asked for was settled</td><td>tells the User somebody is waiting, or gives the work to somebody else</td></tr>
         </tbody>
       </table>
@@ -303,7 +312,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
       A change to <code>customization/</code> or to <code>knowledge/common.md</code> reaches the
       sessions started after it and no others: there is no frame that hands a running session a
       change to its standing instructions. When something has to reach a session that is running,
-      tell it in words, or stop the seat and hire it again.
+      tell it in words, or restart it: <code>restart_worker</code> for a Worker.
     </p>
   </section>
 
@@ -311,21 +320,21 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     <h2 id="rules">The seeded permission rules</h2>
     <p>
       <code>.claude/settings.json</code>, written once at install. Every path rule starts with
-      <code>/</code>, anchored at the instance root. An update adds no rule; it wires the compound
-      hook into a file that lacks it and turns commit attribution off in one that says nothing about
+      <code>/</code>, anchored at the instance root. An update adds no rule; it wires the two hooks
+      into a file that lacks them and turns commit attribution off in one that says nothing about
       it.
     </p>
     <div class="table">
       <table>
         <thead><tr><th>list</th><th>rule</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the eleven tools and every plugin</td></tr>
+          <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the fourteen tools and every plugin</td></tr>
           <tr><td>allow</td><td><code>AskUserQuestion</code></td><td>a session asking you a question: the question is itself a card on its panel, answered there</td></tr>
           <tr><td>allow</td><td><code>Read(/**)</code></td><td>reading any file</td></tr>
           <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
           <tr><td>allow</td><td><code>Edit(/knowledge/**)</code></td><td>every seat writes what the workspace knows, where it found it out</td></tr>
           <tr><td>allow</td><td><code>Edit(/desks/&lt;Leader&gt;/**)</code></td><td>the Leader's desk directory; every Worker hired gets the same pair for theirs, withdrawn at retire</td></tr>
-          <tr><td>allow</td><td>one <code>Bash(&hellip;:*)</code> each for <code>git</code>, <code>mkdir</code>, <code>cd</code>, <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>, <code>cmp</code>, <code>sha256sum</code>, <code>grep</code>, <code>find</code>, <code>sed</code>, <code>awk</code>, <code>head</code>, <code>tail</code>, <code>wc</code>, <code>echo</code>, <code>chmod</code>, <code>touch</code>, <code>curl</code>, <code>npm</code></td><td>a seat's ordinary shell commands, matched by the command from its first character &mdash; a <code>git -C</code> spelling asks; a <code>cd &hellip; &amp;&amp; &hellip;</code> compound is let through by the hook when every side is allowed and none denied</td></tr>
+          <tr><td>allow</td><td>one <code>Bash(&hellip;:*)</code> each for <code>git</code>, <code>mkdir</code>, <code>cd</code>, <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>, <code>cmp</code>, <code>sha256sum</code>, <code>grep</code>, <code>find</code>, <code>sed</code>, <code>awk</code>, <code>head</code>, <code>tail</code>, <code>wc</code>, <code>echo</code>, <code>chmod</code>, <code>touch</code>, <code>curl</code>, <code>npm</code></td><td>a seat's ordinary shell commands, matched by the command from its first character &mdash; a <code>git -C</code> spelling asks; a <code>cd &hellip; &amp;&amp; &hellip;</code> compound is let through by the hook when every side is allowed and none denied, and refused with a reason, toward a script, when a side is one no rule allows</td></tr>
           <tr><td>ask</td><td><code>Edit(/customization/**)</code></td><td>a session that would rewrite what every session here is told stops for your press &mdash; every seat, the Leader with the rest, since one settings file serves them all</td></tr>
           <tr><td>ask</td><td><code>Edit(/knowledge/common.md)</code></td><td>narrower than the allow above: the one note handed to every session at its start, while the rest of <code>knowledge/</code> stays open to write</td></tr>
           <tr><td>deny</td><td>the instance's own account files</td><td>under <code>.local/</code></td></tr>
@@ -335,8 +344,11 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     </div>
     <p>
       Also seeded: <code>attribution</code> with an empty <code>commit</code> and <code>pr</code> and
-      <code>sessionUrl</code> false, so a commit says what its message says; and the hook
-      <code>lib/hooks/compound.mjs</code> before every Bash call. The instance's Claude Code home
+      <code>sessionUrl</code> false, so a commit says what its message says; the hook
+      <code>lib/hooks/compound.mjs</code> before every Bash call, a subagent's included; and the hook
+      <code>lib/hooks/subagent.mjs</code> when a subagent starts, which hands it
+      <code>customization/common.md</code> in the frame a seat reads it in, and nothing when there is
+      none. The instance's Claude Code home
       turns the built-in memory off.
     </p>
   </section>
@@ -352,7 +364,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     </p>
     <figure class="term">
 <pre>&lt;moment&gt; &lt;event&gt; &lt;seat&gt; &lt;id&gt; &lt;text…&gt;
-2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.18.0
+2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.19.0
 2026-09-20T02:15:41.530+02:00 called Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk
 2026-09-20T02:15:41.532+02:00 tool Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms
 2026-09-20T02:15:44.210+02:00 queued Paul - message #54, 1 waiting
@@ -364,7 +376,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
         <thead><tr><th>column</th><th>what</th></tr></thead>
         <tbody>
           <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page and the desks keep</td></tr>
-          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
+          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>died</code>, <code>closed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
           <tr><td>seat</td><td>the session the row is about; <code>-</code> for the server itself</td></tr>
           <tr><td>id</td><td>the tool-use id on <code>called</code>, <code>tool</code> and <code>failed</code>, else <code>-</code>; <code>grep toolu_&hellip; runtime.log</code> is a call's whole life, and the three rows name the tool in full, as Claude Code does</td></tr>
         </tbody>
@@ -374,7 +386,8 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
       The pid, the host, the user and the version are on the <code>started</code> row and on no
       other. A session's process gone is one <code>stopped</code> row after the last row of its
       calls, saying what it ended as &mdash; <code>stop</code>, <code>restart</code>,
-      <code>idle</code>, <code>park</code>, <code>idle-forced</code>, <code>park-deadline</code>
+      <code>idle</code>, <code>quota</code>, <code>park</code>, <code>idle-forced</code>,
+      <code>stop-deadline</code>, <code>park-deadline</code>, <code>first-turn-failed</code>
       &mdash; or, for one that ended on its own, how: <code>exit 1</code>, <code>SIGKILL</code>. The
       server's own going out is the last row of its run, <code>stopped - - SIGTERM</code>.
     </p>
@@ -388,6 +401,9 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
       <code>held</code> says a turn waits, for a quota window or while you type on the seat's
       panel (<a href="#typing">the typing hold</a>), and <code>released</code> that it was let go.
       <code>checkpoint</code> says a Worker reached the number of calls the Leader set.
+      <code>died</code> says the service refused a turn, in the service's own words, and
+      <code>closed</code> that a close reached its deadline with no desk written, and when the desk
+      last was.
       <code>leftovers</code> says what a seat left running was ended with its session.
     </p>
   </section>
@@ -410,7 +426,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
         <thead><tr><th>not served when</th></tr></thead>
         <tbody>
           <tr><td>the name is not a letter followed by letters, digits and hyphens, up to 32 in all</td></tr>
-          <tr><td>the name is one of the eleven the server serves itself</td></tr>
+          <tr><td>the name is one of the fourteen the server serves itself</td></tr>
           <tr><td>the file does not load</td></tr>
           <tr><td>the file loads and lacks one of the three exports</td></tr>
         </tbody>

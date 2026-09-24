@@ -52,8 +52,9 @@
     <h1>The Leader and the Workers</h1>
     <p class="lead">
       Three actors. The User steers the team through the Leader, in plain words. The Leader
-      hires, delegates, relays, settles what the instance may do and keeps what every session here
-      is given; it does no project work. Workers do the work, one task each, and stop when it ships.
+      hires, delegates, relays, stops and restarts, settles what the instance may do and keeps what
+      every session here is given; it does no project work. Workers do the work, one task each, and
+      say when it is done.
     </p>
   </section>
 
@@ -66,13 +67,14 @@
         what the instance may do are yours, settled in your words on a card.</dd>
       <dt>Leader</dt>
       <dd>One session, always there. It takes your words, hires Workers by name, briefs them,
-        takes their questions and reports, decides what reaches you, files a finished desk away
-        and parks the room when you say the day is over. When it is not running, the panel shows
+        takes their questions and reports, decides what reaches you, stops and restarts them,
+        files a finished desk away and parks the room when you say the day is over. When it is not running, the panel shows
         its history, and the next thing addressed to it &mdash; a line you type, a Worker's message,
         a server event &mdash; starts it on its desk.</dd>
       <dt>Worker</dt>
       <dd>A named session on a desk of its own, with one task. It keeps its desk written as the
-        work moves, reports to the Leader with a message, and stops when the task ships. A
+        work moves, reports to the Leader with a message, and says with <code>done</code> when
+        the task has shipped; ending its session is the Leader's and the server's, never its own. A
         Worker's panel lives with its process; hired again on the same desk it is back with its
         rows.</dd>
     </dl>
@@ -98,15 +100,27 @@
     <p>
       Then the Leader briefs: a message to the Worker, which comes back the moment the Worker has
       it, and the Leader's turn goes on. What the Worker says back arrives later, as a message the
-      other way, and the Leader decides what of it reaches you. While the Leader's turn runs, one
-      line above its panel reads what it is at &mdash; thinking, or the call it has out.
+      other way, and the Leader decides what of it reaches you. What cannot wait for the Worker's
+      turn to end goes <code>urgent</code>, and reaches it at its next tool call. While the Leader's
+      turn runs, one line above its panel reads what it is at &mdash; thinking, or the call it has
+      out.
+    </p>
+    <p>
+      What the Leader says to you is for you: a turn with nothing in it for you ends without a
+      word, a Worker's checkpoint stays between the Leader and the Worker, and where things stand
+      is the whole open list each time, never one written earlier. Inline code is kept for a name,
+      a path or a short command; quoted or proposed text is a blockquote, and longer code a fenced
+      block.
     </p>
     <p>
       Through the day the server tells the Leader what it needs to know and nothing more: that
       you typed on a Worker's panel, and what; that one Worker said something to another; that a
       Worker has been silent for 10 minutes, and again at 50; that a Worker has been waiting on a
-      card for ten minutes; that a Worker stopped idle, with its desk as it was last written; that
-      admin mode ran, when it ended, and which of the instance's configuration files changed
+      card for ten minutes; how much of its context a Worker has used, at the warning size and at
+      the size to restart it at; that a Worker says it is done; that a Worker has gone, and why
+      &mdash; stopped or restarted by the Leader, idle, a spent window &mdash; with its desk as it
+      was last written; that the service refused a Worker's turn, in the service's own words; that
+      a spent window has reset; that admin mode ran, when it ended, and which of the instance's configuration files changed
       &mdash; by name, and nothing of what is in them. Told, not asked: nothing waits on the Leader
       for any of it.
     </p>
@@ -122,9 +136,9 @@
       When a Worker's round is done the Leader retires it: <code>desks/&lt;Name&gt;/</code> is moved
       whole &mdash; the desk, the conversation, the persona &mdash; under <code>archive/</code>, the
       seat leaves the room and the page, and the name is the roster's again. Filed, never deleted.
-      One that may be wanted back on the same desk is stopped, not retired. And when you say this
-      is it for the day, in any words, the Leader parks the room: every Worker writes its desk and
-      stops.
+      One that may be wanted back on the same desk is stopped with <code>stop_worker</code>, not
+      retired. And when you say this is it for the day, in any words, the Leader parks the room:
+      every Worker is closed, writes its desk and goes.
     </p>
   </section>
 
@@ -136,16 +150,26 @@
       what the work produces &mdash; a design, a finding, notes &mdash; is kept beside the desk
       file. It writes the desk with a tool at every point the work moves, not only at the end,
       because a written desk is what survives and anything worked out and not written is gone
-      with the session.
+      with the session. Its files stay inside the instance: <code>/tmp</code> is outside it, so
+      every use would stop on a card for you.
     </p>
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
-      its own panel lands there and nowhere else. Seven tools go to every seat; the four that are
-      the Leader's &mdash; <code>park</code>, <code>hire</code>, <code>retire</code>,
+      its own panel lands there and nowhere else. Five tools go to every seat and one is the
+      Worker's own, <code>done</code>; the eight that are the Leader's &mdash;
+      <code>stop_session</code>, <code>restart_session</code>, <code>stop_worker</code>,
+      <code>restart_worker</code>, <code>park</code>, <code>hire</code>, <code>retire</code>,
       <code>permission</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
-      proposes it to the Leader. When the task ships the Worker reports, writes its desk and stops
-      with <code>stop_session</code>; the desk stays, and <code>hire</code> on its name brings it
-      back on the same desk if it is wanted again.
+      proposes it to the Leader. When the task ships the Worker reports, writes its desk and calls
+      <code>done</code>, with a one-line note if it likes; the Leader gives it the next thing or
+      stops it. The desk stays, and <code>hire</code> on its name brings it back on the same desk
+      if it is wanted again.
+    </p>
+    <p>
+      A Worker whose turn the service refuses &mdash; a model this Claude Code does not have, a
+      sign-in missing, the service down &mdash; is ended at once when it was its very first turn,
+      and the Leader is told what the service said. One that has worked before keeps running,
+      since the failure may pass, and the Leader is told once.
     </p>
   </section>
 
@@ -157,8 +181,9 @@
       it when the window resets. A message between the Leader and a Worker is one line on the
       Leader's panel and a full row on the Worker's; a message from one Worker to another reaches
       both, and lands on the Leader's panel too as <code>Paul &rarr; Jane: &hellip;</code> &mdash;
-      heard, not asked. A message whose markdown opens with a table, a list or a code block folds
-      behind one line; a double click opens it.
+      heard, not asked. A switch on the Leader's head hides these lines from its panel when you
+      would rather read the Leader alone. A message whose markdown opens with a table, a list or a
+      code block folds behind one line; a double click opens it.
     </p>
     <figure class="media">
       <b>[media 9]</b>
@@ -169,8 +194,8 @@
       When you type on a Worker's panel, the words are that Worker's own <code>&lt;user&gt;</code>
       turn &mdash; your authority, for a typed "go" &mdash; and the server tells the Leader the same
       moment: one line on the Leader's panel, <code>Ana &rarr; Paul: &hellip;</code>, and an event
-      to its process. The Leader hears what you typed as you typed it, and the Worker does not
-      have to pass it on.
+      to its process. The Leader hears what you typed as you typed it, with the whole row of every
+      reference you put in it, and the Worker does not have to pass it on.
     </p>
     <p>
       Every one of these arrives in a frame the server set &mdash; <code>&lt;user&gt;</code>,
@@ -182,13 +207,14 @@
   <section class="wrap prose">
     <h2 id="desks">Desks and handover</h2>
     <p>
-      A desk is a person. The desk file is edited in place, like any other file; its header line
+      A desk is a person, and each seat is told its desk and desk file as whole paths, the
+      instance root joined. The desk file is edited in place, like any other file; its header line
       is written with <code>write_desk</code> &mdash; a title, one line, what the seat is on; a
       status, one line, where it stands &mdash; and calling it is what says the desk is current.
       It is how the User and the Leader see what everybody is on without opening every panel.
     </p>
     <p>
-      A session is told how big it has grown, and decides for itself what to do about it. Past
+      The Leader is told how big it has grown, and decides for itself what to do about it. Past
       200,000 tokens in a request the server sends it a <code>context</code> event carrying the size
       it passed and the size it wraps up at, and tells it again every 20,000 above that &mdash; once
       per size, never twice for the same one. Nothing is ended for it: it carries on, keeps its desk
@@ -200,6 +226,13 @@
       the desk is the whole of what carried over, and the restart is in the log. Both
       <code>restart_session</code> and <code>stop_session</code> refuse until the desk was written
       after the event that asked, so the desk comes first, always.
+    </p>
+    <p>
+      A Worker is not told its size. The Leader is, naming the Worker, at 200,000 and at 300,000
+      only, and past 300,000 restarts it with <code>restart_worker</code> at a moment that suits the
+      work &mdash; between two steps, or after the report it owes. The Worker is told its session is
+      closing, writes its desk, and goes when that turn is over; its successor starts on the same
+      desk the same way.
     </p>
     <figure class="media">
       <b>[media 10]</b>
@@ -217,8 +250,9 @@
       desk, because the desk file is written by its session, and a model kept in there would be a
       model that session could raise for itself. It goes away with the desk. Leaving the model out
       writes nothing down, so changing the installed model moves everybody who was never named
-      one, from their next process. <code>ovai configuration</code> lists every desk with what it
-      resolves to.
+      one, from their next process. A model given at <code>hire</code> on a desk a Worker had
+      before runs it on that model and is kept for the desk from then on; without one, the desk's
+      own stands. <code>ovai configuration</code> lists every desk with what it resolves to.
     </p>
   </section>
 
@@ -226,16 +260,17 @@
     <h2 id="idle">Idle and quota, from the team's side</h2>
     <p>
       A Worker that has been silent is reported to the Leader at 10 and at 50 minutes. At 55 the
-      seat itself is told it goes cold at 60, and writes its desk and stops. A seat on a turn
-      &mdash; waiting on a card included &mdash; is never idle. What is not stopped by 60 is ended
-      with its desk as it was last written, and the Leader is told.
+      server closes it: it writes its desk and goes, and a desk not written within 5 minutes of the
+      turn that read the close is taken as it was last written. The Leader is told either way. A
+      seat on a turn &mdash; waiting on a card included &mdash; is never idle.
     </p>
     <p>
-      When a usage window nears its limit every running seat is told: a Worker writes its desk
-      and stops; the Leader tells you which window and when it resets, writes its desk and stays.
-      No Worker is hired until the reset. A Worker still mid-turn when the window is spent is
-      interrupted and told again &mdash; do not resume, write your desk and stop. After the reset the
-      Leader brings the Workers back with <code>hire</code> on their desks. The
+      When a usage window nears its limit every running seat is told: a Worker carries on; the
+      Leader tells you which window and when it resets, stops the Workers whose work can wait,
+      writes its desk and stays. No Worker is hired until the reset. When the window is spent, a
+      Worker on it is interrupted and closed &mdash; do not resume, write your desk. At the reset
+      the Leader is told, and started if it was stopped, and brings the Workers back with
+      <code>hire</code> on their desks. The
       <a href="/how-it-works/#quota">quota gate</a> has the stages and the thresholds.
     </p>
     <div class="callout">

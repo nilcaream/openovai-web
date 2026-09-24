@@ -114,7 +114,11 @@
       The terminal is yours again the moment the address is printed. The server starts the seats,
       is the only thing that writes to their stdin, serves the page from one event stream, serves
       the tools, and writes the log. If the port is already taken it says which process holds it,
-      with the pid; a server already running is reported with its address and left alone.
+      with the pid; a server already running is reported with its address and left alone. Typed
+      in a session's own shell, it hands that session on to nothing: the server and every seat it
+      starts drop what Claude Code put on the session &mdash; its id, pid, entry point, effort,
+      messaging socket and token &mdash; and the shell's <code>PWD</code> and
+      <code>OLDPWD</code>.
     </p>
     <p>
       Every row of <code>runtime.log</code> has the same four columns &mdash; the moment, the event,
@@ -122,8 +126,9 @@
       The three rows of one tool call share its id, so one <code>grep</code> is a call's whole
       life. No request is ever logged. The log says what became of the sessions as well as what they
       did: a Worker hired and what it runs on, a desk filed away and where it went, a restart with
-      how full the session that restarted was, and every time the account's usage crosses a
-      threshold.
+      how full the session that restarted was, a turn the service refused in the service's own
+      words, a close that reached its deadline with no desk written, and every time the account's
+      usage crosses a threshold.
     </p>
     <figure class="term">
 <pre>2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200
@@ -134,8 +139,8 @@
 2026-09-20T03:02:10.884+02:00 stopped Paul - idle</pre>
     </figure>
     <p>
-      <code>ovai stop</code> parks the room first &mdash; every session is told to write its desk
-      and stop, the Leader included, with a deadline &mdash; then closes the server. It waits for
+      <code>ovai stop</code> parks the room first &mdash; every Worker is closed and the Leader told
+      to write its desk and stop, with a deadline &mdash; then closes the server. It waits for
       the sessions and nothing else: anything else a seat left running is named by the seat that
       left it, with one line that ends all of them. Stopping what is not running says
       <code>not running</code> and is not a failure.
@@ -153,7 +158,7 @@
     <figure class="media">
       <b>[media 3]</b>
       <figcaption>screenshot: the Leader's head close up &mdash; dot, name, model, context in k, state
-        word, connected, the usage windows, the theme and notification switches</figcaption>
+        word, connected, the usage windows, the theme, notification and messages switches</figcaption>
     </figure>
     <p>
       A panel is a head &mdash; a dot, the name, the model, the context in k once known, and what
@@ -162,8 +167,12 @@
       turn runs, red once the process is gone. The head of the Leader's panel carries the account's
       usage windows &mdash; the session window with the time to its reset, the weekly window over
       all models, and the weekly window of the one model that has its own, like
-      <code>8% (3h) · all 86% (6d) · fable 20% (6d)</code> &mdash; and the toggle between light and
-      dark.
+      <code>8% (3h) · all 86% (6d) · fable 20% (6d)</code>, read every 5 minutes while any
+      session runs, with each window's reset in its tooltip &mdash; and the toggle between light
+      and dark. A third switch on that head, after the two notification switches, hides the
+      messages between the Leader and the Workers, and one Worker's to another, from the Leader's
+      panel; what you typed to a Worker stays, and a hidden row a click reaches is shown opened
+      until it is folded.
     </p>
     <p>
       A panel with no rows shows nothing: it stays empty until the seat's first row arrives. A row
@@ -181,10 +190,18 @@
     <p>
       Replies are rendered as markdown. Raw HTML in a reply is escaped, a link is kept only on
       <code>http(s)</code> and <code>mailto</code> and opens in a new tab, an image is shown as a
-      link &mdash; so nothing a session says makes the page fetch anything. There is no Send
-      button and no button that starts or ends a seat. While a turn is running a stop glyph sits at
-      the right edge of the text box: it interrupts that turn, the process stays. The permission
-      cards are the only other buttons there are.
+      link &mdash; so nothing a session says makes the page fetch anything. A code block wider than
+      the panel scrolls inside its frame with a thin scrollbar in the theme's colours, and its copy
+      button stays in the frame's top-right corner, shown while the block is hovered. A click on a
+      row's time puts a reference to it, like <code>(ref/15:08:11/123)</code>, into the box where
+      the cursor is; on the panel the reference is a link that brings the row into view, and the
+      session gets the whole row with your line, as <code>&lt;ref to="15:08:11/123" from="Anna"
+      at="&hellip;"&gt;&hellip;&lt;/ref&gt;</code> inside the <code>&lt;user&gt;</code>. There is no
+      Send button under the text box and no button that starts or ends a seat. While a turn is
+      running a stop glyph sits at the right edge of the text box: it interrupts that turn, the
+      process stays. The other buttons are the cards: a permission card, and a question a session
+      asks, which reads as a form &mdash; its options in a column, Other last with a line of its
+      own to type in, and Send and Cancel.
     </p>
     <p>
       The page draws from one stream. It opens an <code>EventSource</code> on <code>/events</code>
@@ -223,8 +240,10 @@
       written only when the previous turn has ended. Everything waiting for a seat goes as one
       <code>&lt;queue&gt;</code> element, its children the frames as they arrived, each with
       <code>at="HH:MM"</code>, so a session reads the whole delivery and when each part came. A
-      server event queues like any frame, ahead of the rest when it has to; the one exception is
-      the interrupt, which stops the running turn first and is the next thing the session reads.
+      server event queues like any frame, ahead of the rest when it has to; the exceptions are the
+      interrupt, which stops the running turn first and is the next thing the session reads, and a
+      message the Leader marks <code>urgent</code>, which reaches a Worker mid-turn, at its next
+      tool call.
       While you are typing in a seat's box, a turn made of messages and events waits for you, so
       what you were about to say goes in with it: <a href="/reference/#typing">the typing hold</a>.
     </p>
@@ -250,7 +269,8 @@
     <p>
       A desk is a person. Each seat owns <code>desks/&lt;Name&gt;/</code>, holding one Markdown state
       file, <code>STATE.md</code>, the persona the process was started with, the conversation, and
-      whatever that person keeps there. The listing is the roster. The desk file is edited in
+      whatever that person keeps there; each seat is told its desk and desk file as whole paths,
+      the instance root joined. The listing is the roster. The desk file is edited in
       place with the file tools like any other file; its first line is the server's header, and
       one tool, <code>write_desk</code> &mdash; a title and a status &mdash; writes that line and
       says the desk is current.
@@ -258,7 +278,8 @@
     <p>
       That file, not the session's memory, is what a replacement session reads to continue. A
       session writes its desk as it goes; when its conversation has filled it writes the desk once
-      more, ends at a moment of its own choosing, and a fresh one starts on the same desk, in the
+      more and ends at a moment that suits the work &mdash; the Leader's own choosing for itself and
+      for each Worker &mdash; and a fresh one starts on the same desk, in the
       same panel, with whatever was queued for it carried over. Nothing is summarised away. The
       successor is turned by a frame of its own &mdash; <code>restarted</code>, ahead of whatever
       was waiting for the seat &mdash; so it goes on from what the desk says to do next without
@@ -287,29 +308,34 @@
       <code>grep</code> is for. <code>validate</code> checks the directory against those rules and
       answers one line per problem, each naming the rule it breaks. One note is the framework's
       business: <code>knowledge/common.md</code> is handed to every session at its start, in a frame
-      that names it. <a href="/knowledge/">What the workspace knows</a> has the whole of it.
+      that names it. <a href="/knowledge/">What the workspace knows</a> has the whole of it. A
+      subagent a session starts is handed <code>customization/common.md</code> by a hook, in the
+      frame a seat reads it in, and nothing else of the instance's.
     </p>
   </section>
 
   <section class="wrap prose">
-    <h2 id="tools">The eleven tools</h2>
+    <h2 id="tools">The fourteen tools</h2>
     <p>
-      The server serves eleven tools over the secret route. Seven go to every seat; four are the
-      Leader's, and a Worker asking for one is refused in words. The whole of it costs one
-      permission rule, seeded at install.
+      The server serves fourteen tools over the secret route. Five go to every seat, one is the
+      Workers' and eight are the Leader's; a seat asking for one that is not its own is refused in
+      words. The whole of it costs one permission rule, seeded at install.
     </p>
     <div class="table">
       <table>
         <thead><tr><th>tool</th><th>who</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>message</code></td><td>everyone</td><td>say something to another session; comes back the moment the other seat has it. On an order to a Worker the Leader can set a <code>checkpoint</code>: after that many tool calls the Worker is told to report and carry on</td></tr>
+          <tr><td><code>message</code></td><td>everyone</td><td>say something to another session; comes back the moment the other seat has it. On an order to a Worker the Leader can set a <code>checkpoint</code>: after that many tool calls the Worker is told to report and carry on; marked <code>urgent</code>, it reaches the Worker mid-turn, at its next tool call</td></tr>
           <tr><td><code>room</code></td><td>everyone</td><td>who works here: every seat, its role, its model, whether it is running, which one is you, where the quota stands</td></tr>
           <tr><td><code>index</code></td><td>everyone</td><td>what is in <code>knowledge/</code>: the header, or the notes carrying a tag</td></tr>
           <tr><td><code>validate</code></td><td>everyone</td><td>check every note against the rules, one line per problem</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td>the header of the caller's own desk: title, status</td></tr>
-          <tr><td><code>restart_session</code></td><td>everyone</td><td>end the caller's process and start a successor on the same desk</td></tr>
-          <tr><td><code>stop_session</code></td><td>everyone</td><td>end the caller's process and its panel; the desk stays</td></tr>
-          <tr><td><code>park</code></td><td>Leader</td><td>every running Worker writes its desk and stops, by a deadline</td></tr>
+          <tr><td><code>done</code></td><td>Worker</td><td>say the work is done, with a one-line note if it likes; the Leader decides whether it stops</td></tr>
+          <tr><td><code>restart_session</code></td><td>Leader</td><td>end the Leader's own process and start a successor on the same desk</td></tr>
+          <tr><td><code>stop_session</code></td><td>Leader</td><td>end the Leader's own process and its panel; the desk stays</td></tr>
+          <tr><td><code>stop_worker</code></td><td>Leader</td><td>close one Worker: it is told its session is closing, writes its desk, and goes when that turn is over</td></tr>
+          <tr><td><code>restart_worker</code></td><td>Leader</td><td>the same, and a successor starts on the Worker's desk</td></tr>
+          <tr><td><code>park</code></td><td>Leader</td><td>close every running Worker: each writes its desk and goes, by a deadline</td></tr>
           <tr><td><code>hire</code></td><td>Leader</td><td>start a Worker on a desk: a new name from the roster, or somebody who stopped, back on theirs</td></tr>
           <tr><td><code>retire</code></td><td>Leader</td><td>file a stopped Worker's desk under <code>archive/</code></td></tr>
           <tr><td><code>permission</code></td><td>Leader</td><td>settle one rule for the whole instance, on a card you answer</td></tr>
@@ -318,7 +344,9 @@
     </div>
     <p>
       <code>restart_session</code> and <code>stop_session</code> refuse until the desk was written
-      since the event that asked, so the desk comes first, always. The
+      since the event that asked, so the desk comes first, always. A Worker's close ends when the
+      turn that wrote its desk is over; one that waits past its deadline ends with the desk as it
+      was last written. The
       <a href="/reference/">reference</a> has every argument.
     </p>
   </section>
@@ -328,34 +356,43 @@
     <p>
       A session's context filling up, going idle, running out of quota and being parked are one
       flow each, and none of it is a phrase to recognise: the server sends a frame it set itself,
-      and the session answers with a tool call.
+      and the Leader answers with a tool call. A Worker only works: when it has to end, the
+      Leader or the server closes it, and the one event it is told is <code>closing</code>, with
+      why &mdash; it writes its desk, and the session ends when that turn is over.
     </p>
     <figure class="term diagram">
       <figcaption>four events, one answer each</figcaption>
-<pre>context        the conversation as sent passed the warning size (200k tokens by default),
-               and again at every step above it (20k): 220k, 240k, and on
-  warning      → carry on, keep the desk current, plan your own restart for a moment that suits the work
-  error        from the error size (300k) → write_desk, restart_session: a successor starts on the
+<pre>context        the conversation as sent passed the warning size (200k tokens by default)
+  Leader       told of its own, and again at every step above it (20k): 220k, 240k, and on
+    warning    → carry on, keep the desk current, plan its own restart for a moment that suits the work
+    error      from the error size (300k) → write_desk, restart_session: a successor starts on the
                same desk, same panel, queue carried, and is turned by a restarted frame of its own
+  Worker       the Leader is told, naming the Worker, at the warning and at the error size only;
+               the Worker is not told
+    error      → restart_worker at a moment that suits the work
 
 idle           the Leader is told about a silent Worker at 10 and at 50 minutes;
-               at 55 the seat is told it goes cold at 60
-               → write_desk, stop_session; what is not stopped by 60 is ended, and the Leader is told
+               at 55 the Worker is closed, and has 5 minutes from the turn that reads it for its desk
+               → the Leader is told it stopped, idle or idle-forced
+               the Leader itself, at 55: told it goes cold at 60 → write_desk, stop_session
 
 quota-low      the account's 5h or 7d window is nearly spent (thresholds in openovai.json)
-  warning      → Workers write their desks and stop; the Leader tells you and stays; no hires until the reset
-  critical     → every turn is held at the gate; a Worker still mid-turn is interrupted and told again
-               after the reset, held frames are released, the Leader's first
+  warning      → the Leader tells you, stops the Workers whose work can wait, and stays; no hires
+               until the reset; a Worker keeps its desk current and carries on
+  critical     → every turn is held at the gate; a Worker still mid-turn is interrupted and closed
+quota-reset    the window reset → held frames are released, the Leader's first; a stopped Leader
+               is started, and brings the Workers back
 
 park           you said this is it for the day; or ovai stop, or any signal to the server
-               → every Worker writes its desk and stops, by a deadline (20 seconds by default)</pre>
+               → every Worker is closed and goes by a deadline (20 seconds by default)</pre>
     </figure>
     <p>
-      Nothing is enforced at any context size: when a session restarts stays the session's own
-      decision, and the event carries the size reached and all three sizes, so a session can see
-      what it is counting toward. An event that asks nothing of a session does not cancel an ending
-      the server is already waiting on: a seat told at 55 minutes to write its desk and stop is
-      still ended at 60, whatever else it is told in between.
+      Nothing is enforced at any context size: when the Leader restarts, itself or a Worker, stays
+      its own decision. The size is measured at every request of a turn, so a long turn is told
+      when it passes one, and the event carries the size reached and the sizes it counts toward. A
+      close never goes into a turn already under way and never cuts one that runs: its deadline
+      counts from the turn that read it. A later message does not take a close back; a word to an
+      idle Worker still does, since that is what it was waiting for.
     </p>
     <p>
       A seat on a turn &mdash; a permission stop included &mdash; is never idle. A stop keeps the desk
@@ -370,23 +407,27 @@ park           you said this is it for the day; or ovai stop, or any signal to t
       from the account's usage endpoint. Two threshold pairs in <code>openovai.json</code> cover
       them, <code>quota: { "5h": [90, 95], "7d": [97, 99] }</code> by default: a warning stage and
       a critical one for each. One event, <code>quota-low</code>, is sent at both stages and says
-      which window and when it resets.
+      which window and when it resets. The windows are read every 5 minutes while any session
+      runs, and at a turn's end and a page load when the last read is a minute old, so the gate and
+      the line in the Leader's head are current with no page open.
     </p>
     <p>
-      At the warning every running seat is told. A Worker writes its desk and stops; the Leader
-      tells you &mdash; which window, that the Workers stopped, the reset time &mdash; writes its
-      desk and stays, because talking to a warm Leader costs little. No Worker is hired from here
-      until the window resets.
+      At the warning every running seat is told. A Worker keeps its desk current and carries on;
+      the Leader tells you which window and the reset time, stops the Workers whose work can wait,
+      writes its desk and stays, because talking to a warm Leader costs little. No Worker is hired
+      from here until the window resets.
     </p>
     <p>
       From the critical stage the server gates every turn: before anything goes on any stdin it
       checks the window, and a frame that would not pass waits in the server's queue rather than
-      failing mid-work. A Worker still mid-turn is interrupted and told again, with
-      <code>interrupted="true"</code>: do not resume, write your desk and stop. The Leader is told
-      once and not interrupted. A message to a held seat answers at once that it is held, and the
-      page says which window and when it resets. After the reset, held frames are released the
+      failing mid-work. A Worker on that window is interrupted and closed, with
+      <code>interrupted="true"</code>: do not resume, write your desk; it has 5 minutes for it. The
+      Leader is told once and not interrupted. A message to a held seat answers at once that it is
+      held, and the page says which window and when it resets. At the reset the Leader is sent
+      <code>quota-reset</code>, which starts it when it was stopped; held frames are released the
       Leader's first, then the Workers', each in the order they arrived, and the Leader brings the
-      Workers back on their desks. The one model's own window holds that model and nothing else:
+      Workers back on their desks. The resets to come are kept in memory: a park forgets them, and
+      a server restart before the reset loses them. The one model's own window holds that model and nothing else:
       no process starts on it while it is spent, and every other model goes on.
     </p>
     <div class="callout">

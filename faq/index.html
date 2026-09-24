@@ -92,7 +92,7 @@
       <code>kill &lt;pid&gt;</code> line that ends it, and the process's command line after it as a
       comment, so a session of yours can be told from a process that merely carried the instance's
       home; the line still pastes. <code>ovai stop</code> first parks the room properly &mdash; every
-      session writes its desk &mdash; and then the update goes through. It also refuses to go
+      Worker and the Leader write their desks &mdash; and then the update goes through. It also refuses to go
       backwards by name: <code>--downgrade</code> takes an older release anyway, and
       <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub.
     </p>
@@ -105,26 +105,32 @@
       <code>knowledge/common.md</code>. A persona is rendered when a seat's process starts, from the
       files the instance has at that moment, and the server reads its own configuration when it
       starts. So an edit reaches every process started after it and none of the ones already
-      running: the next Worker hired has it, and the Leader has it after its next restart. To give
+      running: the next Worker hired or restarted has it, a subagent started after it has
+      <code>customization/common.md</code> as it now is, and the Leader has it after its next
+      restart. To give
       it to the seats that are up, <code>ovai restart</code> &mdash; which interrupts whatever they
       are mid-way through, so it is worth a moment when nobody is deep in something.
     </p>
   </section>
 
   <section class="wrap prose">
-    <h2 id="quiet">A Worker went quiet, said "back in a moment", or disappeared</h2>
+    <h2 id="quiet">A Worker went quiet, restarted, or disappeared</h2>
     <p>
       Three different things. <em>Quiet</em>: the Leader is told about a silent Worker at 10 and at
-      50 minutes; at 55 any seat is told it goes cold at 60, writes its desk and stops. A seat on a
-      turn &mdash; a card waiting included &mdash; is never idle. <em>Back in a moment</em>: its
-      conversation had grown past the size it wraps up at, so it wrote its desk and restarted itself.
-      A successor is already going on from that desk, in the same panel, with whatever was queued
-      carried over; it announces itself to nobody, and the restart is a row in
-      <code>runtime.log</code> with the context the session before it was carrying.
-      <em>Disappeared</em>: a
+      50 minutes; at 55 the server closes it, and it writes its desk and goes. A seat on a turn
+      &mdash; a card waiting included &mdash; is never idle. <em>Restarted</em>: its conversation had
+      grown past the size it wraps up at, so the Leader restarted it with
+      <code>restart_worker</code>, and it wrote its desk. A successor is already going on from that
+      desk, in the same panel, with whatever was queued carried over; it announces itself to
+      nobody, the Leader was told it restarted, and the restart is a row in
+      <code>runtime.log</code> with the context the session before it was carrying. The Leader
+      restarts itself the same way, and says "back in a moment". <em>Disappeared</em>: a
       Worker whose process has gone is dimmed with its text box closed and removed from the page
       thirty seconds later; the desk stays, and the Leader's <code>hire</code> on that name brings
-      it back on the same desk with its rows. Ask the Leader; it was told each time.
+      it back on the same desk with its rows. Ask the Leader; it was told each time, and why &mdash;
+      stopped, idle, a spent window, or a first turn the service refused, in the service's own
+      words. A Worker whose later turn the service refuses keeps running, and the Leader is told
+      once.
     </p>
   </section>
 
@@ -135,8 +141,9 @@
       when it resets, it is the <a href="/how-it-works/#quota">quota gate</a> at its second stage:
       the server holds every turn until the window resets, then releases them, the Leader's first;
       nothing is lost, and nothing to do but wait, or talk to the Leader, whose held turns say so.
-      The Workers stopped a little earlier, at the first stage, on their own; after the reset the
-      Leader brings them back with <code>hire</code>.
+      The Workers on that window were closed as it was spent, each writing its desk, and the Leader
+      may have stopped some at the first stage; at the reset the Leader is told, started if it was
+      stopped, and brings them back with <code>hire</code>.
     </p>
     <figure class="media">
       <b>[media 18]</b>
@@ -202,7 +209,8 @@
       The page listens on <code>127.0.0.1</code> only. A session does what the instance allows,
       never gets to try what it denies &mdash; <code>git push</code>, <code>sudo</code> and
       <code>ssh</code> from birth &mdash; and stops on a card for anything undecided, for as long as
-      you take. A seat idle for an hour writes its desk and stops. A tool of the server's is one
+      you take. A Worker idle for 55 minutes is closed, and a Leader idle that long writes its desk
+      and stops. A tool of the server's is one
       permission rule; a tool of yours under <code>plugins/</code> is one you wrote. The
       <a href="/permissions/">permissions page</a> has the seeded rules and the shape of the ones
       you add; what you leave the room allowed to do is what it can do while you are away.

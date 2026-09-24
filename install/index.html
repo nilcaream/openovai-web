@@ -83,7 +83,7 @@
           With no arguments the release's installer asks its questions: where the instance lives,
           who it works for, the Leader's name, the models, the port, how it signs in. Before
           anything else <code>openovai</code> says which version it resolved &mdash;
-          <code>openovai 0.18.0 (latest)</code> &mdash; downloads that release once, fetches the
+          <code>openovai 0.19.0 (latest)</code> &mdash; downloads that release once, fetches the
           Node.js and Claude Code it pins, and hands over to its installer. The directory has to be
           empty or new.
         </p>
@@ -134,7 +134,7 @@
       of its own, the version.</p>
     <dl>
       <dt>openovai [version]</dt>
-      <dd><code>openovai 0.18.0 &hellip;</code> or <code>openovai --version 0.18.0 &hellip;</code>
+      <dd><code>openovai 0.19.0 &hellip;</code> or <code>openovai --version 0.19.0 &hellip;</code>
         takes that release; absent, the newest release on GitHub at that moment, printed before
         anything is done. Asked interactively, the choice offers <code>latest</code> and the
         versions already downloaded.</dd>
@@ -147,7 +147,8 @@
       <dt>--leader</dt>
       <dd>The name of the session that leads the team.</dd>
       <dt>--leader-model, --worker-model</dt>
-      <dd>The models those sessions run on. A Worker can be hired onto another one later.</dd>
+      <dd>The models those sessions run on. A Worker can be hired onto another one later, and its
+        desk keeps that one from then on.</dd>
       <dt>--port</dt>
       <dd>The port the page listens on, on <code>127.0.0.1</code> only. <code>0</code> means
         whatever is free, and <code>ovai start</code> prints the address it actually got; pick a
@@ -236,8 +237,10 @@ cd openovai
       instance has not got is seeded once. When the new release pins a newer Node.js or Claude
       Code, those are fetched beside the ones already there, and an instance still on the older
       release keeps using the older ones. Desks, conversations, <code>knowledge/</code>,
-      <code>customization/</code>, <code>plugins/</code>, <code>openovai.json</code>, the settings
-      and the Claude Code home are left alone. There is no rollback: taking the release again is
+      <code>customization/</code>, <code>plugins/</code>, <code>openovai.json</code> and the Claude
+      Code home are left alone. The settings are left alone but for two things: the two hooks are
+      wired into a settings file that lacks them, and commit attribution is turned off in one that
+      says nothing about it; no rule is added. There is no rollback: taking the release again is
       the fix.
     </p>
     <p>
@@ -268,9 +271,9 @@ cd openovai
       <table>
         <thead><tr><th>command</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address it is listening on; a port already taken names the process that holds it</td></tr>
+          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address it is listening on; a port already taken names the process that holds it. Typed in a session's own shell, it hands that session on to nothing: the server and its seats start without the session's own variables</td></tr>
           <tr><td><code>ovai status</code></td><td><code>not running</code> (exit 3), or <code>running at &lt;url&gt; (pid, since)</code> &mdash; found out by asking the address, not by trusting a file</td></tr>
-          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every session writes its desk and stops, the Leader included, by a deadline &mdash; then closes the server; not running is not a failure</td></tr>
+          <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every Worker is closed and the Leader writes its desk and stops, by a deadline &mdash; then closes the server; not running is not a failure</td></tr>
           <tr><td><code>ovai restart</code></td><td>the two in a row, and prints the new address</td></tr>
           <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential, and every desk with what it runs on</td></tr>
           <tr><td><code>ovai login</code></td><td>signs the instance in, once, under <code>--auth login</code></td></tr>

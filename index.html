@@ -79,16 +79,18 @@ openovai</pre>
       </li>
       <li class="card">
         <h3>One Leader, named Workers.</h3>
-        <p>The Leader hires, delegates, relays and settles what the instance may do; it does no
-          project work. Workers do one task each and stop when it ships. Whatever one Worker
-          says to another, the Leader hears.</p>
+        <p>The Leader hires, delegates, relays, stops and restarts, and settles what the instance
+          may do; it does no project work. Workers do one task each and say when it is done; the
+          Leader decides whether they stop. Whatever one Worker says to another, the Leader
+          hears.</p>
         <a href="/team/">How the team works &rarr;</a>
       </li>
       <li class="card">
         <h3>Permissions are cards on the page.</h3>
         <p>A session that reaches for something unsettled stops on its panel with the command
           and its reason. Allow it once, deny it with a sentence, or always allow the shape
-          &mdash; one rule per side of a compound command.</p>
+          &mdash; one rule per side of a compound command. A compound with a side no rule allows
+          is sent back to be written as a script, without a card.</p>
         <a href="/permissions/">Permissions and safety &rarr;</a>
       </li>
       <li class="card">
@@ -108,17 +110,19 @@ openovai</pre>
       <li class="card">
         <h3>The lifecycle is tools, not phrases.</h3>
         <p>Grown too large, idle, out of quota, parked: the server says so in an event and the
-          session answers with a tool call. No
-          button on the page starts or ends a seat, and a session cannot end before its desk is
-          written &mdash; the desk comes first, always.</p>
+          Leader answers with a tool call &mdash; for itself, or to stop or restart a Worker. A
+          Worker that has to end is told its session is closing, writes its desk, and goes when
+          that turn is over. No button on the page starts or ends a seat, and the desk comes
+          first, always.</p>
         <a href="/how-it-works/#lifecycle">The lifecycle &rarr;</a>
       </li>
       <li class="card">
         <h3>It knows the quota, and never runs it dry.</h3>
-        <p>The server reads the account's usage windows with every turn. Near the limit the
-          Workers write their desks and stop on their own; the Leader stays, because talking to
-          it costs little, and tells you which window and when it resets. A spent window holds
-          turns rather than failing them mid-work; after the reset the team is brought back.</p>
+        <p>The server reads the account's usage windows every few minutes while any session
+          runs. When a window is spent the Workers are closed, each writing its desk; the Leader
+          stays, because talking to it costs little, and tells you which window and when it
+          resets. A spent window holds turns rather than failing them mid-work; at the reset the
+          Leader is told, and brings the team back.</p>
         <a href="/how-it-works/#quota">The quota gate &rarr;</a>
       </li>
       <li class="card">
@@ -181,8 +185,8 @@ openovai</pre>
   <section class="wrap">
     <h2>Built from what you already have</h2>
     <p>
-      Two persona templates, project settings, an MCP server, a shell shim, a few Node tools and
-      a small web page to host it all on. Nothing runs that you cannot read in an evening. Twenty-four
+      Two persona templates, project settings, two hooks, an MCP server, a shell shim, a few Node
+      tools and a small web page to host it all on. Nothing runs that you cannot read in an evening. Thirty-one
       test suites on Node's own runner, and every check in them was watched going red before it
       was kept.
     </p>

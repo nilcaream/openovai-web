@@ -3,9 +3,10 @@
 The website for [OpenOv AI](https://github.com/nilcaream/openovai) — a toolkit for running a small
 team of AI developer sessions on one machine.
 
-One page. No build step, no dependencies, no package manager. `index.html` is the site and
-`style.css` is all of its styling; the only JavaScript is a theme toggle and a copy button, both
-inline, and the page is complete without them.
+Eleven pages. No build step, no dependencies, no package manager. Each page is an `index.html`
+in its own directory, `index.html` at the root is the home page, and `style.css` is all of their
+styling; the only JavaScript is a theme toggle and a copy button, both
+inline, and every page is complete without them.
 
 ## Look at it
 

@@ -81,7 +81,7 @@
           <tr><td></td><td><code>--source</code>, <code>--force</code></td><td>never asked: where the toolkit is, and whether to install into a directory that is not empty</td></tr>
           <tr><td><code>openovai.json</code>, written by the installer</td><td><code>user</code>, <code>leader</code>, <code>models</code>, <code>port</code>, <code>auth</code></td><td>the answers above</td></tr>
           <tr><td><code>openovai.json</code>, read when present</td><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> minutes</td></tr>
-          <tr><td></td><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> tokens</td></tr>
+          <tr><td></td><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> tokens; <code>step</code> is the Leader's own, since a Worker's size reaches the Leader at the warning and the error only</td></tr>
           <tr><td></td><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code> seconds</td></tr>
           <tr><td></td><td><code>permission</code></td><td><code>{ "wait": 10 }</code> minutes</td></tr>
           <tr><td></td><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code> seconds; <code>0</code> in either turns the hold off &mdash; <a href="/reference/#typing">the typing hold, with a worked timeline</a></td></tr>
@@ -94,7 +94,7 @@
           <tr><td><code>knowledge/</code></td><td>one Markdown note per topic, written and edited by every seat</td><td>empty, but for the <code>common.md</code> every session is given</td></tr>
           <tr><td><code>customization/</code></td><td><code>common.md</code>, <code>leader.md</code>, <code>worker.md</code>, each framed into the sessions it is for</td><td>empty</td></tr>
           <tr><td><code>plugins/</code></td><td>one <code>.mjs</code> per tool the instance serves itself</td><td>empty</td></tr>
-          <tr><td>the browser, per page</td><td>the theme; the two notification switches</td><td>light; both off</td></tr>
+          <tr><td>the browser, per page</td><td>the theme; the two notification switches; the switch that hides the messages between sessions from the Leader's panel, kept as <code>openovai-comms</code></td><td>light; both off; shown</td></tr>
           <tr><td><code>ovai update</code></td><td><code>--from &lt;url or directory&gt;</code>, <code>--downgrade</code></td><td>the latest release on GitHub; never older than the instance is on</td></tr>
         </tbody>
       </table>
@@ -136,6 +136,7 @@
           <tr><td><code>1024</code>&ndash;<code>65535</code>, or <code>0</code></td><td>what <code>--port</code> accepts</td><td><code>install.mjs</code></td><td>the unprivileged range</td></tr>
           <tr><td><code>inherit</code>, <code>login</code></td><td>the two ways an instance signs in</td><td><code>install.mjs</code></td><td>a closed set: an account of its own, or the machine's token</td></tr>
           <tr><td><code>ANTHROPIC_API_KEY</code>, <code>ANTHROPIC_AUTH_TOKEN</code></td><td>never inherited by a seat, whatever the instance was installed with</td><td><code>claude.mjs</code></td><td>either would run a seat as somebody else, or against somebody else's bill</td></tr>
+          <tr><td>what Claude Code puts on a session: its id, pid, entry point, effort, messaging socket and token; and <code>PWD</code>, <code>OLDPWD</code></td><td>dropped by the server and every seat it starts, so <code>ovai start</code> typed in a session's shell hands that session on to nothing; <code>CLAUDE_CODE_OAUTH_TOKEN</code> stays under <code>inherit</code></td><td><code>claude.mjs</code></td><td>a seat is a session of this instance, never a child of the one that started the server</td></tr>
         </tbody>
       </table>
     </div>
@@ -156,16 +157,16 @@
         <thead><tr><th>value</th><th>governs</th><th>file</th><th>why fixed</th></tr></thead>
         <tbody>
           <tr><td>60 minutes</td><td>when an idle seat goes cold: the life of its prompt cache; the 50-minute FYI counts down to it</td><td><code>chat/lifecycle.mjs</code></td><td>the vendor's number, not the instance's</td></tr>
-          <tr><td>5 minutes</td><td>after the critical idle event, before a seat that has not stopped itself is ended</td><td><code>chat/lifecycle.mjs</code></td><td>one desk write and one stop take seconds</td></tr>
+          <tr><td>5 minutes</td><td>after the critical idle event, before a Leader that has not stopped itself is ended; for a Worker closed for idling or a spent window, or by <code>stop_worker</code> or <code>restart_worker</code> with an interrupt, how long after the turn that read the close its desk is waited for</td><td><code>chat/lifecycle.mjs</code></td><td>one desk write and one stop take seconds</td></tr>
           <tr><td>60 seconds; 200 ms</td><td>how often the clocks are read; how often a park looks at who has stopped</td><td><code>chat/lifecycle.mjs</code></td><td>mechanism</td></tr>
-          <tr><td>10 seconds</td><td>a wait on a card long enough to be written on the panel as <code>waited N s for permission</code></td><td><code>chat/lifecycle.mjs</code></td><td>under that there is no gap to explain</td></tr>
+          <tr><td>10 seconds</td><td>a wait on a card long enough to be written on the panel as <code>Waited N seconds for permission</code></td><td><code>chat/lifecycle.mjs</code></td><td>under that there is no gap to explain</td></tr>
           <tr><td>2 seconds</td><td>how often, at most, the page tells the server a key went into a seat's box; the typing hold's quiet counts from the last one it heard</td><td><code>chat/panels.mjs</code></td><td>a beat well inside the quiet is enough</td></tr>
           <tr><td>1 minute</td><td>of two rows saying when a session ended or started, less than this apart, only the first is drawn</td><td><code>chat/render.mjs</code></td><td>an end and a start seconds after it are one moment; both stay in the conversation, and only the drawing leaves one out</td></tr>
           <tr><td>10 seconds</td><td>a tool call slow enough to get a row of its own on the panel</td><td><code>chat/server.mjs</code></td><td>the same reason</td></tr>
           <tr><td>500 ms; 3</td><td>how long a word on the tool line stays up; how many wait behind it</td><td><code>chat/panels.mjs</code></td><td>readable at a glance, and nothing lost</td></tr>
           <tr><td>30 seconds</td><td>how long a stopped Worker's panel stays on the page</td><td><code>chat/panels.mjs</code></td><td>long enough to read how it ended</td></tr>
-          <tr><td>30 minutes; 2 seconds; 10 seconds</td><td>how long a tool call may take over the tools connection (a park); how long an interrupted turn is given to say so; how long a seat that asked to stop is given to end its turn</td><td><code>chat/session.mjs</code></td><td>bounds on the harness, measured or guessed and said so in the code</td></tr>
-          <tr><td>5 seconds; 60 seconds; 5 minutes; 10 seconds</td><td>how often the head's usage is looked at while a page is open; how old a reading may get; how long a failed reading is left alone; the request's timeout</td><td><code>chat/server.mjs</code>, <code>chat/usage.mjs</code></td><td>one endpoint, asked politely</td></tr>
+          <tr><td>30 minutes; 2 seconds; 10 seconds</td><td>how long a tool call may take over the tools connection (a park); how long an interrupted turn is given to say so; how long a session that is ending is given to end its turn</td><td><code>chat/session.mjs</code></td><td>bounds on the harness, measured or guessed and said so in the code</td></tr>
+          <tr><td>5 seconds; 5 minutes; 60 seconds; 5 minutes; 10 seconds</td><td>how often the server looks at whether the usage wants reading; how old a reading may get while any session runs, page open or not; how old a reading may get before a turn's end or a page load reads it again; how long a failed reading is left alone; the request's timeout</td><td><code>chat/server.mjs</code>, <code>chat/usage.mjs</code></td><td>one endpoint, asked politely</td></tr>
           <tr><td>30 seconds; 60 seconds</td><td>how long <code>ovai start</code> waits for the server to answer; how long a release fetch is given</td><td><code>ovai.mjs</code>, <code>release.mjs</code></td><td>a server binds in a second; the rest is a machine under load</td></tr>
         </tbody>
       </table>
@@ -176,10 +177,10 @@
         <thead><tr><th>value</th><th>governs</th><th>file</th><th>why fixed</th></tr></thead>
         <tbody>
           <tr><td>120; 80</td><td><code>write_desk</code>: the title, the status</td><td><code>chat/server.mjs</code></td><td>title and status share one header line</td></tr>
-          <tr><td>80 characters; <code>| &amp; ; &lt; &gt; $ `</code> and a newline</td><td>an exact-command rule &mdash; the one Claude Code would save for a command no rule is composed for &mdash; longer than this or holding any of those is not offered as Always; the rules composed for a compound's sides are offered whatever its length</td><td><code>chat/permissions.mjs</code></td><td>longer than a line of the card, or holding shell syntax, it is a one-off written out in full, and as a rule it would fill the panel and never match again; the words on a button are the rule it writes, so it is left off rather than shortened</td></tr>
+          <tr><td>80 characters; <code>| &amp; ; &lt; &gt; $ `</code> and a newline</td><td>an exact-command rule &mdash; the one Claude Code would save for a command no rule is composed for &mdash; longer than this or holding any of those is not offered as Always; the rules composed for a compound's sides are offered whatever its length, and none is drawn from inside a backtick or <code>$(</code> span; a rule naming one file is never offered as Always either, only settled by the Leader</td><td><code>chat/permissions.mjs</code></td><td>longer than a line of the card, or holding shell syntax, it is a one-off written out in full, and as a rule it would fill the panel and never match again; the words on a button are the rule it writes, so it is left off rather than shortened</td></tr>
           <tr><td>100 000 characters</td><td>one message, from the composer or the <code>message</code> tool</td><td><code>chat/server.mjs</code></td><td>a message is a message, not a file</td></tr>
           <tr><td>200 characters</td><td>how much of a refused tool result the tooltip shows</td><td><code>chat/session.mjs</code></td><td>a tooltip</td></tr>
-          <tr><td>a letter, then up to 31 letters, digits or <code>-</code>; <code>description</code>, <code>inputSchema</code>, <code>run</code></td><td>what a plugin file may be called; what it has to export</td><td><code>plugins.mjs</code></td><td><a href="/plugins/">the plugin contract</a>; the eleven built-in names are taken</td></tr>
+          <tr><td>a letter, then up to 31 letters, digits or <code>-</code>; <code>description</code>, <code>inputSchema</code>, <code>run</code></td><td>what a plugin file may be called; what it has to export</td><td><code>plugins.mjs</code></td><td><a href="/plugins/">the plugin contract</a>; the fourteen built-in names are taken</td></tr>
           <tr><td>four fields and nothing else; at least three lowercase hyphenated tags, no duplicates; sources that are paths from the instance root, URLs or <code>&lt;user&gt;</code>; a date that is not in the future; a lowercase hyphenated filename</td><td>what a note under <code>knowledge/</code> is, and what <code>validate</code> reads back</td><td><code>chat/server.mjs</code></td><td>the shape of <a href="/knowledge/">what the workspace knows</a>: a contract short enough to hold in your head is one every seat keeps</td></tr>
         </tbody>
       </table>
@@ -191,6 +192,7 @@
         <tbody>
           <tr><td>light</td><td>the theme before a choice is made</td><td><code>chat/page.html</code></td><td>the toggle is the setting</td></tr>
           <tr><td>off; off</td><td>the two notification switches before a choice is made</td><td><code>chat/page.html</code></td><td>a browser prompt nobody asked for is the wrong first impression</td></tr>
+          <tr><td>shown</td><td>the messages between sessions on the Leader's panel before a choice is made</td><td><code>chat/page.html</code></td><td>the Leader's panel hears the whole room until you say otherwise</td></tr>
           <tr><td>40 %</td><td>how much of the window the composer may grow to</td><td><code>chat/page.html</code></td><td>the rows above it are what you are reading</td></tr>
           <tr><td><code>OpenOv AI</code></td><td>the page title, and the title of every notification</td><td><code>chat/panels.mjs</code></td><td>the product's name</td></tr>
           <tr><td>ls cat echo pwd head tail grep find wc which diff stat du cd</td><td>the commands a card offers as a rule when a compound has one of them as a side</td><td><code>chat/permissions.mjs</code></td><td>read-only by nature; anything else is offered as itself</td></tr>
@@ -208,7 +210,7 @@
           <tr><td><code>workspace</code></td><td>the one directory name Claude Code files the instance's transcripts under, whatever path the instance sits at</td><td><code>claude.mjs</code></td><td>so an instance moved or copied still finds its own threads: no absolute path anywhere in it</td></tr>
           <tr><td><code>CLAUDE.md</code>, <code>CLAUDE.local.md</code>, <code>.claude/CLAUDE.md</code>, <code>.claude/rules/**</code></td><td>the instruction files a seat does not obey from any directory under the three trees</td><td><code>instructions.mjs</code></td><td>a cloned repository's instructions are its author's, not this workspace's; the instance root's own are read</td></tr>
           <tr><td><code>autoContinueAtUsageLimit</code> on; <code>autoMemoryEnabled</code> off; attribution off</td><td>the harness's own settings for the instance's account</td><td><code>seed.mjs</code></td><td>a seat waiting on a dialog at a keyboard nobody sits at has left the room; a second memory is a second answer; a commit is the seat's</td></tr>
-          <tr><td>the seeded allow, ask and deny rules, and the compound hook</td><td>what a fresh instance never stops for, what it stops for, and what no seat does with a tool</td><td><code>desks.mjs</code>, <code>seed.mjs</code>, <code>hooks/compound.mjs</code></td><td>the seed is fixed; the file it seeds <a href="/permissions/">is yours from then on</a></td></tr>
+          <tr><td>the seeded allow, ask and deny rules, the compound hook, and the subagent hook that hands a subagent <code>customization/common.md</code></td><td>what a fresh instance never stops for, what it stops for, and what no seat does with a tool</td><td><code>desks.mjs</code>, <code>seed.mjs</code>, <code>hooks/compound.mjs</code>, <code>hooks/subagent.mjs</code></td><td>the seed is fixed; the file it seeds <a href="/permissions/">is yours from then on</a></td></tr>
           <tr><td>the two personas and the desk template</td><td>what every Leader and every Worker is told at start</td><td><code>templates/</code></td><td><code>customization/</code> is framed in beside them; the mechanism the personas describe is the toolkit's</td></tr>
         </tbody>
       </table>

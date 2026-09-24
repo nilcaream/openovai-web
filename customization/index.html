@@ -53,7 +53,7 @@
     <p class="lead">
       An instance has a handful of knobs, and this page is all of them. What you add to the
       personas, the one JSON file that describes the instance, the models, the permission rules,
-      the two switches on the Leader's head, and the port. Everything here is yours: an update
+      the three switches on the Leader's head, and the port. Everything here is yours: an update
       replaces the payload and leaves every one of these alone.
     </p>
   </section>
@@ -69,7 +69,9 @@
       <code>customization/leader.md</code> and <code>customization/worker.md</code> go to that kind
       of session. A Leader is given the Worker's file after both, marked as the Worker's rather
       than as its own, so that it knows what every Worker already holds and briefs the task rather
-      than the method. A Worker is never given the Leader's.
+      than the method. A Worker is never given the Leader's. A subagent a session starts is handed
+      <code>customization/common.md</code> alone, by a hook, in the same frame and word for word:
+      it is neither the Leader nor a Worker, so the role files stay with the seats.
     </p>
     <figure class="term">
 <pre>&lt;customization source="customization/worker.md"&gt;
@@ -85,7 +87,8 @@ and you say so to the Leader before you start on it.
       have not written is no frame at all; a file that is there and empty is a frame with nothing
       in it, which is what it says. And because the persona is rendered when the process starts, an
       edit changes nothing for a process already running and reaches every process started after it
-      &mdash; the next Worker hired, the Leader after its next restart.
+      &mdash; the next Worker hired or restarted, the Leader after its next restart, and every
+      subagent started after it.
     </p>
     <p>
       This is where what your team is held to lives: the language the team writes in, the shape of
@@ -115,14 +118,14 @@ and you say so to the Leader before you start on it.
           <tr><td colspan="3"><em>written by the installer</em></td></tr>
           <tr><td><code>user</code></td><td>&mdash;</td><td>the person the team works for</td></tr>
           <tr><td><code>leader</code></td><td>&mdash;</td><td>the name of the session that leads the team</td></tr>
-          <tr><td><code>models.leader</code>, <code>models.worker</code></td><td>&mdash;</td><td>the models those sessions run on; a Worker named a model at <code>hire</code> is the exception</td></tr>
+          <tr><td><code>models.leader</code>, <code>models.worker</code></td><td>&mdash;</td><td>the models those sessions run on; a Worker whose desk was given a model at <code>hire</code> is the exception</td></tr>
           <tr><td><code>port</code></td><td>&mdash;</td><td>the port the page listens on, <code>127.0.0.1</code> only; <code>0</code> is whatever is free</td></tr>
           <tr><td><code>auth</code></td><td>&mdash;</td><td><code>login</code> or <code>inherit</code></td></tr>
           <tr><td><code>schema</code>, <code>createdAt</code></td><td>&mdash;</td><td>the file's version and when the instance was installed; <code>ovai configuration</code> reports the second</td></tr>
           <tr><td colspan="3"><em>read when present</em></td></tr>
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code></td><td>the two stages of the <a href="/how-it-works/#quota">quota gate</a>, in percent of each window; the <code>7d</code> pair holds every weekly window, the one over all models and fable's own alike</td></tr>
-          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when any seat is told to write its desk and stop</td></tr>
-          <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code></td><td>tokens: the request size at which a session is first told how big it has grown, how often it is told again above that, and the size at which the telling turns into an instruction to hand over</td></tr>
+          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when a silent Worker is closed and a silent Leader told to write its desk and stop</td></tr>
+          <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code></td><td>tokens: the request size at which the Leader is first told how big it has grown, how often it is told again above that, and the size at which the telling turns into an instruction to hand over; for a Worker, the two sizes at which the Leader is told how big that Worker has grown, the second being when to restart it</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, how long a server stop waits for the whole room, and how much longer <code>ovai stop</code> waits past that for the sessions to go</td></tr>
           <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code></td><td>minutes a Worker may wait on a card before the Leader is told once that somebody is waiting on your panel</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code></td><td>seconds: a seat waits for you while you type in its box. <code>quiet</code> is how long after your last keystroke you still count as typing, <code>cap</code> the longest a waiting turn is held; <code>0</code> in either turns the hold off, and a value that is not a number or is below 0 is taken as the default. <a href="/reference/#typing">What is held, with a worked timeline</a></td></tr>
@@ -146,8 +149,10 @@ and you say so to the Leader before you start on it.
       Workers on; that word is kept in <code>desks/&lt;Name&gt;/MODEL</code>, its own file rather
       than a line of the desk &mdash; the desk file is written by its session, and a model kept in
       there would be a model that session could raise for itself. It goes away with the desk.
-      Leaving the model out at <code>hire</code> writes nothing down, so changing
-      <code>models.worker</code> moves everybody who was never named one, from their next process.
+      A model given at <code>hire</code> on a desk a Worker had before runs it on that model and is
+      written down for the desk from then on. Leaving the model out at <code>hire</code> writes
+      nothing down, so changing <code>models.worker</code> moves everybody who was never named one,
+      from their next process.
     </p>
   </section>
 
@@ -156,9 +161,11 @@ and you say so to the Leader before you start on it.
     <p>
       <code>.claude/settings.json</code> under the instance root is seeded once and then belongs to
       you: every card you answer with the third button and every rule the Leader settles with
-      <code>permission</code> is written there, and <code>.claude/allowed.md</code> beside it keeps
-      one line per rule &mdash; who asked, when, what for. An update touches it for two things and
-      no other: it wires the compound hook into a file that lacks it, and turns Claude Code's
+      <code>permission</code> &mdash; a rule naming one file, like
+      <code>Edit(/knowledge/common.md)</code>, included &mdash; is written there, and
+      <code>.claude/allowed.md</code> beside it keeps one line per rule &mdash; who asked, when, what
+      for. An update touches it for two things and no other: it wires the two hooks, the compound
+      one and the subagent one, into a file that lacks them, and turns Claude Code's
       commit attribution off in a file that says nothing about it. It adds no rule; it says which
       of the rules a fresh instance is born with the file has not got, and leaves that to you. A
       file that says something else about attribution is yours, and an update leaves it. The
@@ -167,7 +174,7 @@ and you say so to the Leader before you start on it.
   </section>
 
   <section class="wrap prose">
-    <h2 id="notifications">Notifications and theme</h2>
+    <h2 id="notifications">Notifications, messages and theme</h2>
     <p>
       Two icon buttons on the Leader's head, beside the theme toggle, are the whole of the
       notification configuration: an exclamation mark for the action-needed notification
@@ -188,8 +195,15 @@ and you say so to the Leader before you start on it.
         another window; the tab's icon with the amber ring beside a plain one</figcaption>
     </figure>
     <p>
+      A third switch, after those two, hides the messages between the Leader and the Workers, and
+      one Worker's to another, from the Leader's panel; what you typed to a Worker stays. They are
+      shown to begin with, and the choice is kept by the browser as <code>openovai-comms</code>. A
+      hidden row a click reaches &mdash; its Sent or Received line on a Worker's panel, a
+      reference &mdash; is shown opened, and hides again when it is folded.
+    </p>
+    <p>
       At the right edge of the same head, a toggle between light and dark. The page starts light;
-      a choice is kept by the browser for that page, the same way the two switches are.
+      a choice is kept by the browser for that page, the same way the switches are.
     </p>
   </section>
 

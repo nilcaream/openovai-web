@@ -77,8 +77,15 @@
   common.md              handed to every session at its start
   deployment.md          one topic
   the-payments-api.md    one topic
-  who-runs-the-build.md  one topic</pre>
+  who-runs-the-build.md  one topic
+  files/                 what a note needs of its own: a template, an image</pre>
     </figure>
+    <p>
+      The one directory <code>knowledge/</code> holds is <code>files/</code>: the files a note needs
+      of its own, in whatever layout and format suits them. None of it is a note, so
+      <code>index</code> and <code>validate</code> pass it over. Any other directory is reported
+      the way a stray file is, since nothing here would ever look in it.
+    </p>
     <p>
       Facts only. A note says what is true and where that came from; what the team is
       <em>held to</em> is <a href="/customization/">customization</a>, in your words, where you can

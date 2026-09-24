@@ -58,7 +58,7 @@
     <p>
       <a href="#openovai">openovai</a> &middot; <a href="#ovai">ovai</a> &middot;
       <a href="#root">the instance root</a> &middot; <a href="#json">openovai.json</a> &middot;
-      <a href="#tools">tools</a> &middot; <a href="#events">server events</a> &middot;
+      <a href="#typing">the typing hold</a> &middot; <a href="#tools">tools</a> &middot; <a href="#events">server events</a> &middot;
       <a href="#rules">seeded rules</a> &middot; <a href="#log">runtime.log</a> &middot;
       <a href="#plugin">plugin contract</a> &middot; <a href="#needs">requirements</a>
     </p>
@@ -80,8 +80,8 @@
       <table>
         <thead><tr><th>form</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.17.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
-          <tr><td><code>openovai 0.17.0 &hellip;</code><br><code>openovai --version 0.17.0 &hellip;</code></td><td>that release</td></tr>
+          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.18.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
+          <tr><td><code>openovai 0.18.0 &hellip;</code><br><code>openovai --version 0.18.0 &hellip;</code></td><td>that release</td></tr>
           <tr><td><code>openovai [version] <wbr>--root &hellip; <wbr>--user &hellip; <wbr>--leader &hellip; <wbr>--leader-model &hellip; <wbr>--worker-model &hellip; <wbr>--port &hellip; <wbr>--auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
         </tbody>
       </table>
@@ -135,7 +135,7 @@
           <tr><td><code>runtime.json</code></td><td>the instance</td><td>the running server: url, pid, since</td></tr>
           <tr><td><code>runtime.log</code></td><td>the instance</td><td>what the server said, one row per line, every run appended; <a href="#log">the columns</a></td></tr>
           <tr><td><code>plugins/</code></td><td>the instance</td><td>tools it serves itself, one file each; yours, kept across updates</td></tr>
-          <tr><td><code>knowledge/</code></td><td>the instance</td><td>what the workspace knows: one Markdown note per topic, written by every seat; <a href="/knowledge/">the note format</a></td></tr>
+          <tr><td><code>knowledge/</code></td><td>the instance</td><td>what the workspace knows: one Markdown note per topic, written by every seat, and one directory, <code>files/</code>, which <code>index</code> and <code>validate</code> pass over; <a href="/knowledge/">the note format</a></td></tr>
           <tr><td><code>customization/</code></td><td>the instance</td><td>what you add to the personas: <code>common.md</code>, <code>leader.md</code>, <code>worker.md</code>; never touched</td></tr>
           <tr><td><code>desks/&lt;Name&gt;/</code></td><td>the people</td><td>one directory per person: <code>STATE.md</code>, <code>persona.md</code>, <code>conversation.json</code>, <code>MODEL</code> when one was named, and whatever that person keeps there; the listing is the roster</td></tr>
           <tr><td><code>archive/</code></td><td>the people</td><td>retired desks, moved whole: <code>&lt;day&gt;-&lt;Name&gt;-&lt;slug of the final title&gt;/</code>; appears at the first retire</td></tr>
@@ -166,11 +166,74 @@
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> &mdash; percent</td></tr>
           <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> &mdash; minutes</td></tr>
           <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> &mdash; tokens</td></tr>
-          <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code> &mdash; seconds</td></tr>
+          <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code> &mdash; seconds</td></tr>
           <tr><td><code>permission</code></td><td><code>{ "wait": 10 }</code> &mdash; minutes</td></tr>
+          <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code> &mdash; seconds; <a href="#typing">the typing hold</a></td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="typing">The typing hold</h2>
+    <p>
+      A seat waits for you while you type to it. When something arrives for a seat &mdash; a
+      Worker's message, a server event &mdash; while you are typing in that seat's box, the seat
+      does not start on it straight away: it waits until you send your line or stop typing, so what
+      you were about to say goes in with it instead of landing behind a turn spent on something
+      else.
+    </p>
+    <p>What is held, and what is not:</p>
+    <ul>
+      <li>Only a turn made of Worker messages and server events, and only before it begins. A turn
+        already under way runs on: the server cannot pause a session between its own tool calls.</li>
+      <li>Your own line is never held. Pressing Enter takes whatever is waiting in with it, as one
+        turn, in the order it all arrived.</li>
+      <li>Only the seat whose box you are typing in. Every other seat carries on as before.</li>
+      <li>A keystroke counts, text sitting in the box does not: a box you walked away from with
+        words still in it holds nothing once the quiet has run out.</li>
+    </ul>
+    <p>Two settings, under <code>typing</code> in <code>openovai.json</code>, both in seconds:</p>
+    <figure class="term">
+<pre>"typing": { "quiet": 10, "cap": 30 }</pre>
+    </figure>
+    <div class="table">
+      <table>
+        <thead><tr><th>key</th><th>default</th><th>what</th></tr></thead>
+        <tbody>
+          <tr><td><code>typing.quiet</code></td><td>10</td><td>how long after your last keystroke you still count as typing. The page tells the server about a keystroke at most once every two seconds, so the quiet is counted from the last keystroke the server heard, which can be up to two seconds before your real last one. A <code>quiet</code> under two seconds therefore holds only in patches</td></tr>
+          <tr><td><code>typing.cap</code></td><td>30</td><td>the longest a waiting turn is held, counted from when it started waiting (the moment it would otherwise have begun), however long you keep typing. Once it goes in and its turn ends, the next thing that arrives while you are still typing can be held again, for a fresh cap</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <code>0</code> in either one turns the hold off. A value that is not a number, or is below 0,
+      is taken as the default. The server reads <code>openovai.json</code> when it starts: a change
+      takes effect at <code>ovai restart</code>.
+    </p>
+    <p>A timeline with the defaults, on the Leader's panel:</p>
+    <ol>
+      <li><b>Typing, a message arrives, Enter.</b> You start typing at 14:00:00. At 14:00:04 a
+        Worker's message arrives and the Leader, idle, does not start on it. At 14:00:09 you press
+        Enter: your line and the message go in together as one turn, the message first because it
+        arrived first.</li>
+      <li><b>Typing stops without sending.</b> You type from 14:00:00 to 14:00:03 and stop, the
+        words left in the box. At 14:00:04 a Worker's message arrives and is held. Ten seconds after
+        the last keystroke the server heard, at about 14:00:13, it goes in on its own.</li>
+      <li><b>Typing past the cap.</b> You type without a pause from 14:00:00. At 14:00:04 a
+        Worker's message arrives and is held. At 14:00:34 the cap is reached and it goes in while
+        you are still typing. When you send your line it reaches that turn the way any line of yours
+        does: at the turn's next tool call, or after the turn if none is left.</li>
+    </ol>
+    <p>
+      What <code>runtime.log</code> shows: one row when a hold starts, and the usual
+      <code>wrote</code> row when it ends, with how long it held and what ended it &mdash;
+      <code>user</code> (your line), <code>quiet</code> or <code>cap</code>:
+    </p>
+    <figure class="term">
+<pre>held &lt;seat&gt; - typing, 1 waiting
+wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing held 5.0s (user)</pre>
+    </figure>
   </section>
 
   <section class="wrap prose">
@@ -184,7 +247,7 @@
       <table>
         <thead><tr><th>tool</th><th>who</th><th>arguments</th><th>refused when</th></tr></thead>
         <tbody>
-          <tr><td><code>message</code></td><td>everyone</td><td><code>to</code> (who), <code>text</code> (what); both required</td><td>the other seat has no process; a seat held by the quota gate has it and reads it at the reset</td></tr>
+          <tr><td><code>message</code></td><td>everyone</td><td><code>to</code> (who), <code>text</code> (what); both required. The Leader's alone: <code>checkpoint</code> (a whole number, at least 1), on an order to a Worker &mdash; after that many tool calls the server tells the Worker to report where it stands and carry on, and tells the Leader; it replaces a checkpoint still pending</td><td>the other seat has no process; a seat held by the quota gate has it and reads it at the reset; a <code>checkpoint</code> from a Worker, or one that is not a whole number of at least 1</td></tr>
           <tr><td><code>room</code></td><td>everyone</td><td>none</td><td>&mdash;</td></tr>
           <tr><td><code>index</code></td><td>everyone</td><td><code>tags</code> (left out: the header &mdash; how many notes, when the directory last changed, every tag with its count, and any file it could not read; given: the notes carrying those tags, the ones carrying more of what was asked first)</td><td>&mdash;; a file it cannot read is named in the header rather than failing the call</td></tr>
           <tr><td><code>validate</code></td><td>everyone</td><td>none</td><td>&mdash;; every problem is one line of the answer, naming the rule it breaks</td></tr>
@@ -214,7 +277,7 @@
     <p>
       A frame the server sets itself, <code>&lt;server-event type="&hellip;"&gt;</code>, queued like a
       turn and ahead of the rest when it has to be. Nothing inside a message can pose as one. There
-      are ten.
+      are twelve.
     </p>
     <div class="table">
       <table>
@@ -226,7 +289,9 @@
           <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or let it stop</td></tr>
           <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>any seat at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way, whatever else it is told in between</td></tr>
           <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>every Worker, from <code>park</code>; the Leader too from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
-          <tr><td><code>admin-closed</code></td><td><code>ended</code>, <code>changed</code>: which of the four configuration files the session watched changed, by name and nothing of what is in them</td><td>the Leader, at the server's next start after an <code>ovai claude</code> session ended</td><td>told, not asked; nothing waits on it. The telling is the server's, never the admin session's</td></tr>
+          <tr><td><code>admin-closed</code></td><td><code>ended</code>, <code>changed</code> (how many of the configuration files the session watched changed); the body names those files and what moved in them &mdash; marketplaces, plugins, skills, MCP servers, connectors, each permission rule (masked), and any other settings key by name &mdash; and nothing of what the files hold</td><td>the Leader, at the server's next start after an <code>ovai claude</code> session ended</td><td>told, not asked; nothing waits on it. Reads what matters before handing work out: a permission rule that moved changes what a Worker may do. The telling is the server's, never the admin session's</td></tr>
+          <tr><td><code>checkpoint</code></td><td><code>calls</code>; to the Leader also <code>who</code></td><td>a Worker, once it has made the number of tool calls the Leader set on its order with <code>checkpoint</code>; the Leader at the same moment</td><td>the Worker reports to the Leader where the work stands, done or not, what is left and how many more calls it expects, then carries on unless told otherwise; the Leader is told, not asked</td></tr>
+          <tr><td><code>undelivered</code></td><td><code>to</code>, and the words as they were sent</td><td>the sender of a message whose addressee's session ended before reading it; a Leader not running is started by it</td><td>says it again, to somebody else, or later</td></tr>
           <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
           <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
           <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code></td><td>the Leader, when a Worker stopped idle or into an exhausted window</td><td>notes it; <code>hire</code> brings it back when the work is still wanted</td></tr>
@@ -255,6 +320,7 @@
         <thead><tr><th>list</th><th>rule</th><th>what</th></tr></thead>
         <tbody>
           <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the eleven tools and every plugin</td></tr>
+          <tr><td>allow</td><td><code>AskUserQuestion</code></td><td>a session asking you a question: the question is itself a card on its panel, answered there</td></tr>
           <tr><td>allow</td><td><code>Read(/**)</code></td><td>reading any file</td></tr>
           <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
           <tr><td>allow</td><td><code>Edit(/knowledge/**)</code></td><td>every seat writes what the workspace knows, where it found it out</td></tr>
@@ -277,10 +343,16 @@
 
   <section class="wrap prose">
     <h2 id="log"><code>runtime.log</code></h2>
-    <p>Every row has the same four columns, single spaces, then the text. No request is ever logged.</p>
+    <p>
+      Every row has the same four columns, single spaces, then the text. No request is ever logged.
+      Every row is masked as it is written: a key, a token, a password in a URL, an
+      <code>Authorization</code> header, a <code>--token</code>-style flag or a
+      <code>SECRET=</code>-style assignment is written as <code>***</code>. The rows of every panel
+      are masked the same way, before they are kept.
+    </p>
     <figure class="term">
 <pre>&lt;moment&gt; &lt;event&gt; &lt;seat&gt; &lt;id&gt; &lt;text…&gt;
-2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.17.0
+2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid 41200 host box user ana version 0.18.0
 2026-09-20T02:15:41.530+02:00 called Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk
 2026-09-20T02:15:41.532+02:00 tool Max toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms
 2026-09-20T02:15:44.210+02:00 queued Paul - message #54, 1 waiting
@@ -292,7 +364,7 @@
         <thead><tr><th>column</th><th>what</th></tr></thead>
         <tbody>
           <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page and the desks keep</td></tr>
-          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>interrupt</code>, <code>dropped</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
+          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
           <tr><td>seat</td><td>the session the row is about; <code>-</code> for the server itself</td></tr>
           <tr><td>id</td><td>the tool-use id on <code>called</code>, <code>tool</code> and <code>failed</code>, else <code>-</code>; <code>grep toolu_&hellip; runtime.log</code> is a call's whole life, and the three rows name the tool in full, as Claude Code does</td></tr>
         </tbody>
@@ -313,6 +385,9 @@
       says how full the session that restarted was, in tokens, so "it filled up" is a number rather
       than a story. <code>quota</code> says which usage window crossed a threshold, the percentage
       it stood at, when it resets, and the model when the window is one model's own.
+      <code>held</code> says a turn waits, for a quota window or while you type on the seat's
+      panel (<a href="#typing">the typing hold</a>), and <code>released</code> that it was let go.
+      <code>checkpoint</code> says a Worker reached the number of calls the Leader set.
       <code>leftovers</code> says what a seat left running was ended with its session.
     </p>
   </section>

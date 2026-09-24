@@ -82,8 +82,9 @@
           <tr><td><code>openovai.json</code>, written by the installer</td><td><code>user</code>, <code>leader</code>, <code>models</code>, <code>port</code>, <code>auth</code></td><td>the answers above</td></tr>
           <tr><td><code>openovai.json</code>, read when present</td><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> minutes</td></tr>
           <tr><td></td><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> tokens</td></tr>
-          <tr><td></td><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20 }</code> seconds</td></tr>
+          <tr><td></td><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code> seconds</td></tr>
           <tr><td></td><td><code>permission</code></td><td><code>{ "wait": 10 }</code> minutes</td></tr>
+          <tr><td></td><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code> seconds; <code>0</code> in either turns the hold off &mdash; <a href="/reference/#typing">the typing hold, with a worked timeline</a></td></tr>
           <tr><td></td><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> percent</td></tr>
           <tr><td>one Worker's desk</td><td><code>desks/&lt;Name&gt;/MODEL</code>, written by <code>hire</code> when a model was named</td><td>absent: the usual one, <code>models.worker</code></td></tr>
           <tr><td>the environment</td><td><code>XDG_DATA_HOME</code></td><td><code>~/.local/share</code>; the runtimes live under <code>&lt;data&gt;/openovai/</code></td></tr>
@@ -99,7 +100,7 @@
       </table>
     </div>
     <p>
-      The five keys read when present are honoured and nowhere else: the installer does not write
+      The six keys read when present are honoured and nowhere else: the installer does not write
       them, the terminal does not ask for them, and <code>ovai configuration</code> does not print
       them. A value of the wrong shape falls back to the default for that key.
     </p>
@@ -158,6 +159,8 @@
           <tr><td>5 minutes</td><td>after the critical idle event, before a seat that has not stopped itself is ended</td><td><code>chat/lifecycle.mjs</code></td><td>one desk write and one stop take seconds</td></tr>
           <tr><td>60 seconds; 200 ms</td><td>how often the clocks are read; how often a park looks at who has stopped</td><td><code>chat/lifecycle.mjs</code></td><td>mechanism</td></tr>
           <tr><td>10 seconds</td><td>a wait on a card long enough to be written on the panel as <code>waited N s for permission</code></td><td><code>chat/lifecycle.mjs</code></td><td>under that there is no gap to explain</td></tr>
+          <tr><td>2 seconds</td><td>how often, at most, the page tells the server a key went into a seat's box; the typing hold's quiet counts from the last one it heard</td><td><code>chat/panels.mjs</code></td><td>a beat well inside the quiet is enough</td></tr>
+          <tr><td>1 minute</td><td>of two rows saying when a session ended or started, less than this apart, only the first is drawn</td><td><code>chat/render.mjs</code></td><td>an end and a start seconds after it are one moment; both stay in the conversation, and only the drawing leaves one out</td></tr>
           <tr><td>10 seconds</td><td>a tool call slow enough to get a row of its own on the panel</td><td><code>chat/server.mjs</code></td><td>the same reason</td></tr>
           <tr><td>500 ms; 3</td><td>how long a word on the tool line stays up; how many wait behind it</td><td><code>chat/panels.mjs</code></td><td>readable at a glance, and nothing lost</td></tr>
           <tr><td>30 seconds</td><td>how long a stopped Worker's panel stays on the page</td><td><code>chat/panels.mjs</code></td><td>long enough to read how it ended</td></tr>
@@ -173,6 +176,7 @@
         <thead><tr><th>value</th><th>governs</th><th>file</th><th>why fixed</th></tr></thead>
         <tbody>
           <tr><td>120; 80</td><td><code>write_desk</code>: the title, the status</td><td><code>chat/server.mjs</code></td><td>title and status share one header line</td></tr>
+          <tr><td>80 characters; <code>| &amp; ; &lt; &gt; $ `</code> and a newline</td><td>an exact-command rule &mdash; the one Claude Code would save for a command no rule is composed for &mdash; longer than this or holding any of those is not offered as Always; the rules composed for a compound's sides are offered whatever its length</td><td><code>chat/permissions.mjs</code></td><td>longer than a line of the card, or holding shell syntax, it is a one-off written out in full, and as a rule it would fill the panel and never match again; the words on a button are the rule it writes, so it is left off rather than shortened</td></tr>
           <tr><td>100 000 characters</td><td>one message, from the composer or the <code>message</code> tool</td><td><code>chat/server.mjs</code></td><td>a message is a message, not a file</td></tr>
           <tr><td>200 characters</td><td>how much of a refused tool result the tooltip shows</td><td><code>chat/session.mjs</code></td><td>a tooltip</td></tr>
           <tr><td>a letter, then up to 31 letters, digits or <code>-</code>; <code>description</code>, <code>inputSchema</code>, <code>run</code></td><td>what a plugin file may be called; what it has to export</td><td><code>plugins.mjs</code></td><td><a href="/plugins/">the plugin contract</a>; the eleven built-in names are taken</td></tr>

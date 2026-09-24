@@ -69,6 +69,8 @@
     </p>
     <ul>
       <li>the instance's own tool server, so the eleven tools cost one rule;</li>
+      <li>Claude Code's <code>AskUserQuestion</code>, a session asking you a question, which is a
+        card on its panel already;</li>
       <li>reading any file;</li>
       <li>editing and writing under the three trees that are yours &mdash; <code>reference/</code>,
         <code>projects/</code> and <code>temp/</code> &mdash; one rule each, and the same for a
@@ -145,6 +147,21 @@
       tells the Leader once that somebody is waiting on their panel; and while the page is not
       visible, the browser can notify you that a card appeared, if you turned that on.
     </p>
+    <p>
+      Where no rule is composed for a command, the button would carry the one Claude Code itself
+      would save: the exact command, written out whole. That rule is not offered as Always when it
+      is longer than 80 characters or holds <code>| &amp; ; &lt; &gt; $</code>, a backtick or a
+      newline &mdash; a one-off nobody would keep as a rule &mdash; and Allow and Deny answer the
+      call. The rules composed for the sides of a compound, <a href="#compound">below</a>, are
+      offered whatever the command's length. Once a card is answered after a wait,
+      the panel row that says how long it waited shows the call's first line; double-click it for
+      the whole call.
+    </p>
+    <p>
+      A question a session asks you, Claude Code's <code>AskUserQuestion</code>, is a card of its
+      own: the question and its choices on the session's panel, answered there. It is allowed from
+      birth, since the question is already the thing you are asked.
+    </p>
   </section>
 
   <section class="wrap prose">
@@ -171,6 +188,11 @@
       substitution, a here-document, a quote that is not closed &mdash; nothing is answered, which
       is the safe way round. The list is read from the settings on every call, so a rule you
       settle later is honoured at the next command, and a rule you take out stops counting.
+    </p>
+    <p>
+      A Worker keeps its own calls short. Anything longer than one command &mdash; a pipe, a chain,
+      a loop &mdash; it writes as a one-time script on its own desk and runs by its interpreter, so
+      the card you are asked on shows one short line, and the script stays there to read.
     </p>
   </section>
 
@@ -265,11 +287,12 @@
       seat, the tool-call id, the text. The rows of one call &mdash; <code>called</code>, the
       <code>tool</code> row the server writes when it ran one of its own, <code>failed</code>
       &mdash; share its id, so one <code>grep</code> is a call's whole life. A seat's process
-      going is one row saying what it ended as. No request is ever logged.
+      going is one row saying what it ended as. No request is ever logged, and every row is masked
+      as it is written: a key, a token or a password in a command is written as <code>***</code>.
     </p>
     <div class="callout">
       <b>Next</b>
-      <p><a href="/knowledge/">Knowledge</a>: what this workspace knows, as a flat directory of
+      <p><a href="/knowledge/">Knowledge</a>: what this workspace knows, as a directory of
         notes every seat may write.</p>
     </div>
   </section>

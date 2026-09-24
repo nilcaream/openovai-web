@@ -86,6 +86,16 @@
         </tbody>
       </table>
     </div>
+    <p>
+      The same installer is also published on npm as <code>@openovai/ovai</code>, for a machine with
+      Node.js 24 or newer: <code>npx @openovai/ovai@latest <wbr>--root &hellip;</code> takes every
+      option above except the version, which is named as <code>@openovai/ovai@&lt;version&gt;</code>.
+      The package is the release, so the installer needs no download and no <code>openovai</code>
+      command is left behind; the Node.js and Claude Code it pins are fetched at the first
+      <code>ovai start</code>, with the tools in the requirements below.
+      <code>@latest</code> is written out because npx reuses a copy it has cached for a name given
+      with no version. npm refuses it on any system but Linux and macOS.
+    </p>
   </section>
 
   <section class="wrap prose">
@@ -450,7 +460,8 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
         <thead><tr><th>what</th><th>for</th></tr></thead>
         <tbody>
           <tr><td>Linux or macOS, x86_64 or arm64; on Windows, WSL 2 as on Linux, with the instance in the Linux file system and off <code>/mnt/c</code></td><td>running an instance: the page is opened in your browser on <code>127.0.0.1</code></td></tr>
-          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code> or <code>shasum</code>, <code>uname</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them</td></tr>
+          <tr><td><code>sh</code>, <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code> or <code>shasum</code>, <code>uname</code></td><td>the <code>openovai</code> command and the release installer: fetching the release, and the Node.js and Claude Code it pins, and checking them; an instance made with <code>npx @openovai/ovai</code> needs them too, at its first <code>ovai start</code>, where <code>bin/ovai</code> fetches those two through <code>lib/runtime.sh</code></td></tr>
+          <tr><td>Node.js 24 or newer</td><td>only the <code>npx @openovai/ovai</code> way in, which runs the installer on it; an instance never runs on it, and the way in still needs the row above at the first start</td></tr>
           <tr><td>an Anthropic account</td><td>signing the instance in, with <code>--auth login</code> or a token under <code>--auth inherit</code></td></tr>
         </tbody>
       </table>

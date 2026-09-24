@@ -73,6 +73,26 @@
           the one line to add to your shell profile and asks you to open a new terminal &mdash; it
           never edits a profile itself. Once per user; every instance after that starts from it.
         </p>
+        <p>
+          With Node.js 24 or newer there is another way in, and it does this step and the next at
+          once:
+        </p>
+        <div class="term term-copy">
+          <button type="button" class="copy ghost" data-copy="npx" hidden>Copy</button>
+<pre id="npx-cmd">npx @openovai/ovai@latest</pre>
+        </div>
+        <p>
+          The package is the release. It asks the same questions as the next step and takes the
+          same options, needs no download for the release itself, and leaves no
+          <code>openovai</code> command behind. Node.js and Claude Code are fetched at the first
+          <code>ovai start</code>, which needs <code>sh</code>, <code>curl</code> or
+          <code>wget</code>, <code>tar</code>, <code>sha256sum</code> or <code>shasum</code> and
+          <code>uname</code>, as the other way does.
+          <code>@latest</code> is written out because npx reuses a copy it has cached for a name
+          given with no version; <code>@openovai/ovai@&lt;version&gt;</code> names a release.
+          <code>ovai update</code> takes later releases from GitHub, signed, whichever way the
+          instance was made.
+        </p>
       </li>
       <li>
         <h3>Create the first instance</h3>
@@ -169,10 +189,15 @@
     <p>
       Linux or macOS, x86_64 or arm64, with <code>sh</code>, <code>curl</code> or <code>wget</code>,
       <code>tar</code>, <code>sha256sum</code> (or <code>shasum</code>, as a Mac has it),
-      <code>ssh-keygen</code> from OpenSSH 8.1 or later, and <code>uname</code>. On Windows, ovai runs in WSL 2 as on Linux, with the instance kept in the
-      Linux file system and off <code>/mnt/c</code>. Nothing else: no Node.js, no npm, no Claude
-      Code on the machine. The rest the installer brings: the Node.js and Claude Code an instance
-      runs on are pinned, exactly, per release &mdash; chosen and tested when the release is cut
+      <code>ssh-keygen</code> from OpenSSH 8.1 or later, and <code>uname</code>. On Windows, ovai
+      runs in WSL 2 as on Linux, with the instance kept in the Linux file system and off
+      <code>/mnt/c</code>. Nothing else: no Node.js, no npm, no Claude Code on the machine &mdash;
+      but for the <code>npx</code> way in, which runs its installer on a Node.js 24 or newer you
+      already have, is refused by npm on Windows, and still needs <code>sh</code>,
+      <code>curl</code> or <code>wget</code>, <code>tar</code>, <code>sha256sum</code> or
+      <code>shasum</code> and <code>uname</code> at the first <code>ovai start</code>, where the
+      instance fetches what it runs on. The rest the installer brings: the Node.js and Claude Code
+      an instance runs on are pinned, exactly, per release &mdash; chosen and tested when the release is cut
       &mdash; fetched from a fixed address and checked against a checksum, and kept under
       <code>~/.local/share/openovai/</code>, per user, outside every instance. Instances on one
       machine share those runtimes and reuse what is already there; an instance runs them by

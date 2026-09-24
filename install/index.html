@@ -77,7 +77,7 @@
       <li>
         <h3>Create the first instance</h3>
         <div class="term">
-<pre>openovai</pre>
+<pre>~/.local/bin/openovai</pre>
         </div>
         <p>
           With no arguments the release's installer asks its questions: where the instance lives,
@@ -115,8 +115,8 @@
       <li>
         <h3>A second instance, on one line</h3>
         <div class="term">
-<pre>openovai --root ~/second --user Ana --leader Max \
-         --leader-model opus --worker-model sonnet --port 7800 --auth login
+<pre>~/.local/bin/openovai --root ~/second --user Ana --leader Max \
+                      --leader-model opus --worker-model sonnet --port 7800 --auth login
 ~/second/bin/ovai login
 ~/second/bin/ovai start</pre>
         </div>

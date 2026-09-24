@@ -53,7 +53,7 @@
     <p class="lead">
       A desk is one task and goes away with it. A conversation is shorter still. So an instance
       keeps one thing that outlives both, and it is a directory you can open:
-      <code>knowledge/</code>, at the instance root, one Markdown note per topic, written and
+      <code>knowledge/</code>, in the instance directory, one Markdown note per topic, written and
       edited by every session with the file tools it already has.
     </p>
     <p>
@@ -73,7 +73,7 @@
       conversation.
     </p>
     <figure class="term">
-<pre>&lt;root&gt;/knowledge/
+<pre>&lt;instance&gt;/knowledge/
   common.md              handed to every session at its start
   deployment.md          one topic
   the-payments-api.md    one topic
@@ -115,7 +115,7 @@ The build runs on&hellip;</pre>
         <tbody>
           <tr><td><code>summary</code></td><td>one line: what the note is about, for somebody deciding whether to open it</td></tr>
           <tr><td><code>tags</code></td><td>at least three, lowercase and hyphenated, no duplicates; they are what a search matches on, so they are a decision the writer makes rather than a word that happens to be in the text</td></tr>
-          <tr><td><code>sources</code></td><td>where it came from: a path from the instance root, a URL, or <code>&lt;user&gt;</code> when you said it; never a path under <code>desks/</code> or <code>archive/</code>, since a desk is filed away when its seat retires and what is filed away is history &mdash; what a note needs from a desk is copied into the note, or under <code>knowledge/files/</code></td></tr>
+          <tr><td><code>sources</code></td><td>where it came from: a path from the instance directory, a URL, or <code>&lt;user&gt;</code> when you said it; never a path under <code>desks/</code> or <code>archive/</code>, since a desk is filed away when its seat retires and what is filed away is history &mdash; what a note needs from a desk is copied into the note, or under <code>knowledge/files/</code></td></tr>
           <tr><td><code>updated</code></td><td>the date it last changed, and never a date in the future</td></tr>
         </tbody>
       </table>
@@ -180,7 +180,7 @@ summary: What everybody here needs on their first turn
       everybody, the instance is born asking before it changes &mdash;
       <code>Edit(/knowledge/common.md)</code> is in the <a href="/permissions/">ask list</a>, so a
       session that would rewrite that one file stops for your press while the rest of the directory
-      stays open to write. A card never offers that one-file rule as Always; the Leader settles it
+      stays open to write. A permission popup never offers that one-file rule as Always; the Leader settles it
       with <code>permission</code> when you say so. No file, no frame, no error: a workspace that has learnt nothing yet reads
       exactly as an empty one does.
     </p>

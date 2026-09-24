@@ -64,7 +64,7 @@
       <dt>User</dt>
       <dd>You. The Leader's panel is in the middle; type what you want and the Leader starts. You
         can type on any Worker's panel too, and the Leader hears it the same moment. Rules about
-        what the instance may do are yours, settled in your words on a card.</dd>
+        what the instance may do are yours, settled in your words on a permission popup.</dd>
       <dt>Leader</dt>
       <dd>One session, always there. It takes your words, hires Workers by name, briefs them,
         takes their questions and reports, decides what reaches you, stops and restarts them,
@@ -83,8 +83,12 @@
   <section class="wrap prose">
     <h2 id="day">The day of a Leader</h2>
     <p>
-      You open the page and type on the Leader's panel: what you want, in any words. The Leader
-      answers in plain language, and when the work is somebody's, it hires. Called with no name,
+      You open the page and type on the Leader's panel: what you want, in any words. The first time
+      the server starts on a version, the Leader's panel opens with ovai's introduction: one screen
+      on what ovai is, what it does not do, where Claude Code's own commands go and how to ask about
+      the tool. The Leader is handed the same text, and ovai's guide, a skill with a page per topic
+      it reads to answer how something is done here, in your own words. The Leader answers in
+      plain language, and when the work is somebody's, it hires. Called with no name,
       the roster names the Worker: a fixed list of thirty first names, and the next one is the
       least recently used free one &mdash; never used first, then the one whose holder left longest
       ago. A new name gets a desk opened from the template, and the rules that make that directory
@@ -111,19 +115,26 @@
       What the Leader says to you is for you: a turn with nothing in it for you is answered with
       <code>&lt;noop/&gt;</code> and the panel shows nothing for it, and a Worker's checkpoint stays
       between the Leader and the Worker. When you ask where things stand, and when the Leader asks
-      you what to take next, it gives the whole open list, never one written earlier. Inline code is
+      you what to take next, it gives the whole open list, never one written earlier. Its last word
+      before you speak again stands alone: where things are now and the one question open, so that
+      nothing above it needs reading to act on it. Every text a session writes in a turn is a row on
+      its panel, before a tool call as much as after one, and an answer is words in the reply, never
+      only thinking or the desk. When the Leader reads what you typed and ends its turn with no
+      words, the server tells it at once with an <code>unanswered</code> event, and it answers. Inline code is
       kept for a name, a path or a short command; quoted or proposed text is a blockquote, and
       longer code a fenced block.
     </p>
     <p>
       Through the day the server tells the Leader what it needs to know and nothing more: that you
       typed on a Worker's panel, and what; that one Worker said something to another; that a Worker
-      has been silent for 10 minutes, and again at 50; that a Worker's card timed out, after 10
+      has been silent for 10 minutes, and again at 50; that a Worker's permission popup timed out, after 10
       minutes or 2 for a subagent's call; how much of its context a Worker has used, at the warning
-      size and at the size to restart it at; that a Worker says it is done; that a Worker has gone,
+      size and at the size to restart it at; that a Worker says it is done; that every running Worker has sat idle for a minute with nothing
+      waiting for it, once, usually a report it has not acted on; that a Worker has gone,
       and why &mdash; stopped or restarted by the Leader, idle, a spent window &mdash; with its desk
       as it was last written; that the service refused a Worker's turn, in the service's own words;
-      that a spent window has reset; that admin mode ran, when it ended, and which of the instance's
+      that a spent window has reset; that admin mode ran &mdash; within seconds while the server runs, else at its next start
+      &mdash; when it ended, and which of the instance's
       configuration files changed &mdash; by name, and nothing of what is in them. Told, not asked:
       nothing waits on the Leader for any of it.
     </p>
@@ -131,7 +142,7 @@
       The rules the instance holds are settled through the Leader, in your words. Say "you will be
       autonomous, push without asking" or "pip install is too much, ask me every time", and the
       Leader answers in plain language first, then calls <code>permission</code> once per rule
-      &mdash; a card on its panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every time</b>. A Worker
+      &mdash; a permission popup on its panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every time</b>. A Worker
       hired to push is hired after the push is allowed.
       <a href="/permissions/">Permissions</a> has the whole of it.
     </p>
@@ -151,11 +162,11 @@
       One task at a time. A Worker is started on its desk with a persona rendered at that moment,
       reads its desk first, and works from there: what the work produces &mdash; a design, a
       finding, notes &mdash; is kept on its desk, beside the desk file, and every file it names is
-      named by its whole path from the instance root, where every session runs. It writes the desk
+      named by its whole path from the instance directory, where every session runs. It writes the desk
       with a tool at every point the work moves, not only at the end, because a written desk is what
       survives and anything worked out and not written is gone with the session. Its files stay
-      inside the instance: <code>/tmp</code> is outside it, so every use would stop on a card for
-      you.
+      inside the instance: <code>/tmp</code> is outside it, so a file tool's read or write there
+      would stop on a permission popup for you.
     </p>
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
@@ -212,7 +223,7 @@
     <h2 id="desks">Desks and handover</h2>
     <p>
       A desk is a person, and each seat is told its desk and desk file as whole paths, the
-      instance root joined. The desk file is edited in place, like any other file; its header line
+      instance directory joined. The desk file is edited in place, like any other file; its header line
       is written with <code>write_desk</code> &mdash; a title, one line, what the seat is on; a
       status, one line, where it stands &mdash; and calling it is what says the desk is current.
       It is how the User and the Leader see what everybody is on without opening every panel.
@@ -249,14 +260,17 @@
     <h2 id="models">Models per seat</h2>
     <p>
       The instance was installed with a model for the Leader and one for the Workers. A Worker
-      that should not run on the usual one is hired with a model beside its name, kept as one
-      word in <code>desks/&lt;Name&gt;/MODEL</code> &mdash; its own file rather than a line of the
+      that should not run on the usual one is hired with a model beside its name, kept as
+      written in <code>desks/&lt;Name&gt;/MODEL</code> &mdash; its own file rather than a line of the
       desk, because the desk file is written by its session, and a model kept in there would be a
       model that session could raise for itself. It goes away with the desk. Leaving the model out
       writes nothing down, so changing the installed model moves everybody who was never named
       one, from their next process. A model given at <code>hire</code> on a desk a Worker had
       before runs it on that model and is kept for the desk from then on; without one, the desk's
-      own stands. <code>ovai configuration</code> lists every desk with what it resolves to.
+      own stands. <code>ovai configuration</code> lists every desk with what it resolves to. A model
+      may name the effort it runs at, <code>opus/high</code>: the effort goes to Claude Code as
+      <code>--effort</code>, and with none written Claude Code picks its own. A new instance runs
+      its Leader on <code>opus</code> and its Workers on <code>sonnet</code>.
     </p>
   </section>
 
@@ -266,7 +280,7 @@
       A Worker that has been silent is reported to the Leader at 10 and at 50 minutes. At 55 the
       server closes it: it writes its desk and goes, and a desk not written within 5 minutes of the
       turn that read the close is taken as it was last written. The Leader is told either way. A
-      seat on a turn &mdash; waiting on a card included &mdash; is never idle.
+      seat on a turn &mdash; waiting on a permission popup included &mdash; is never idle.
     </p>
     <p>
       When a usage window nears its limit every running seat is told: a Worker carries on; the
@@ -280,7 +294,7 @@
     <div class="callout">
       <b>Next</b>
       <p><a href="/permissions/">Permissions</a>: what a session may do from birth, and what the
-        card on its panel offers you.</p>
+        permission popup on its panel offers you.</p>
     </div>
   </section>
 

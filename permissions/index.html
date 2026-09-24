@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Permissions and safety — OpenOv AI</title>
-<meta name="description" content="What a session may do from birth, the card that stops a session on its panel, one rule per side of a compound command, rules settled in your words, and who is speaking to whom.">
+<meta name="description" content="What a session may do from birth, the permission popup that stops a session on its panel, one rule per side of a compound command, rules settled in your words, and who is speaking to whom.">
 <link rel="canonical" href="https://openov.ai/permissions/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/permissions/">
@@ -53,7 +53,7 @@
     <p class="lead">
       A session asks before it uses a tool the instance has not settled. What the instance allows it
       simply does; what it denies it never gets to try; and anything left undecided stops the run
-      and appears on that session's panel as a card, in the session's own words. A card nobody
+      and appears on that session's panel as a permission popup, in the session's own words. A permission popup nobody
       answers is a Deny after ten minutes, or two for a subagent's call, and the session is told
       that nobody answered: it goes on with what it can do without the call and asks for it again
       when you are back.
@@ -66,12 +66,14 @@
       A fresh instance seeds two settings files once and never touches them again, but for two
       things: an update wires the two hooks, <a href="#compound">below</a>, into a settings file
       that lacks them, and turns the harness's commit attribution off in one that says nothing
-      about it. It adds no rule. What a fresh instance is born allowing:
+      about it. It adds no rule: a rule a fresh instance of a newer version is born with and yours
+      lacks is asked for on the Leader's panel instead, <a href="#defaults">below</a>. What a fresh
+      instance is born allowing:
     </p>
     <ul>
       <li>the instance's own tool server, so the fourteen tools cost one rule;</li>
       <li>Claude Code's <code>AskUserQuestion</code>, a session asking you a question, which is a
-        card on its panel already;</li>
+        permission popup on its panel already;</li>
       <li>reading any file;</li>
       <li>editing and writing under the three trees that are yours &mdash; <code>reference/</code>,
         <code>projects/</code> and <code>temp/</code> &mdash; one rule each, and the same for a
@@ -90,7 +92,14 @@
     </ul>
     <p>And what it is born denying:</p>
     <ul>
-      <li>the instance's own account files;</li>
+      <li>the instance's own account files, and to the Read tool and the tools that write files,
+        the account's credential, <code>.local/.credentials.json</code>, and the page's two keys,
+        <code>page-session</code> and <code>page-link</code>. These bind the file tools only: a
+        granted <code>Bash(cat:*)</code> or <code>Bash(node:*)</code> still reads either with no
+        permission popup, and a <code>Bash(&hellip;)</code> deny would stop one spelling of the
+        command out of endless ones, so none is added. The rest of <code>.local/</code> stays
+        readable, since Claude Code keeps large tool results and skills there for a session to
+        read;</li>
       <li><code>git push</code>, <code>sudo</code> and <code>ssh</code>: a push is yours, and a
         refusal wins over the <code>git</code> rule that would let it through, whatever the hook
         says.</li>
@@ -107,7 +116,7 @@
         overlap there on purpose, and the narrower ask is the one consulted.</li>
     </ul>
     <p>
-      Every path rule starts with <code>/</code>, which anchors it at the instance root, so a
+      Every path rule starts with <code>/</code>, which anchors it at the instance directory, so a
       session that has stepped into a repository with <code>cd</code> is still allowed the same
       places. The attribution Claude Code would add to every commit and pull request is off: a
       commit is the seat's, made as you asked, and says what its message says. A settings file
@@ -116,7 +125,7 @@
   </section>
 
   <section class="wrap prose">
-    <h2 id="card">The card</h2>
+    <h2 id="card">The permission popup</h2>
     <p>
       A call the instance has not settled stops the run and appears on that session's panel:
       <code>Paul wants to use Bash</code>, the command and the reason the session gave for it, or
@@ -129,7 +138,7 @@
       <dt>Allow</dt>
       <dd>lets that call through, once.</dd>
       <dt>Always allow</dt>
-      <dd>where the request says plainly what the whole class of calls is, the card lists the rules
+      <dd>where the request says plainly what the whole class of calls is, the permission popup lists the rules
         it saves under <code>Always allow saves:</code>, one to a line &mdash;
         <code>Bash(node:*)</code>, a command by its first word (<code>git</code> by its subcommand:
         <code>Bash(git push:*)</code>), or <code>Edit(/projects/app/**)</code>, a write by the
@@ -144,25 +153,27 @@
     <figure class="shot">
       <a class="light" href="/media/media-11.png"><img src="/media/media-11.png" width="406" height="1072" alt=""></a>
       <a class="dark" href="/media/media-11-dark.png"><img src="/media/media-11-dark.png" width="406" height="1072" alt=""></a>
-      <figcaption>the card: <code>Paul wants to use Bash</code>, the command, the reason, and the rules Always allow saves</figcaption>
+      <figcaption>the permission popup: <code>Paul wants to use Bash</code>, the command, the reason, and the rules Always allow saves</figcaption>
     </figure>
     <p>
-      A command whose first word is a path or a variable gets no button, and neither does a write
-      outside the instance &mdash; <code>/tmp</code> included, which is why a Worker keeps its files
-      inside the instance &mdash; nor a tool the server serves, which is granted already. A run that
+      A command whose first word is a path or a variable gets no button, and neither does a file
+      tool's write outside the instance &mdash; <code>/tmp</code> included, which is why a Worker
+      keeps its files inside the instance &mdash; nor a tool the server serves, which is granted
+      already. A shell rule matches the start of a command, not the paths it names, so an allowed
+      <code>cp</code> or <code>find</code> runs in <code>/tmp</code> with no popup. A run that
       ends before it was answered takes its question down with it. While the page is not visible,
-      the browser can notify you that a card appeared, if you turned that on.
+      the browser can notify you that a permission popup appeared, if you turned that on.
     </p>
     <p>
-      A card that holds a session's call, a permission card or a question, is a Deny after ten
+      A popup that holds a session's call, a permission popup or a question, is a Deny after ten
       minutes nobody answers it, or after two when one of the session's subagents made the call: a
       subagent is not built to be stopped, and the session's prompt cache lives five minutes. It
-      leaves the panel as an answered card does, the panel says <code>Waited 634 seconds for
+      leaves the panel as an answered popup does, the panel says <code>Waited 634 seconds for
       permission, timed out: &hellip;</code>, and the session gets, as the call's error, that you
-      did not answer the card within that time. That Deny is nobody's answer: the session goes on
+      did not answer the popup within that time. That Deny is nobody's answer: the session goes on
       with what it can do without the call, says what waits on it, and asks for it again once you
-      are back, never looking for a way round it. The clock is read once a minute, so a card goes
-      within a minute after its time. When it was a Worker's card, the Leader is told it timed out.
+      are back, never looking for a way round it. The clock is read once a minute, so a popup goes
+      within a minute after its time. When it was a Worker's popup, the Leader is told it timed out.
       The Leader and the Workers are held to it alike.
     </p>
     <p>
@@ -173,13 +184,13 @@
       call. The rules composed for the sides of a compound, <a href="#compound">below</a>, are
       offered whatever the command's length, and none is drawn from inside a backtick or
       <code>$(</code> span. A rule naming one file, <code>Edit(/knowledge/common.md)</code>, is never
-      offered as Always: it is the Leader's to settle, <a href="#rules">in words</a>. Once a card is
+      offered as Always: it is the Leader's to settle, <a href="#rules">in words</a>. Once a popup is
       answered after a wait, the panel row that says how long it waited &mdash; <code>Waited 233
       seconds for permission: &hellip;</code> &mdash; shows the call's first line; double-click it
       for the whole call.
     </p>
     <p>
-      A question a session asks you, Claude Code's <code>AskUserQuestion</code>, is a card of its
+      A question a session asks you, Claude Code's <code>AskUserQuestion</code>, is a popup of its
       own, answered on the session's panel as a form: a rule between questions, the options in a
       column, Other as the last option with a line of its own to type in, and Send and Cancel. It
       is allowed from birth, since the question is already the thing you are asked.
@@ -191,11 +202,11 @@
     <p>
       Claude Code matches a Bash rule against a command from its first character, so an instance
       that allows <code>git</code>, <code>cd</code> and <code>npm</code> would still be stopped on
-      <code>cd app &amp;&amp; npm test</code>: no one rule holds the whole. Two hooks and the card meet
+      <code>cd app &amp;&amp; npm test</code>: no one rule holds the whole. Two hooks and the permission popup meet
       that.
     </p>
     <p>
-      The card offers one rule per side: <code>cd app &amp;&amp; npm test &amp;&amp; make build</code>
+      The permission popup offers one rule per side: <code>cd app &amp;&amp; npm test &amp;&amp; make build</code>
       offers <b>Always allow <code>Bash(npm:*)</code> and <code>Bash(make:*)</code></b>,
       <code>cd</code> being held from birth &mdash; and never a rule for the words Claude Code runs
       without asking anyway (<code>ls</code>, <code>cat</code>, <code>grep</code>, <code>cd</code>
@@ -207,7 +218,7 @@
       "${CLAUDE_PROJECT_DIR}/lib/hooks/run.sh" compound</code> (or <code>subagent</code>), which
       runs them on the Node.js the instance's version pins, not on whatever <code>node</code> the
       session's <code>PATH</code> has; an update replaces the older commands with these and keeps
-      any hook of your own. It reads the command as text and cuts it into sides the way the card
+      any hook of your own. It reads the command as text and cuts it into sides the way the permission popup
       does:
     </p>
     <ul>
@@ -222,7 +233,7 @@
         <code>$(</code>, a here-document &mdash; with a side no rule allows: it refuses, with a
         reason that says to create the script with the Write tool, in <code>temp/</code> or on the
         desk, and run only <code>bash &lt;file&gt;</code>. The session writes the script and runs
-        it, and the card you are asked on, if any, shows one short line.</li>
+        it, and the permission popup you are asked on, if any, shows one short line.</li>
       <li>One plain command no rule allows, a line with a side the deny list refuses, and a line
         the hook cannot read, such as a quote that is not closed: it answers nothing, and the
         harness asks. Such a line is never sent toward a script, so a new program run on its own is
@@ -250,7 +261,7 @@
       <code>permission</code> once per rule: a rule as Claude Code's reference spells it &mdash;
       <code>Bash(git push:*)</code> for a command by prefix, <code>Bash(the whole command)</code>
       for one command exactly, <code>Edit(/src/**)</code> or <code>Read(/src/**)</code> for a
-      directory under the instance root, <code>Edit(/knowledge/common.md)</code> or
+      directory in the instance, <code>Edit(/knowledge/common.md)</code> or
       <code>Read(/notes/plan.md)</code> for one file there, <code>Read(//dir/**)</code> for a
       directory outside it,
       <code>WebFetch(domain:host)</code> for a host, <code>WebSearch</code>,
@@ -264,17 +275,27 @@
     <figure class="shot">
       <a class="light" href="/media/media-12.png"><img src="/media/media-12.png" width="1084" height="1072" alt=""></a>
       <a class="dark" href="/media/media-12-dark.png"><img src="/media/media-12-dark.png" width="1084" height="1072" alt=""></a>
-      <figcaption>the Leader's rule card: the rule, the reason, Allow / Deny / Ask every time</figcaption>
+      <figcaption>the Leader's rule popup: the rule, the reason, Allow / Deny / Ask every time</figcaption>
     </figure>
     <p>
-      Each call is one card on the Leader's panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every
+      Each call is one rule popup on the Leader's panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every
       time</b>; the press writes the rule to that list in the instance's settings, takes it off the
       other two, and reaches the Leader as an event, so a Worker hired to push is hired after the
-      push is allowed. A rule card holds no call, and never times out. Called with no rule,
+      push is allowed. A rule popup holds no call, and never times out. Called with no rule,
       <code>permission</code> answers what the instance holds and what is still pending &mdash; the
       Leader reports from that, never from a settings file. Every rule granted by a press is written
       down in <code>.claude/allowed.md</code>, one line per rule with the list it went to, who
       asked, when and what for.
+    </p>
+    <p id="defaults">
+      A rule a fresh instance is born with that yours holds in none of its lists &mdash; after an
+      update, most of the time, or because you took it out &mdash; is asked for by ovai itself: one
+      permission popup per rule on the Leader's panel, at every start of the server, saying that it
+      came with the update, what it does and why. It has two buttons: what ovai recommends, labelled
+      as what it does (<b>Allow</b>, <b>Deny</b> or <b>Ask every time</b>), and <b>Ignore</b>, which
+      is remembered in <code>.claude/ignored-defaults.json</code> so that rule is never asked again.
+      A popup nobody answered comes back at the next start. Nothing is added without a press, and
+      the Leader is not told about it.
     </p>
     <figure class="shot">
       <a href="/media/media-13.png"><img src="/media/media-13.png" width="1077" height="384" alt=""></a>
@@ -295,12 +316,23 @@
     </p>
     <p>
       Who is calling a tool travels with the process, not with a name. When the server starts a seat
-      it mints a secret &mdash; 32 random bytes &mdash; hands it to the process in its environment,
-      and keys the tool route by it. The map from secret to seat lives in memory only, a secret dies
+      it mints a secret &mdash; 32 random bytes &mdash; and keys the tool route by it. The secret is
+      handed over in a file only this user can read, <code>desks/&lt;Name&gt;/mcp.json</code>, named
+      on the command line by its path and removed the first time the secret comes back in a call,
+      about a quarter of a second after the start. It is never in the process's environment, which
+      every process of the same user can read for as long as the session lives. What stays open: a
+      process of the same user that watches for the file can read it in that moment, one that may
+      read another process's memory can read it there, and a seat that runs commands as you can
+      change ovai's own code, which every session runs. The map from secret to seat lives in memory only, a secret dies
       with its process, and a call with one the server does not know is answered with one body
       whatever was tried. The request log prints the secret as the word <code>&lt;secret&gt;</code>
-      wherever a path carries one. The page has a secret of its own that opens no tool route, and
-      sets it as a cookie for its own port (<code>HttpOnly</code>, <code>SameSite=Strict</code>).
+      wherever a path carries one. The page has a key of its own that opens no tool route, <code>page-session</code>, and a
+      browser holds it as a cookie for its own port (<code>HttpOnly</code>,
+      <code>SameSite=Strict</code>), set by a one-time link: <code>ovai start</code> and
+      <code>ovai url</code> print one, it works once and for ten minutes, and a new one replaces the
+      one before it. A browser that has not got the cookie is shown where to get a link, and
+      nothing else. Delete <code>page-session</code> to sign every browser out. The instance
+      directory is readable by its owner alone, and so are both files.
     </p>
     <p>
       The server answers only to its own address. A request whose <code>Host</code> is not
@@ -310,9 +342,10 @@
       <code>Origin</code> is refused with 403 unless that origin is
       <code>http://127.0.0.1:&lt;port&gt;</code> or <code>http://localhost:&lt;port&gt;</code>. That
       closes one gap: a web page whose own name was pointed at <code>127.0.0.1</code> could
-      otherwise load the page, read its secret and drive every seat. It closes nothing else: any
-      process or user on the machine that connects to the port directly still gets the page and its
-      secret from <code>GET /</code>.
+      otherwise load the page and drive every seat. The sign-in closes the other: a process or user
+      on the machine that connects to the port directly gets the page only with the cookie, and the
+      cookie only from a link. Whoever can read the instance's files as you can sign in, sessions
+      included; that is the line it draws.
     </p>
   </section>
 
@@ -332,7 +365,10 @@
         outlives a conversation is what somebody wrote down: a seat's desk, and the
         <a href="/knowledge/">knowledge</a> directory. Both are plain files, and both are read the
         same by everyone.</li>
-      <li><b>What a reply can do to the page.</b> Raw HTML is escaped, a link is kept only on
+      <li><b>What a reply can do to the page.</b> Raw HTML is escaped, and so is the text after an
+        inline tag; the page is sent with a Content-Security-Policy that runs its own two inline
+        scripts and one inline style, each by the digest of its text, and nothing else inline, loads
+        everything else from its own origin, may not be framed and sends no form. A link is kept only on
         <code>http(s)</code>, <code>mailto</code> and a path the file view would show or the desktop
         would open, <a href="#files">below</a>, and an image is shown as a link: nothing a session
         says makes the page fetch anything.</li>
@@ -346,11 +382,16 @@
     <p>
       A path in a reply is a link only to what the checks let through, and the server runs the same
       checks on every row it sends, to decide which paths the page links, and again when a link is
-      opened. A path is read from the instance root and nowhere else. It is shown or opened only
+      opened. A path is read from the instance directory and nowhere else. It is shown or opened only
       when its real path, symlinks followed, is inside the instance, and never when it is the
-      instance's Claude Code home (<code>.local/</code>), a <code>.git</code> directory, a
-      <code>.env</code> or <code>.env.*</code> file, or a <code>.credentials.json</code>, however
-      the name is cased. The <a href="/how-it-works/#files">file view</a> shows a regular file of at
+      a Claude Code home, or a <code>.git</code>, <code>.ssh</code>, <code>.aws</code> or
+      <code>.gnupg</code> directory anywhere on the path, nor when it is a
+      <code>.credentials.json</code>, <code>.git-credentials</code>, <code>.netrc</code>,
+      <code>.npmrc</code>, <code>.pgpass</code>, <code>.env</code> or <code>.env.*</code>,
+      <code>page-session</code> or <code>page-link</code> file at any depth, however the name is
+      cased; a nested instance's are refused the same. A regular file with more than one name, a
+      hard link, is refused too, since the view cannot see its other names. The list goes by name:
+      a copy of a credential under another name is shown. The <a href="/how-it-works/#files">file view</a> shows a regular file of at
       most 1 MiB of UTF-8 text, answers only a request that carries the page's cookie, allows no
       inline script or style on its page, and is not cached.
     </p>
@@ -386,7 +427,11 @@
       <code>tool</code> row the server writes when it ran one of its own, <code>failed</code>
       &mdash; share its id, so one <code>grep</code> is a call's whole life. A seat's process
       going is one row saying what it ended as. No request is ever logged, and every row is masked
-      as it is written: a key, a token or a password in a command is written as <code>***</code>.
+      as it is written: a token of a known shape, such as <code>sk-&hellip;</code> or
+      <code>ghp_&hellip;</code>, anywhere, and in a command also the value after a name that says
+      key, token, secret or password on the same line, is written as <code>***</code>. What is said
+      in words is masked by shape alone. A desktop open that fails is an <code>unopened</code> row,
+      with the path and the reason.
     </p>
     <div class="callout">
       <b>Next</b>

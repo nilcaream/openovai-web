@@ -67,7 +67,7 @@
       ovai's own mechanics for every seat, in <code>&lt;ovai
       source="lib/templates/common.md"&gt;</code>, then the role's template in <code>&lt;ovai
       source="lib/templates/leader.md"&gt;</code> (or <code>worker.md</code>), then what you add.
-      What you add to it is yours: three files at the instance root, each reaching the session in a
+      What you add to it is yours: three files in the instance directory, each reaching the session in a
       frame that names the file it came from. <code>customization/common.md</code> goes to every
       session here and comes first, so the role's own file reads as the narrower thing under it;
       <code>customization/leader.md</code> and <code>customization/worker.md</code> go to that kind
@@ -108,7 +108,7 @@ and you say so to the Leader before you start on it.
   <section class="wrap prose">
     <h2 id="json"><code>openovai.json</code></h2>
     <p>
-      The instance's description of itself, at the root. The installer writes it &mdash; who works
+      The instance's description of itself, in the instance directory. The installer writes it &mdash; who works
       here, on which models, on which port, how it signs in; no absolute path, so an instance can
       be moved and still be itself &mdash; and an install over the instance with <code>--force</code>
       writes any option you give into it. Everything below the first group is optional: absent, the
@@ -128,7 +128,7 @@ and you say so to the Leader before you start on it.
           <tr><td><code>schema</code>, <code>createdAt</code></td><td>&mdash;</td><td>the file's version and when the instance was installed; <code>ovai configuration</code> reports the second</td></tr>
           <tr><td colspan="3"><em>read when present</em></td></tr>
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code></td><td>the two stages of the <a href="/how-it-works/#quota">quota gate</a>, in percent of each window; the <code>7d</code> pair holds every weekly window, the one over all models and fable's own alike</td></tr>
-          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when a silent Worker is closed and a silent Leader told to write its desk and stop</td></tr>
+          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55, "all": 1 }</code></td><td>minutes: when the Leader is told about a silent Worker, twice, and when a silent Worker is closed and a silent Leader told to write its desk and stop; and how long every running Worker has to sit idle before the Leader is told nobody is doing anything</td></tr>
           <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code></td><td>tokens: the request size at which the Leader is first told how big it has grown, how often it is told again above that, and the size at which the telling turns into an instruction to hand over; for a Worker, the two sizes at which the Leader is told how big that Worker has grown, the second being when to restart it</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, how long a server stop waits for the whole room, and how much longer <code>ovai stop</code> waits past that for the sessions to go</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code></td><td>seconds: a seat waits for you while you type in its box. <code>quiet</code> is how long after your last keystroke you still count as typing, <code>cap</code> the longest a waiting turn is held; <code>0</code> in either turns the hold off, and a value that is not a number or is below 0 is taken as the default. <a href="/reference/#typing">What is held, with a worked timeline</a></td></tr>
@@ -157,13 +157,20 @@ and you say so to the Leader before you start on it.
       nothing down, so changing <code>models.worker</code> moves everybody who was never named one,
       from their next process.
     </p>
+    <p>
+      Each of these takes <code>model</code> or <code>model/effort</code>: <code>opus/high</code>
+      runs the seat on <code>opus</code> at high effort, and with no effort written Claude Code picks
+      its own for the model. A new instance offers <code>opus</code> for the Leader and
+      <code>sonnet</code> for the Workers; the <a href="/defaults/#models">defaults page</a> has the
+      whole check.
+    </p>
   </section>
 
   <section class="wrap prose">
     <h2 id="rules">The rules are yours</h2>
     <p>
-      <code>.claude/settings.json</code> under the instance root is seeded once and then belongs to
-      you: every card you answer with the third button and every rule the Leader settles with
+      <code>.claude/settings.json</code> in the instance directory is seeded once and then belongs to
+      you: every permission popup you answer with the third button and every rule the Leader settles with
       <code>permission</code> &mdash; a rule naming one file, like
       <code>Edit(/knowledge/common.md)</code>, included &mdash; is written there, and
       <code>.claude/allowed.md</code> beside it keeps one line per rule &mdash; who asked, when, what
@@ -181,7 +188,7 @@ and you say so to the Leader before you start on it.
     <p>
       Two icon buttons on the Leader's head, beside the theme toggle, are the whole of the
       notification configuration: an exclamation mark for the action-needed notification
-      (<code>&lt;name&gt; requires your action</code> &mdash; a card appeared on some panel) and a
+      (<code>&lt;name&gt; requires your action</code> &mdash; a permission popup appeared on some panel) and a
       bell for the end-of-turn notification (<code>&lt;name&gt; finished their turn</code> &mdash;
       the Leader's turn ended, however it ended). Each is lit while on and slashed across while off,
       both off to begin with, kept by the browser for that page. The first switch you turn on asks

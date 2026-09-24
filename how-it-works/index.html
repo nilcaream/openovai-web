@@ -67,7 +67,7 @@
       share neither account nor transcripts.
     </p>
     <figure class="term">
-<pre>&lt;root&gt;/
+<pre>&lt;instance&gt;/
   bin/ovai          the one command
   lib/              everything else the release ships; replaced whole on update
   openovai.json     the instance's description of itself: who works here, on which models, which port
@@ -165,7 +165,7 @@
       the session is doing: listening, working, waiting for you &mdash; a transcript, and a text
       box. Enter sends, Shift+Enter is a newline. The dot is green between turns, amber while a turn
       runs, red once the process is gone. The head of the Leader's panel carries, after the
-      connection word, the version the server runs &mdash; <code>0.20.0</code>, or the eight
+      connection word, the version the server runs &mdash; <code>0.21.0</code>, or the eight
       characters of the commit on a build of <code>main</code> &mdash; then the account's usage
       windows &mdash; the session window with the time to its reset, the weekly window over all
       models, and the weekly window of the one model that has its own, like <code>8% (3h) · all 86%
@@ -179,9 +179,13 @@
       A panel with no rows shows nothing: it stays empty until the seat's first row arrives. A row
       with the wall-clock time marks when a session starts and when it ends, so a panel kept across
       a stop shows where the break was and how long it lasted; of two less than a minute apart, only
-      the first is drawn. Every row is masked before it is kept: a key, a token or a password in a
-      command is written as <code>***</code>, on the panel and in <code>runtime.log</code> alike. A
-      tool line such as <code>Reading &hellip;</code> names a file inside the instance from its root
+      the first is drawn. Every row is masked before it is kept, on the panel and in <code>runtime.log</code> alike: a
+      token by its own shape, such as <code>sk-&hellip;</code>, <code>ghp_&hellip;</code>, a JWT or a
+      Bearer value, is written as <code>***</code> wherever it stands, and in a tool call's line and
+      the log a value is also masked after a name that says key, token, secret or password on the
+      same line. What is said in words is masked by shape alone, so &ldquo;public key: HTTP
+      403&rdquo; reads as written. A
+      tool line such as <code>Reading &hellip;</code> names a file inside the instance by its path from the instance directory
       and any other file by its absolute path. Scrolled more than 80&nbsp;px above the newest row,
       any panel shows <code>&darr; latest</code>, and a click on it takes you to the newest row; on
       the Leader's panel it says <code>&darr; new messages</code> once a row lands below you.
@@ -192,7 +196,9 @@
       <figcaption>a Worker's panel: what it says, and a line for each tool it uses</figcaption>
     </figure>
     <p>
-      Replies are rendered as markdown. Raw HTML in a reply is escaped, a link is kept only on
+      Replies are rendered as markdown. Raw HTML in a reply is escaped, and so is the text after it,
+      and the page is sent with a Content-Security-Policy that runs its own two scripts and nothing
+      else inline, so HTML that got into a row would not run as the page. A link is kept only on
       <code>http(s)</code> and <code>mailto</code> and opens in a new tab, an image is shown as a
       link &mdash; so nothing a session says makes the page fetch anything. A code block wider than
       the panel scrolls inside its frame with a thin scrollbar in the theme's colours, and its copy
@@ -203,7 +209,7 @@
       at="&hellip;"&gt;&hellip;&lt;/ref&gt;</code> inside the <code>&lt;user&gt;</code>. There is no
       Send button under the text box and no button that starts or ends a seat. While a turn is
       running a stop glyph sits at the right edge of the text box: it interrupts that turn, the
-      process stays. The other buttons are the cards: a permission card, and a question a session
+      process stays. The other buttons are the popups: a permission popup, and a question a session
       asks, which reads as a form &mdash; its options in a column, Other last with a line of its
       own to type in, and Send and Cancel.
     </p>
@@ -211,9 +217,9 @@
       A file a reply or a message names opens read-only in a tab of its own. A backticked path, or a
       markdown link to one, is a link when the file view would show that file, and plain code when
       it would not; in <code>path:12</code> the path is the link and the line stays in the words.
-      Paths are read from the instance root, which is why every session is told to name a file or a
+      Paths are read from the instance directory, which is why every session is told to name a file or a
       directory by its whole path from there, and one outside the instance by its absolute path. The
-      view is <code>/view/&lt;path from the instance root&gt;</code>: a markdown file drawn the way
+      view is <code>/view/&lt;path from the instance directory&gt;</code>: a markdown file drawn the way
       a reply is, a code file in one block coloured by its language with its lines numbered, any
       other text in a plain block, and a <b>View source</b> button for the file's text as it is. A
       file larger than 256&nbsp;KiB opens as its source alone; the view shows up to 1&nbsp;MiB of
@@ -227,7 +233,10 @@
       <code>.svg</code>) opens it in the image viewer, and a path to a directory &mdash;
       <code>temp/shots/</code> or <code>temp/shots</code> &mdash; opens it in the file manager. The
       server hands the real path to the desktop's opener, <code>xdg-open</code> or <code>open</code>
-      on macOS; when the opener is missing or fails, the panel says so beside the link. The view
+      on macOS; when the opener is missing or fails, the panel says so beside the link, and
+      <code>runtime.log</code> gets an <code>unopened</code> row. A server started outside the
+      desktop session, through <code>su</code> for instance, has no display to open anything on, and
+      the panel says that. The view
       shows none of these three and says where each opens.
     </p>
     <p>
@@ -280,8 +289,9 @@
     </p>
     <p>
       Who is calling a tool travels with the process. When the server starts a seat it mints a
-      secret &mdash; 32 random bytes &mdash; hands it to the process in its environment, and keys the
-      tool route by it: <code>POST /mcp/&lt;secret&gt;</code>. The map from secret to seat lives in
+      secret &mdash; 32 random bytes &mdash; hands it over in a file only this user can read,
+      <code>desks/&lt;Name&gt;/mcp.json</code>, named on the command line and removed the first time
+      the secret comes back in a call, and keys the tool route by it: <code>POST /mcp/&lt;secret&gt;</code>. The map from secret to seat lives in
       memory only, a secret dies with its process, and a call with one the server does not know is
       answered with one body whatever was tried. Names are for people; secrets are for the
       machinery.
@@ -301,7 +311,7 @@
       A desk is a person. Each seat owns <code>desks/&lt;Name&gt;/</code>, holding one Markdown state
       file, <code>STATE.md</code>, the persona the process was started with, the conversation, and
       whatever that person keeps there; each seat is told its desk and desk file as whole paths,
-      the instance root joined. The listing is the roster. The desk file is edited in
+      the instance directory joined. The listing is the roster. The desk file is edited in
       place with the file tools like any other file; its first line is the server's header, and
       one tool, <code>write_desk</code> &mdash; a title and a status &mdash; writes that line and
       says the desk is current.
@@ -324,7 +334,7 @@
     <p>
       A desk is one task and goes away with it. A conversation is shorter still. So an instance
       keeps one thing that outlives both, and every session reads the same one:
-      <code>knowledge/</code>, a directory of Markdown notes at the instance root, one topic per
+      <code>knowledge/</code>, a directory of Markdown notes in the instance directory, one topic per
       file, and one <code>files/</code> directory for what a note needs beside it. A note opens with four fields &mdash; a <code>summary</code> line, at least three
       <code>tags</code>, the <code>sources</code> it came from, the date it was <code>updated</code>
       &mdash; and is written and edited by every seat with the file tools it already has. The
@@ -369,7 +379,7 @@
           <tr><td><code>park</code></td><td>Leader</td><td>close every running Worker: each writes its desk and goes, by a deadline</td></tr>
           <tr><td><code>hire</code></td><td>Leader</td><td>start a Worker on a desk: a new name from the roster, or somebody who stopped, back on theirs</td></tr>
           <tr><td><code>retire</code></td><td>Leader</td><td>file a stopped Worker's desk under <code>archive/</code></td></tr>
-          <tr><td><code>permission</code></td><td>Leader</td><td>settle one rule for the whole instance, on a card you answer</td></tr>
+          <tr><td><code>permission</code></td><td>Leader</td><td>settle one rule for the whole instance, on a permission popup you answer</td></tr>
         </tbody>
       </table>
     </div>
@@ -406,6 +416,8 @@ idle           the Leader is told about a silent Worker at 10 and at 50 minutes;
                at 55 the Worker is closed, and has 5 minutes from the turn that reads it for its desk
                → the Leader is told it stopped, idle or idle-forced
                the Leader itself, at 55: told it goes cold at 60 → write_desk, stop_session
+  all-idle     every running Worker idle a minute, nothing waiting, the Leader off a turn
+               → the Leader is told once, names given: usually a report it has not acted on
 
 quota-low      the account's 5h or 7d window is nearly spent (thresholds in openovai.json)
   warning      → the Leader tells you, stops the Workers whose work can wait, and stays; no hires
@@ -415,7 +427,8 @@ quota-reset    the window reset → held frames are released, the Leader's first
                is started, and brings the Workers back
 
 park           you said this is it for the day; or ovai stop, or any signal to the server
-               → every Worker is closed and goes by a deadline (20 seconds by default)</pre>
+               → every Worker is closed and goes by a deadline: 30 minutes by default when the
+                 Leader parks, 20 seconds for ovai stop or a signal</pre>
     </figure>
     <p>
       Nothing is enforced at any context size: when the Leader restarts, itself or a Worker, stays

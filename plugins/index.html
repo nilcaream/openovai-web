@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plugins: tools of your own — OpenOv AI</title>
-<meta name="description" content="A file under plugins/ is a tool every session can call: three exports, a restart, no permission card. The contract, what is refused and why, and one worked example built from scratch.">
+<meta name="description" content="A file under plugins/ is a tool every session can call: three exports, a restart, no permission popup. The contract, what is refused and why, and one worked example built from scratch.">
 <link rel="canonical" href="https://openov.ai/plugins/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/plugins/">
@@ -76,7 +76,7 @@
       name a tool can have; what is in the way is that this server already has one), and a name
       whose file is already there: what is in that file is somebody's work, and a command that
       quietly replaced it would be worse than the surprise it saved. <code>plugins/</code> sits at
-      the instance root beside <code>desks/</code>, outside everything an update replaces.
+      the instance directory, beside <code>desks/</code>, outside everything an update replaces.
     </p>
   </section>
 
@@ -220,7 +220,7 @@ export async function run({ branch }, { seat }) {
         <p>Every seat sees it as <code>mcp__openovai__ci-status</code>, under the one permission
           rule the instance already holds for the server's tools. "What did CI make of
           <code>feature/login</code>?" on the Leader's panel is one tool line and one sentence back.
-          No card appears, for this tool or any other in <code>plugins/</code>.</p>
+          No permission popup appears, for this tool or any other in <code>plugins/</code>.</p>
       </li>
     </ol>
     <figure class="shot">
@@ -276,7 +276,7 @@ export async function run({ branch }, { seat }) {
     <h2 id="trust">Writing the file is the deciding</h2>
     <p>
       A tool of yours runs inside the server process, so the permission system never sees it:
-      there is no card for a plugin call, and no rule to grant, because <code>mcp__openovai</code>
+      there is no permission popup for a plugin call, and no rule to grant, because <code>mcp__openovai</code>
       is granted already. That is the point &mdash; a session calls your tracker the way it calls
       <code>index</code> &mdash; and it is also the whole of the trust model: whatever the file can
       reach, a session that calls it reaches. Write the refusals in; give the tool the least it

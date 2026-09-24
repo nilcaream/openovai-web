@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reference — OpenOv AI</title>
-<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance root file by file, the keys of openovai.json, the fourteen tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
+<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance directory file by file, the keys of openovai.json, the fourteen tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
 <link rel="canonical" href="https://openov.ai/reference/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/reference/">
@@ -51,13 +51,13 @@
   <section class="wrap hero">
     <h1>Reference</h1>
     <p class="lead">
-      Everything with a name, in tables. The two commands, the instance root, the configuration
+      Everything with a name, in tables. The two commands, the instance directory, the configuration
       keys, the fourteen tools and what they take, the events a session receives, the rules an
       instance is born with, the log, the plugin contract, and what it needs to run.
     </p>
     <p>
       <a href="#openovai">openovai</a> &middot; <a href="#ovai">ovai</a> &middot;
-      <a href="#root">the instance root</a> &middot; <a href="#json">openovai.json</a> &middot;
+      <a href="#root">the instance directory</a> &middot; <a href="#json">openovai.json</a> &middot;
       <a href="#typing">the typing hold</a> &middot; <a href="#tools">tools</a> &middot; <a href="#events">server events</a> &middot;
       <a href="#rules">seeded rules</a> &middot; <a href="#log">runtime.log</a> &middot;
       <a href="#plugin">plugin contract</a> &middot; <a href="#needs">requirements</a>
@@ -80,8 +80,8 @@
       <table>
         <thead><tr><th>form</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.20.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
-          <tr><td><code>openovai 0.20.0 &hellip;</code><br><code>openovai --version 0.20.0 &hellip;</code></td><td>that release</td></tr>
+          <tr><td><code>openovai</code></td><td>the newest release on GitHub at that moment, printed as <code>openovai 0.21.0 (latest)</code> before anything is done; with no other argument the release's installer asks its questions, and the version question is the only one <code>openovai</code> asks itself, offering <code>latest</code> and the versions already downloaded</td></tr>
+          <tr><td><code>openovai 0.21.0 &hellip;</code><br><code>openovai --version 0.21.0 &hellip;</code></td><td>that release</td></tr>
           <tr><td><code>openovai [version] <wbr>--root &hellip; <wbr>--user &hellip; <wbr>--leader &hellip; <wbr>--leader-model &hellip; <wbr>--worker-model &hellip; <wbr>--port &hellip; <wbr>--auth &hellip;</code></td><td>every argument after the version is passed through unchanged to the release's installer; all given, nothing is asked. <code>--force</code> installs over an instance already in place, as an update of it. The options are on the <a href="/install/#options">install page</a></td></tr>
         </tbody>
       </table>
@@ -90,21 +90,22 @@
 
   <section class="wrap prose">
     <h2 id="ovai"><code>ovai</code> &mdash; the instance's command</h2>
-    <p><code>&lt;root&gt;/bin/ovai</code>, one per instance. Bare <code>ovai</code> prints the help.</p>
+    <p><code>&lt;instance&gt;/bin/ovai</code>, one per instance. Bare <code>ovai</code> prints the help.</p>
     <div class="table">
       <table>
         <thead><tr><th>command</th><th>what</th></tr></thead>
         <tbody>
           <tr><td><code>ovai help</code></td><td>the usage; <code>--help</code> and <code>-h</code> the same</td></tr>
           <tr><td><code>ovai status</code></td><td><code>running at &lt;url&gt; (pid, since)</code>, or <code>not running</code>; reads <code>runtime.json</code> and then tries the address, so a record a killed server left behind is found out by asking</td></tr>
-          <tr><td><code>ovai configuration</code></td><td>what this instance is: version (a release, or the 8-character commit of a build), who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, and the runtime row: the pinned Node.js and Claude Code and the directory they live in</td></tr>
-          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints the whole address, <code>http://127.0.0.1:&lt;port&gt;</code>; a taken port is named with the process holding it; a server already running is reported and left alone. The server and every seat it starts drop what Claude Code put on the session it was typed in &mdash; its id, pid, entry point, effort, messaging socket and token &mdash; and the shell's <code>PWD</code> and <code>OLDPWD</code></td></tr>
+          <tr><td><code>ovai configuration</code></td><td>what this instance is: version (a release, or the 8-character commit of a build), who works here, on which models, the port, how it signs in, whether it has a credential (unchecked), when it was installed, every desk with the model it resolves to, and the runtime row: the pinned Node.js and Claude Code and the directory they live in; last, under <code>claude variables</code>, what the sessions get of each Claude Code variable, read from <code>claude-variables</code> as the server last started, never from the shell it is typed in</td></tr>
+          <tr><td><code>ovai start</code></td><td>starts the server in the background and prints a one-time link to the page at <code>http://127.0.0.1:&lt;port&gt;</code>, good once and for ten minutes, and, under <code>Claude Code variables (values masked):</code>, one line per Claude Code variable sorted by name: <code>(removed)</code>, <code>(overridden: &lt;value&gt;)</code>, <code>(overridden)</code> or <code>(passed on)</code> for one found in the shell, and the value alone for one ovai sets that the shell had not; a taken port is named with the process holding it; a server already running is reported and left alone. The server and every seat it starts drop what Claude Code put on the session it was typed in &mdash; its id, pid, entry point, effort, messaging socket and token &mdash; and the shell's <code>PWD</code> and <code>OLDPWD</code></td></tr>
+          <tr><td><code>ovai url</code></td><td>a new one-time link to the running page, for another browser; it replaces the link before it, so at most one is ever pending; <code>not running</code> when there is no server</td></tr>
           <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every Worker is closed and the Leader writes its desk and stops, with <code>park.timeout</code> as the deadline &mdash; then closes the server; it waits for the sessions and nothing else, and anything else a seat left running is named with one line that ends all of them; <code>not running</code> is not a failure. <code>kill</code> or <code>kill -HUP</code> of the server's pid reach the same handler</td></tr>
           <tr><td><code>ovai restart</code></td><td>stop, then start; prints the new address</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from the scaffold; refuses a name a tool cannot have, a built-in name, and a name whose file is already there</td></tr>
           <tr><td><code>ovai login</code></td><td>under <code>--auth login</code>, opens a browser once and keeps the credential inside the instance; refuses under <code>inherit</code> and says so</td></tr>
           <tr><td><code>ovai claude</code></td><td><code>open Claude Code on this instance, to reach its own commands</code>: a real Claude Code session on the instance's own configuration, at your terminal, so <code>/mcp</code>, <code>/plugin</code> and whatever Claude Code gains next write this instance's account rather than yours. Not a seat: no desk, no name in the room, no way to speak to anybody here, and every question it has it asks you. Quit it when you are done; a seat reads its configuration when it starts, so <code>ovai restart</code> is what makes a change live for the people working here</td></tr>
-          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, then finished by the version it brought in, with <code>bin/ovai update --finish</code> from the new payload &mdash; which fetches the new runtime, takes away what the new version retires, seeds once a file a fresh install would seed and this instance has not got, wires the hooks and turns attribution off &mdash; everything of yours left alone. On the version the instance is already on it runs the same finish. Refuses for a session &mdash; a process running the code the update replaces &mdash; naming the <code>kill</code> line for each, and goes on past anything else a seat left running; refuses to go backwards without <code>--downgrade</code>. <code>--from</code> a directory that is a git checkout takes a build: only on <code>main</code> with nothing <code>git status --porcelain</code> lists, else refused in one line that says which; the instance is then on the first 8 characters of that commit's hash, the version <code>ovai configuration</code>, the page and the server's health show. A build has no order: a release is always taken onto it, another commit always, and the same commit replaces nothing and runs the finish. A directory that is not a checkout, an unpacked release, is taken as a release. Going back with <code>--downgrade</code> to a version before 0.20.0 says that the hooks in <code>.claude/settings.json</code> name <code>lib/hooks/run.sh</code>, which that version does not have, and must be rewired by hand</td></tr>
+          <tr><td><code>ovai update <wbr>[--downgrade] <wbr>[--from &lt;url or directory&gt;]</code></td><td>takes the latest GitHub release when it is newer: <code>bin/</code> and <code>lib/</code> replaced whole, then finished by the version it brought in, with <code>bin/ovai update --finish</code> from the new payload &mdash; which fetches the new runtime, takes away what the new version retires, seeds once a file a fresh install would seed and this instance has not got, wires the hooks and turns attribution off &mdash; everything of yours left alone. A release is taken only signed: its signature checked against the keys in the instance's own <code>lib/RELEASE_KEYS</code>, its package against <code>SHA256SUMS</code>, and the <code>lib/VERSION</code> inside against the tag, before anything is replaced; a release without them is refused, and GitHub's own archive of a tag is never taken. A rule a fresh instance starts with and this one lacks is not added: the update prints one line, and the server asks for each such rule on the Leader's panel at every start, with what ovai recommends and Ignore (remembered in <code>.claude/ignored-defaults.json</code>). On the version the instance is already on it runs the same finish. Refuses for a session &mdash; a process running the code the update replaces &mdash; naming the <code>kill</code> line for each, and goes on past anything else a seat left running; refuses to go backwards without <code>--downgrade</code>. <code>--from</code> a directory that is a git checkout takes a build: only on <code>main</code> with nothing <code>git status --porcelain</code> lists, else refused in one line that says which; the instance is then on the first 8 characters of that commit's hash, the version <code>ovai configuration</code>, the page and the server's health show. A build has no order: a release is always taken onto it, another commit always, and the same commit replaces nothing and runs the finish. A directory that is not a checkout, an unpacked release, is taken as a release, with no signature check. Only an http or https address is fetched; anything else is a directory, and one that does not exist, cannot be read or is not a directory is named with the reason. Going back with <code>--downgrade</code> to a version before 0.20.0 says that the hooks in <code>.claude/settings.json</code> name <code>lib/hooks/run.sh</code>, which that version does not have, and must be rewired by hand</td></tr>
         </tbody>
       </table>
     </div>
@@ -114,15 +115,15 @@
         <tbody>
           <tr><td><code>0</code></td><td>done</td></tr>
           <tr><td><code>1</code></td><td>the server, a plugin or a release said no: the message, and no usage under it</td></tr>
-          <tr><td><code>2</code></td><td>the command line or the instance: an unknown command, an argument too many, a root that is not an instance; the message with the usage under it</td></tr>
-          <tr><td><code>3</code></td><td><code>ovai status</code>: not running</td></tr>
+          <tr><td><code>2</code></td><td>the command line or the instance: an unknown command, an argument too many, a directory that is not an instance; the message with the usage under it</td></tr>
+          <tr><td><code>3</code></td><td><code>ovai status</code>, <code>ovai url</code>: not running</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section class="wrap prose">
-    <h2 id="root">The instance root</h2>
+    <h2 id="root">The instance directory</h2>
     <p>This, and nothing else ever lands in it.</p>
     <div class="table">
       <table class="whose">
@@ -134,23 +135,28 @@
           <tr><td><code>instructions.json</code></td><td>the instance</td><td>the settings document every session is started with: the instruction files above the instance it is not to read; written at every start</td></tr>
           <tr><td><code>runtime.json</code></td><td>the instance</td><td>the running server: url, pid, since</td></tr>
           <tr><td><code>runtime.log</code></td><td>the instance</td><td>what the server said, one row per line, every run appended; <a href="#log">the columns</a></td></tr>
+          <tr><td><code>page-session</code>, <code>page-link</code></td><td>the instance</td><td>the page's two keys: the one a signed-in browser's cookie carries, made at the first start and kept, and the pending one-time link, deleted when it is used; delete <code>page-session</code> to sign every browser out. Refused to the Read tool and the tools that write files in a new instance, and to the file view at any depth</td></tr>
+          <tr><td><code>introduced</code></td><td>the instance</td><td>the version the introduction was last shown for on the Leader's panel; delete it to see the introduction again at the next start</td></tr>
+          <tr><td><code>claude-variables</code></td><td>the instance</td><td>what the sessions get of the shell's Claude Code variables, values masked; written at each start</td></tr>
           <tr><td><code>plugins/</code></td><td>the instance</td><td>tools it serves itself, one file each; yours, kept across updates</td></tr>
           <tr><td><code>knowledge/</code></td><td>the instance</td><td>what the workspace knows: one Markdown note per topic, written by every seat, and one directory, <code>files/</code>, which <code>index</code> and <code>validate</code> pass over; <a href="/knowledge/">the note format</a></td></tr>
           <tr><td><code>customization/</code></td><td>the instance</td><td>what you add to the personas: <code>common.md</code>, <code>leader.md</code>, <code>worker.md</code>; never touched</td></tr>
-          <tr><td><code>desks/&lt;Name&gt;/</code></td><td>the people</td><td>one directory per person: <code>STATE.md</code>, <code>persona.md</code>, <code>conversation.json</code>, <code>MODEL</code> when one was named, and whatever that person keeps there; the listing is the roster</td></tr>
+          <tr><td><code>desks/&lt;Name&gt;/</code></td><td>the people</td><td>one directory per person: <code>STATE.md</code>, <code>persona.md</code>, <code>conversation.json</code>, <code>MODEL</code> when one was named, <code>mcp.json</code> for the moment a session starts (it hands the session its secret, and is removed when the session first uses it), and whatever that person keeps there; the listing is the roster</td></tr>
           <tr><td><code>archive/</code></td><td>the people</td><td>retired desks, moved whole: <code>&lt;day&gt;-&lt;Name&gt;-&lt;slug of the final title&gt;/</code>; appears at the first retire</td></tr>
           <tr><td><code>reference/</code></td><td>your material</td><td>kept to look at: documents, sources, clones for analysis; never worked on</td></tr>
           <tr><td><code>projects/</code></td><td>your material</td><td>worked on; a reference that needs edits is cloned fresh here, never moved</td></tr>
           <tr><td><code>temp/</code></td><td>your material</td><td>scratch, deletable by anyone at any time</td></tr>
-          <tr><td><code>.claude/</code></td><td>Claude Code</td><td>the project settings for the instance: <code>settings.json</code> with the rules, <code>allowed.md</code> with one line per rule granted from a card</td></tr>
+          <tr><td><code>.claude/</code></td><td>Claude Code</td><td>the project settings for the instance: <code>settings.json</code> with the rules, <code>allowed.md</code> with one line per rule granted from a permission popup, <code>ignored-defaults.json</code> with the new default rules you pressed Ignore on</td></tr>
           <tr><td><code>.local/</code></td><td>Claude Code</td><td>its config dir for the instance: account, transcripts, memory (off)</td></tr>
         </tbody>
       </table>
     </div>
     <p>
-      A fresh instance's root is exactly that list without <code>runtime.json</code>,
-      <code>runtime.log</code> and <code>archive/</code>, which appear at the first start and the
-      first retire.
+      A fresh instance directory is exactly that list without <code>runtime.json</code>,
+      <code>runtime.log</code>, the page's keys, <code>introduced</code>,
+      <code>claude-variables</code> and <code>archive/</code>, which appear at the first start and the
+      first retire. The directory is open to its owner alone, and so are the files that hold its
+      address and keys.
     </p>
   </section>
 
@@ -164,7 +170,7 @@
           <tr><td><code>user</code>, <code>leader</code>, <code>models.leader</code>, <code>models.worker</code>, <code>port</code>, <code>auth</code></td><td>written by the installer; no default</td></tr>
           <tr><td><code>schema</code>, <code>createdAt</code></td><td>written by the installer</td></tr>
           <tr><td><code>quota</code></td><td><code>{ "5h": [90, 95], "7d": [97, 99] }</code> &mdash; percent</td></tr>
-          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55 }</code> &mdash; minutes</td></tr>
+          <tr><td><code>idle</code></td><td><code>{ "fyi": [10, 50], "force": 55, "all": 1 }</code> &mdash; minutes</td></tr>
           <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code> &mdash; tokens; <code>step</code> is the Leader's own, a Worker's size reaching the Leader at the warning and the error only</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code> &mdash; seconds</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code> &mdash; seconds; <a href="#typing">the typing hold</a></td></tr>
@@ -258,7 +264,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
           <tr><td><code>stop_worker</code></td><td>Leader</td><td><code>name</code> (required), <code>interrupt</code> (boolean, default false: cut the turn the Worker is on first), <code>deadline</code> (seconds, at least 5; default 5 minutes after an interrupt, <code>park.deadline</code> otherwise). The Worker is told its session is closing, writes its desk, and goes when that turn is over; with no desk by the deadline, it goes with its desk as last written. Answers at once; the outcome comes as a <code>stopped</code> event</td><td>a name that is not one; the Leader's own name; a name with no desk; a Worker not running or already ending; while the room is parking; while the server is stopping; a deadline that is not a whole number of at least 5</td></tr>
           <tr><td><code>restart_worker</code></td><td>Leader</td><td>as <code>stop_worker</code>; then a successor starts on the desk with whatever was queued for the Worker</td><td>as <code>stop_worker</code></td></tr>
           <tr><td><code>park</code></td><td>Leader</td><td><code>interrupt</code> (boolean, default false), <code>deadline</code> (seconds, at least 5; default <code>park.deadline</code>); every running Worker is closed</td><td>a Worker calling it</td></tr>
-          <tr><td><code>hire</code></td><td>Leader</td><td><code>name</code> (somebody who has a desk and stopped; left out, the roster names a new Worker), <code>model</code> (when not the usual one; on a desk a Worker had, it runs on that model and the model is kept for the desk from then on, and without one the desk's own stands)</td><td>the quota gate holds hires; the Leader's own name; a name whose directory is under <code>desks/</code> without a desk file in it</td></tr>
+          <tr><td><code>hire</code></td><td>Leader</td><td><code>name</code> (somebody who has a desk and stopped; left out, the roster names a new Worker), <code>model</code> (<code>model</code> or <code>model/effort</code>, such as <code>opus</code> or <code>claude-opus-5/low</code>; when not the usual one; on a desk a Worker had, it runs on that model and the model is kept for the desk from then on, and without one the desk's own stands)</td><td>the quota gate holds hires; the Leader's own name; a name whose directory is under <code>desks/</code> without a desk file in it</td></tr>
           <tr><td><code>retire</code></td><td>Leader</td><td><code>name</code> (required): a Worker that has stopped</td><td>a name that is not one; the Leader's own; a name with no desk; a Worker still running; the server stopping</td></tr>
           <tr><td><code>permission</code></td><td>Leader</td><td><code>rule</code> (as Claude Code's reference spells it: <code>Bash(word:*)</code>, <code>Bash(the whole command)</code>, <code>Edit(/dir/**)</code>, <code>Read(/dir/**)</code>, <code>Edit(/dir/file)</code> or <code>Read(/dir/file)</code> for one file, <code>Read(//dir/**)</code>, <code>WebFetch(domain:host)</code>, <code>WebSearch</code>, <code>mcp__server__tool</code>, <code>Agent(Name)</code>, or a bare tool name), <code>why</code> (what the User reads beside it); with neither, answers what the instance holds and what is pending</td><td>a rule Claude Code would not read; a rule already settled (say it to the User); a rule already asked on the panel; no <code>why</code></td></tr>
         </tbody>
@@ -280,7 +286,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     <p>
       A frame the server sets itself, <code>&lt;server-event type="&hellip;"&gt;</code>, queued like a
       turn and ahead of the rest when it has to be. Nothing inside a message can pose as one. There
-      are sixteen.
+      are eighteen.
     </p>
     <div class="table">
       <table>
@@ -293,17 +299,19 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
           <tr><td><code>quota-reset</code></td><td><code>window</code>; <code>model</code> when it is one model's own</td><td>the Leader, when a window that reached a stage has reset; a Leader not running is started by it. A park forgets the resets to come, and a server restart before the reset loses them</td><td>brings back the Workers that stopped on the window, with <code>hire</code> on their desks</td></tr>
           <tr><td><code>idle</code></td><td><code>who</code>, <code>minutes</code>; at 50 also the cold-in time and the context</td><td>the Leader, about a silent Worker, at 10 and 50 minutes</td><td>read its desk, message it if a word moves it, or <code>stop_worker</code> it; at 55 the server closes it</td></tr>
           <tr><td><code>idle</code></td><td><code>stage="critical"</code></td><td>the Leader at 55 minutes</td><td><code>write_desk</code>, <code>stop_session</code>; ended at 60 either way, whatever else it is told in between</td></tr>
+          <tr><td><code>all-idle</code></td><td><code>workers</code> (how many); the body names them</td><td>the Leader, off a turn, when every running Worker has been idle <code>idle.all</code> minutes with nothing waiting for it; once, and again only after a Worker has taken a turn. Not with no Worker running; a Worker on a permission popup is on a turn</td><td>usually a report or a <code>done</code> it has not acted on: acts on it</td></tr>
           <tr><td><code>park</code></td><td><code>interrupted="true"</code> when the turn was stopped for it</td><td>the Leader, from <code>ovai stop</code> or a signal</td><td><code>write_desk</code>, <code>stop_session</code>, by the deadline</td></tr>
           <tr><td><code>closing</code></td><td><code>why</code> (<code>stop</code> | <code>restart</code> | <code>idle</code> | <code>quota</code> | <code>park</code>); for a spent window also <code>window</code> and <code>resets</code>; <code>interrupted="true"</code> when the turn was cut for it; <code>deadline</code> in seconds when it has one</td><td>a Worker, from <code>stop_worker</code>, <code>restart_worker</code>, <code>park</code>, at 55 minutes idle, and when its window is spent. Read at the start of a turn of its own, never into one under way</td><td>writes its desk with <code>write_desk</code> as the last thing in that turn; the session ends when the turn is over. With no desk by the deadline &mdash; counted from the turn that read it, and never cutting a turn &mdash; it ends with the desk as last written: 5 minutes for idle and a spent window, the park's own for a park. A later message does not take a close back; a word to a Worker closed for idling does. A close whose turn the service refuses ends at once</td></tr>
           <tr><td><code>done</code></td><td><code>who</code>; the note, when there is one, is the body</td><td>the Leader, when a Worker calls <code>done</code></td><td>gives the Worker the next thing, or <code>stop_worker</code> when nothing more is wanted</td></tr>
+          <tr><td><code>unanswered</code></td><td>none; the body names the time of the User's line</td><td>the Leader, at once, when it read what the User typed and ended the turn with no words on its panel: nothing, only <code>&lt;noop/&gt;</code>, or only calls. Once per such turn, and never after a turn that read one, a turn that failed or one the page stopped</td><td>answers that line in words</td></tr>
           <tr><td><code>died</code></td><td><code>who</code>; the service's words are the body</td><td>the Leader, when the service refused a turn of a Worker that has worked before; once, and not again until the Worker has answered a turn</td><td>the Worker keeps running; a failure that passes goes away at the next message, one that stays is the User's to hear</td></tr>
-          <tr><td><code>admin-closed</code></td><td><code>ended</code>, <code>changed</code> (how many of the configuration files the session watched changed); the body names those files and what moved in them &mdash; marketplaces, plugins, skills, MCP servers, connectors, each permission rule (masked), and any other settings key by name &mdash; and nothing of what the files hold</td><td>the Leader, at the server's next start after an <code>ovai claude</code> session ended</td><td>told, not asked; nothing waits on it. Reads what matters before handing work out: a permission rule that moved changes what a Worker may do. The telling is the server's, never the admin session's</td></tr>
+          <tr><td><code>admin-closed</code></td><td><code>ended</code>, <code>changed</code> (how many of the configuration files the session watched changed); the body names those files and what moved in them &mdash; marketplaces, plugins, skills, MCP servers, connectors, each permission rule (masked), and any other settings key by name &mdash; and nothing of what the files hold</td><td>the Leader, within one 5-second tick of an <code>ovai claude</code> session ending while the server runs, or at the server's next start when it was not running</td><td>told, not asked; nothing waits on it. Reads what matters before handing work out: a permission rule that moved changes what a Worker may do. The telling is the server's, never the admin session's</td></tr>
           <tr><td><code>checkpoint</code></td><td><code>calls</code>; to the Leader also <code>who</code></td><td>a Worker, once it has made the number of tool calls the Leader set on its order with <code>checkpoint</code>; the Leader at the same moment</td><td>the Worker reports to the Leader where the work stands, done or not, what is left and how many more calls it expects, then carries on unless told otherwise; the Leader is told, not asked</td></tr>
           <tr><td><code>undelivered</code></td><td><code>to</code>, and the words as they were sent</td><td>the sender of a message whose addressee's session ended before reading it; a Leader not running is started by it</td><td>says it again, to somebody else, or later</td></tr>
           <tr><td><code>user-typed</code></td><td><code>who</code></td><td>the Leader, when the User types on a Worker's panel</td><td>told, not asked: acts on it if it needs the Leader, does not answer for the Worker</td></tr>
           <tr><td><code>overheard</code></td><td><code>from</code>, <code>to</code></td><td>the Leader, when one Worker messages another</td><td>heard, not asked</td></tr>
           <tr><td><code>stopped</code></td><td><code>who</code>, <code>why</code>: <code>stop</code> (<code>stop_worker</code>), <code>stop-deadline</code> (the same, with no desk in time), <code>restart</code> (<code>restart_worker</code>; the successor is running), <code>idle</code>, <code>idle-forced</code>, <code>quota</code>, <code>first-turn-failed</code> (the service refused the Worker's very first turn; its words are the body)</td><td>the Leader, when a Worker has gone</td><td>notes it; <code>hire</code> brings it back when the work is still wanted. After <code>first-turn-failed</code>, tells the User what the service said before hiring on that desk again</td></tr>
-          <tr><td><code>permission</code></td><td><code>who</code>, <code>minutes</code>, and the call as the body; for a settled rule <code>decision</code> and <code>who</code>, and the rule</td><td>the Leader, when a Worker's card timed out &mdash; <code>minutes</code> is 10, or 2 when one of the Worker's subagents made the call; also when a rule the Leader asked for was settled</td><td>tells the User what the Worker asked for, or gives the work to somebody else</td></tr>
+          <tr><td><code>permission</code></td><td><code>who</code>, <code>minutes</code>, and the call as the body; for a settled rule <code>decision</code> and <code>who</code>, and the rule</td><td>the Leader, when a Worker's permission popup timed out &mdash; <code>minutes</code> is 10, or 2 when one of the Worker's subagents made the call; also when a rule the Leader asked for was settled</td><td>tells the User what the Worker asked for, or gives the work to somebody else</td></tr>
         </tbody>
       </table>
     </div>
@@ -319,7 +327,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     <h2 id="rules">The seeded permission rules</h2>
     <p>
       <code>.claude/settings.json</code>, written once at install. Every path rule starts with
-      <code>/</code>, anchored at the instance root. An update adds no rule; it wires the two hooks
+      <code>/</code>, anchored at the instance directory. An update adds no rule; it wires the two hooks
       into a file that lacks them and turns commit attribution off in one that says nothing about
       it.
     </p>
@@ -328,7 +336,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
         <thead><tr><th>list</th><th>rule</th><th>what</th></tr></thead>
         <tbody>
           <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the fourteen tools and every plugin</td></tr>
-          <tr><td>allow</td><td><code>AskUserQuestion</code></td><td>a session asking you a question: the question is itself a card on its panel, answered there</td></tr>
+          <tr><td>allow</td><td><code>AskUserQuestion</code></td><td>a session asking you a question: the question is itself a popup on its panel, answered there</td></tr>
           <tr><td>allow</td><td><code>Read(/**)</code></td><td>reading any file</td></tr>
           <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
           <tr><td>allow</td><td><code>Edit(/knowledge/**)</code></td><td>every seat writes what the workspace knows, where it found it out</td></tr>
@@ -365,7 +373,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
     <figure class="term">
 <pre>&lt;moment&gt; &lt;event&gt; &lt;seat&gt; &lt;id&gt; &lt;text…&gt;
 2026-09-20T02:15:33.123+02:00 started - - serving /home/ana/workspace at http://127.0.0.1:7357 pid
-41200 host box user ana version 0.20.0 2026-09-20T02:15:41.530+02:00 called Max
+41200 host box user ana version 0.21.0 2026-09-20T02:15:41.530+02:00 called Max
 toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk 2026-09-20T02:15:41.532+02:00 tool Max
 toolu_01HMVftEemFhWAccN3xSqn7a mcp__openovai__write_desk in 1 ms 2026-09-20T02:15:44.210+02:00
 queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul - idle
@@ -376,7 +384,7 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
         <thead><tr><th>column</th><th>what</th></tr></thead>
         <tbody>
           <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page and the desks keep</td></tr>
-          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>died</code>, <code>closed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
+          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>died</code>, <code>closed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>, <code>unopened</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
           <tr><td>seat</td><td>the session the row is about; <code>-</code> for the server itself</td></tr>
           <tr><td>id</td><td>the tool-use id on <code>called</code>, <code>tool</code> and <code>failed</code>, else <code>-</code>; <code>grep toolu_&hellip; runtime.log</code> is a call's whole life, and the three rows name the tool in full, as Claude Code does</td></tr>
         </tbody>
@@ -451,7 +459,7 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
       Node.js, npm and Claude Code are not requirements: each release pins the exact versions it was
       tested with, in <code>lib/RUNTIME</code>, and the installer fetches them under
       <code>~/.local/share/openovai/</code>, per user, shared between instances, used by absolute
-      path. This release pins Node.js 24.21.0 and Claude Code 2.1.280. Nothing global, no
+      path. This release pins Node.js 24.21.0 and Claude Code 2.1.285. Nothing global, no
       <code>sudo</code>.
     </p>
   </section>

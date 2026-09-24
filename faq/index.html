@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FAQ and troubleshooting — OpenOv AI</title>
-<meta name="description" content="The questions a first evening raises: the Leader not answering, a port taken, an update refusing, a Worker gone quiet, everything stopping at once, a card you did not see, two instances, where the conversation is, macOS, and whether it is safe to leave running.">
+<meta name="description" content="The questions a first evening raises: the Leader not answering, a port taken, an update refusing, a Worker gone quiet, everything stopping at once, a permission popup you did not see, two instances, where the conversation is, macOS, and whether it is safe to leave running.">
 <link rel="canonical" href="https://openov.ai/faq/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/faq/">
@@ -53,7 +53,7 @@
     <p class="lead">
       The questions a first evening raises. Most of them have one answer, and the answer is usually
       something the instance already said &mdash; on the panel, in the terminal, or in
-      <code>runtime.log</code> at the root.
+      <code>runtime.log</code> in the instance directory.
     </p>
   </section>
 
@@ -69,6 +69,18 @@
       from the environment it was started in &mdash; start the server from a shell that has it. The
       seat's own words for what went wrong are on its panel; the server's are in
       <code>runtime.log</code>.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="sign-in">The page asks me for a link</h2>
+    <p>
+      A browser gets the page only once it has been signed in, with a one-time link:
+      <code>ovai start</code> prints one, and <code>~/workspace/bin/ovai url</code> prints a new one
+      at any time. A link works once, for ten minutes, and a new one replaces the one before it, so
+      a link copied out of the scrollback opens nothing. Open it once in each browser and that
+      browser stays signed in, across restarts and updates. To sign every browser out, delete
+      <code>page-session</code> in the instance directory.
     </p>
   </section>
 
@@ -94,7 +106,10 @@
       home; the line still pastes. <code>ovai stop</code> first parks the room properly &mdash;
       every Worker and the Leader write their desks &mdash; and then the update goes through. It
       also refuses to go backwards by name: <code>--downgrade</code> takes an older release anyway,
-      and <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub. A
+      and <code>--from &lt;url or directory&gt;</code> takes one from somewhere other than GitHub; a
+      path that does not exist, cannot be read or is not a directory is named, with the reason. A
+      release that is not signed by a key the instance pins, or whose package does not match its
+      <code>SHA256SUMS</code>, is refused before anything is replaced. A
       <code>--from</code> clone is refused, in one line that says which, when it is not on
       <code>main</code> or has anything <code>git status --porcelain</code> lists. On macOS the
       sessions are found with <code>ps</code>, as Linux finds them in <code>/proc</code>.
@@ -121,7 +136,7 @@
     <p>
       Three different things. <em>Quiet</em>: the Leader is told about a silent Worker at 10 and at
       50 minutes; at 55 the server closes it, and it writes its desk and goes. A seat on a turn
-      &mdash; a card waiting included &mdash; is never idle. <em>Restarted</em>: its conversation had
+      &mdash; a permission popup waiting included &mdash; is never idle. <em>Restarted</em>: its conversation had
       grown past the size it wraps up at, so the Leader restarted it with
       <code>restart_worker</code>, and it wrote its desk. A successor is already going on from that
       desk, in the same panel, with whatever was queued carried over; it announces itself to
@@ -164,16 +179,28 @@
   <section class="wrap prose">
     <h2 id="waiting">A session was waiting on me and I did not see it</h2>
     <p>
-      A card waits ten minutes, or two when one of the session's subagents made the call, and is
+      A permission popup waits ten minutes, or two when one of the session's subagents made the call, and is
       then a Deny: the panel says <code>Waited &hellip; seconds for permission, timed out:
       &hellip;</code>, and the session goes on with what it can do without the call, says what waits
-      on it, and asks for it again once you are back. When it was a Worker's card, the Leader is
+      on it, and asks for it again once you are back. When it was a Worker's permission popup, the Leader is
       told it timed out. To be told while it still waits, turn the exclamation-mark switch on the
-      Leader's head on: a card appearing on any panel then reaches you through the browser's
+      Leader's head on: a permission popup appearing on any panel then reaches you through the browser's
       notifications while the page is not visible, and a click on it brings that panel into view.
       From another tab, the page's icon carries a ring while any panel is waiting for you. Both are
       described under
       <a href="/customization/#notifications">notifications</a>.
+    </p>
+  </section>
+
+  <section class="wrap prose">
+    <h2 id="unopened">A link to a page, an image or a directory does not open</h2>
+    <p>
+      Those open on the desktop, through <code>xdg-open</code> or <code>open</code>, in the
+      environment the server was started in. A server started outside the desktop session, through
+      <code>su</code> for instance, has no display, and the panel says that nothing can open it,
+      with the opener's exit after it. Every open that fails is an <code>unopened</code> row in
+      <code>runtime.log</code>, with the path and the reason. Start the server from a terminal of
+      the desktop session.
     </p>
   </section>
 
@@ -195,7 +222,7 @@
       What you see on a panel is kept in <code>desks/&lt;Name&gt;/conversation.json</code> inside
       the instance, one file per seat, so stopping the server does not throw it away; the desk file
       beside it is the state the next session starts from. Claude Code's own transcripts are under
-      <code>.local/</code> at the instance root, its config directory for this instance. A retired
+      <code>.local/</code> in the instance directory, its config directory for this instance. A retired
       Worker's directory is moved whole under <code>archive/</code>, conversation included.
     </p>
   </section>
@@ -219,12 +246,14 @@
   <section class="wrap prose">
     <h2 id="safe">Is it safe to leave running?</h2>
     <p>
-      The page listens on <code>127.0.0.1</code> only and answers only to its own address; that
-      closes the gap of a web page whose name was pointed at <code>127.0.0.1</code>, and nothing
-      else: a process on the machine that connects to the port still gets the page. ovai has had no
-      security hardening beyond that. A session does what the instance allows, never gets to try
+      The page listens on <code>127.0.0.1</code> only, answers only to its own address, and is
+      served only to a browser signed in with a one-time link; the instance directory and the files
+      that hold its address and keys are readable by their owner alone. Whoever can read those
+      files as you can still sign in, sessions included, and a seat that runs commands as you can
+      change ovai's own code. A session's secret is handed over in a file removed as the session
+      starts, never in its environment; releases are taken only signed. A session does what the instance allows, never gets to try
       what it denies &mdash; <code>git push</code>, <code>sudo</code> and <code>ssh</code> from
-      birth &mdash; and stops on a card for anything undecided, which is a Deny after ten minutes
+      birth &mdash; and stops on a permission popup for anything undecided, which is a Deny after ten minutes
       nobody answers. A Worker idle for 55 minutes is closed, and a Leader idle that long writes its
       desk and stops. A tool of the server's is one permission rule; a tool of yours under
       <code>plugins/</code> is one you wrote. The

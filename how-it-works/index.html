@@ -169,7 +169,7 @@
       line at the foot of its panel and the cards in it say it, and that line says
       <code>Disconnected</code>, with every dot red and no state word on any head, while the page
       has lost the server's stream. The head of the Leader's panel carries, after the model, the
-      version the server runs &mdash; <code>0.24.0</code>, or the eight characters of the commit on
+      version the server runs &mdash; <code>0.25.0</code>, or the eight characters of the commit on
       a build of <code>main</code> &mdash; then the account's usage windows &mdash; the session
       window with the time to its reset, the weekly window over all models, and the weekly window
       of the one model that has its own, like
@@ -179,10 +179,24 @@
       light and dark. A third switch on that head,
       after the two notification switches, hides the messages between the Leader and the Workers,
       and one Worker's to another, from the Leader's panel; what you typed to a Worker stays, and
-      a hidden row a click reaches is shown opened until it is folded. The last two switches turn
+      a hidden row a click reaches is shown opened until it is folded. A fourth hides the Leader's
+      status. The last two switches turn
       on Claude Code's auto mode, one for the Leader's session and one for the Workers', where a
       classifier settles a call no rule settles instead of a popup; both are off at every start
       and kept nowhere.
+    </p>
+    <p>
+      Right above the Leader's box stands its <a href="/team/#status">status</a>:
+      <code>desks/&lt;Leader&gt;/STATUS.md</code> as it stood when the Leader last called
+      <code>confirm_status</code>, stamped with the time of that call. An edit the Leader has not
+      confirmed shows nothing. Beside the stamp, whether anything has reached the Leader since:
+      <code>up to date ✓</code>, <code>checking…</code> while it is on something new,
+      <code>3 new since</code> once its turn ended without confirming, or <code>Leader
+      stopped</code> while it has no process or the page has lost the stream. A click on the stamp
+      asks the Leader to check it, with a <code>status-check</code> event, and the label says
+      <code>checking…</code> until the check has reached it. The row appears after the Leader's
+      first confirmation, is as tall as its text, and is kept in <code>status.json</code> on the
+      Leader's desk, so a server started again shows what the last one showed.
     </p>
     <p>
       A panel with no rows shows nothing: it stays empty until the seat's first row arrives. A row
@@ -365,10 +379,10 @@
   </section>
 
   <section class="wrap prose">
-    <h2 id="tools">The fourteen tools</h2>
+    <h2 id="tools">The fifteen tools</h2>
     <p>
-      The server serves fourteen tools over the secret route. Five go to every seat, one is the
-      Workers' and eight are the Leader's; a seat asking for one that is not its own is refused in
+      The server serves fifteen tools over the secret route. Five go to every seat, one is the
+      Workers' and nine are the Leader's; a seat asking for one that is not its own is refused in
       words. The whole of it costs one permission rule, seeded at install.
     </p>
     <div class="table">
@@ -381,6 +395,7 @@
           <tr><td><code>validate</code></td><td>everyone</td><td>check every note against the rules, one line per problem</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td>the header of the caller's own desk: title, status</td></tr>
           <tr><td><code>done</code></td><td>Worker</td><td>say the work is done, with a one-line note if it likes; the Leader decides whether it stops</td></tr>
+          <tr><td><code>confirm_status</code></td><td>Leader</td><td>say the Leader's <code>STATUS.md</code> is current: the panel shows it as it stands at the call, stamped with the call's time</td></tr>
           <tr><td><code>restart_session</code></td><td>Leader</td><td>end the Leader's own process and start a successor on the same desk</td></tr>
           <tr><td><code>stop_session</code></td><td>Leader</td><td>end the Leader's own process and its panel; the desk stays</td></tr>
           <tr><td><code>stop_worker</code></td><td>Leader</td><td>close one Worker: it is told its session is closing, writes its desk, and goes when that turn is over</td></tr>

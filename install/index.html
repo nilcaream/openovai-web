@@ -215,7 +215,11 @@
       <dt>--auth login</dt>
       <dd>The instance signs itself in. A freshly installed one has an empty Claude Code home, so
         <code>ovai login</code> opens a browser once and the credential is kept inside that
-        instance. Use this when two instances on one machine should be two different accounts.</dd>
+        instance. Use this when two instances on one machine should be two different accounts.
+        The server looks once a day at when that sign-in runs out, and five days before it the
+        Leader's panel gets one row with the date and the hour: run <code>ovai login</code> before
+        then. Once it has run out and cannot be renewed, a panel whose turn failed on it says, once,
+        to run <code>ovai login</code> in a terminal and type again.</dd>
       <dt>--auth inherit</dt>
       <dd>The instance takes <code>CLAUDE_CODE_OAUTH_TOKEN</code> from the environment it is started
         in. Mint that token once on the machine with <code>claude setup-token</code>, export it

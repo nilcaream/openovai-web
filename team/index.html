@@ -111,16 +111,31 @@
       last message and takes no room, so nothing moves when it comes or goes, and it disappears
       while the pointer is over it, so the corner it covers can be read.
     </p>
+    <p id="status">
+      What waits for you is in the Leader's status, one row right above the Leader's box. The
+      Leader keeps it in <code>STATUS.md</code> on its desk, apart from its desk file, and calls
+      <code>confirm_status</code> at the end of every turn that brought it anything; the row shows
+      the file as it stood at that call, stamped with the call's time, and beside the stamp whether
+      anything has reached the Leader since: up to date, checking, or how many new. It holds two
+      kinds of bullet and nothing else: what only you can do, starting with a bold <b>Waiting for
+      you:</b>, and the loose ends, started and stopped or found and not closed, that nobody is on.
+      Work that is moving or finished, progress and housekeeping stay out of it, and a bullet goes
+      the moment it no longer waits or is no longer loose. It is one short bulleted list, the waits
+      first, in the same order from one confirmation to the next, and a ticket or a page is a link
+      with a short label. A click on the time asks the Leader to check it. The row appears after
+      the Leader's first confirmation, and a switch on the Leader's head hides it.
+    </p>
     <p>
       What the Leader says to you is for you: a turn with nothing in it for you is answered with
       <code>&lt;noop/&gt;</code> and the panel shows nothing for it, and a Worker's checkpoint stays
-      between the Leader and the Worker. When you ask where things stand, and when the Leader asks
-      you what to take next, it gives the whole open list, never one written earlier. Its last word
-      before you speak again stands alone: where things are now and the one question open, so that
-      nothing above it needs reading to act on it. A text a session writes between its calls is
-      held while the turn runs: when the turn ends it is dropped if the turn answered in words, and
-      shown as ordinary rows if it was all the turn said, so a seat that only wrote notes is still
-      heard. An answer is words in the reply, written once, as the turn's last text after its calls,
+      between the Leader and the Worker. A message says what happened; the status says only what
+      waits. When you ask where things stand, the Leader says it in words in that reply, then
+      brings its status up to date and confirms it, and whatever it asks you to choose from is in
+      the message that asks, never in a list written earlier. A text a session writes before a call
+      is held while the turn runs: when the turn ends it is shown, as ordinary rows, only if nothing
+      else the turn wrote was, and never when the turn ends in <code>&lt;noop/&gt;</code>. The
+      first text after a line of yours or an urgent message came in during the turn shows at once.
+      An answer is words in the reply, written once, as the turn's last text after its calls,
       never before them and never only thinking or the desk. When the Leader reads what you typed and ends its turn with no
       words, the server tells it at once with an <code>unanswered</code> event, and it answers. Inline code is
       kept for a name, a path or a short command; quoted or proposed text is a blockquote, and
@@ -173,8 +188,8 @@
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
       its own panel lands there and nowhere else. Five tools go to every seat and one is the
-      Worker's own, <code>done</code>; the eight that are the Leader's &mdash;
-      <code>stop_session</code>, <code>restart_session</code>, <code>stop_worker</code>,
+      Worker's own, <code>done</code>; the nine that are the Leader's &mdash;
+      <code>confirm_status</code>, <code>stop_session</code>, <code>restart_session</code>, <code>stop_worker</code>,
       <code>restart_worker</code>, <code>park</code>, <code>hire</code>, <code>retire</code>,
       <code>permission</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
       proposes it to the Leader. When the task ships the Worker reports, writes its desk and calls

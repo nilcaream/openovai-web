@@ -117,9 +117,11 @@
       between the Leader and the Worker. When you ask where things stand, and when the Leader asks
       you what to take next, it gives the whole open list, never one written earlier. Its last word
       before you speak again stands alone: where things are now and the one question open, so that
-      nothing above it needs reading to act on it. Every text a session writes in a turn is a row on
-      its panel, before a tool call as much as after one, and an answer is words in the reply, never
-      only thinking or the desk. When the Leader reads what you typed and ends its turn with no
+      nothing above it needs reading to act on it. A text a session writes between its calls is
+      held while the turn runs: when the turn ends it is dropped if the turn answered in words, and
+      shown as ordinary rows if it was all the turn said, so a seat that only wrote notes is still
+      heard. An answer is words in the reply, written once, as the turn's last text after its calls,
+      never before them and never only thinking or the desk. When the Leader reads what you typed and ends its turn with no
       words, the server tells it at once with an <code>unanswered</code> event, and it answers. Inline code is
       kept for a name, a path or a short command; quoted or proposed text is a blockquote, and
       longer code a fenced block.

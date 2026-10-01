@@ -465,11 +465,13 @@ park           you said this is it for the day; or ovai stop, or any signal to t
       read at a turn's end keeps the gate current with no page open. The line in the Leader's head
       keeps its last reading across a restart and is drawn dimmed once that is a quarter of an
       hour old. That line reads its percentages with the token Claude Code keeps in
-      <code>.credentials.json</code> in the instance's home. On macOS
-      Claude Code keeps the sign-in in the Keychain, which ovai does not read, so there the head
-      shows no usage line and the log says why once. The gate still holds sessions at the 5-hour and
-      7-day limits from what each turn reports; the weekly window of a single model, which only that
-      line reads, is not guarded there.
+      <code>.credentials.json</code> in the instance's home, or, for an
+      instance that inherits the machine's sign-in (<code>--auth inherit</code>), with
+      <code>CLAUDE_CODE_OAUTH_TOKEN</code>. On macOS an instance with its own sign-in
+      (<code>--auth login</code>) has none: Claude Code keeps that sign-in in the Keychain, which
+      ovai does not read, so there the head shows no usage line and the log says why once. The gate
+      still holds sessions at the 5-hour and 7-day limits from what each turn reports; the weekly
+      window of a single model, which only that line reads, is not guarded there.
     </p>
     <p>
       At the warning every running seat is told. A Worker keeps its desk current and carries on;

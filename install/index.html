@@ -218,7 +218,8 @@
         instance. Use this when two instances on one machine should be two different accounts.
         The server looks once a day at when that sign-in runs out, and five days before it the
         Leader's panel gets one row with the date and the hour: run <code>ovai login</code> before
-        then. Once it has run out and cannot be renewed, a panel whose turn failed on it says, once,
+        then. Once it has run out and cannot be renewed, a panel whose turn failed on it, a turn
+        started by an event of the server's or by a restart included, says, once,
         to run <code>ovai login</code> in a terminal and type again.</dd>
       <dt>--auth inherit</dt>
       <dd>The instance takes <code>CLAUDE_CODE_OAUTH_TOKEN</code> from the environment it is started
@@ -237,7 +238,7 @@
       options.
     </p>
     <figure class="shot">
-      <a href="/media/media-6.png"><img src="/media/media-6.png" width="874" height="445" alt=""></a>
+      <a href="/media/media-6.png"><img src="/media/media-6.png" width="875" height="446" alt=""></a>
       <figcaption><code>ovai configuration</code>: the version, the seats and their models, the port, how it signs in</figcaption>
     </figure>
   </section>
@@ -280,7 +281,7 @@ cd openovai
       replaced whole, and the rest is done by the version it brought in: it runs <code>bin/ovai
       update --finish</code> from the payload it just put in place, which fetches the new runtime,
       takes away what the new version retires, seeds once a file of yours that a fresh install of
-      this version would have seeded and this instance has not got, and wires the hooks. On the
+      this version would have seeded and this instance has not got, and wires the hook it runs. On the
       version the instance is already on, <code>ovai update</code> runs that same finish. Taking
       0.21.0 is itself done the old way, by the version before it and unchecked; from there on every
       release is checked. Get the <code>openovai</code> command again with the <code>curl &hellip; |
@@ -290,8 +291,9 @@ cd openovai
       fetched beside the ones already there, and an instance still on the older release keeps using
       the older ones. Desks, conversations, <code>knowledge/</code>, <code>customization/</code>,
       <code>plugins/</code>, <code>openovai.json</code> and the Claude Code home are left alone. The
-      settings are left alone but for two things: the two hooks are wired into a settings file that
-      lacks them, older commands for them replaced and any hook of your own kept, and commit
+      settings are left alone but for two things: the subagent hook is wired into a settings file
+      that lacks it, an older command for it replaced, the shell hook versions before 0.26.0 ran
+      taken out and any hook of your own kept, and commit
       attribution is turned off in one that says nothing about it; no rule is added. A rule a fresh
       instance of the new version starts with and yours lacks is instead asked for on the Leader's
       panel, one permission popup per rule at every start of the server, with what ovai recommends
@@ -315,15 +317,15 @@ cd openovai
       configuration</code>, the page, the server's health. A hash has no order, so a release is
       always taken onto a build, with no <code>--downgrade</code>; another commit is always taken;
       the same commit replaces nothing and runs the finish. Going back with <code>--downgrade</code>
-      to a version before 0.20.0 leaves the hooks in <code>.claude/settings.json</code> naming
+      to a version before 0.20.0 leaves the hook in <code>.claude/settings.json</code> naming
       <code>lib/hooks/run.sh</code>, which the older version does not have: the downgrade says so,
-      and they are rewired by hand. An instance on 0.19.0 reads a clone as the release its
+      and it is rewired by hand. An instance on 0.19.0 reads a clone as the release its
       <code>lib/VERSION</code> names, so its first build is taken with the clone's own updater:
       <code>node &lt;clone&gt;/lib/ovai.mjs --root &lt;instance&gt; update --from
       &lt;clone&gt;</code>.
     </p>
     <figure class="shot">
-      <a href="/media/media-7.png"><img src="/media/media-7.png" width="874" height="425" alt=""></a>
+      <a href="/media/media-7.png"><img src="/media/media-7.png" width="875" height="486" alt=""></a>
       <figcaption><code>ovai update</code> refusing while a session runs, then taking the release</figcaption>
     </figure>
     <p>
@@ -350,7 +352,7 @@ cd openovai
           <tr><td><code>ovai restart</code></td><td>the two in a row, and prints the new address</td></tr>
           <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential, every desk with what it runs on, and last what the sessions get of the shell's Claude Code variables, as the server last started with them</td></tr>
           <tr><td><code>ovai login</code></td><td>signs the instance in, once, under <code>--auth login</code></td></tr>
-          <tr><td><code>ovai claude</code></td><td>opens Claude Code on this instance, to reach its own commands &mdash; its configuration is the instance's rather than yours. Quitting it does not make a change live: a seat reads its configuration when it starts, so <code>ovai restart</code> is what picks it up, and that interrupts whatever the seats are doing. The Leader is told that admin mode ran &mdash; within seconds when the server is running, else at its next start &mdash; and which of the instance's configuration files changed, by name</td></tr>
+          <tr><td><code>ovai claude</code></td><td>opens Claude Code on this instance, to reach its own commands &mdash; its configuration is the instance's rather than yours. A permission rule changed there applies at each seat's next call; the rest is not live when it quits: a seat reads its configuration when it starts, so <code>ovai restart</code> is what picks it up, and that interrupts whatever the seats are doing. The Leader is told that admin mode ran &mdash; within seconds when the server is running, else at its next start &mdash; and which of the instance's configuration files changed, by name</td></tr>
           <tr><td><code>ovai plugin &lt;name&gt;</code></td><td>writes <code>plugins/&lt;name&gt;.mjs</code> from a scaffold &mdash; see <a href="/plugins/">plugins</a></td></tr>
           <tr><td><code>ovai update</code></td><td>takes the latest release, as above</td></tr>
         </tbody>

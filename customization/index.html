@@ -53,7 +53,7 @@
     <p class="lead">
       An instance has a handful of knobs, and this page is all of them. What you add to the
       personas, the one JSON file that describes the instance, the models, the permission rules,
-      the three switches on the Leader's head, and the port. Everything here is yours: an update
+      the switches on the Leader's head, and the port. Everything here is yours: an update
       replaces the payload and leaves every one of these alone.
     </p>
   </section>
@@ -132,6 +132,7 @@ and you say so to the Leader before you start on it.
           <tr><td><code>context</code></td><td><code>{ "warning": 200000, "step": 20000, "error": 300000 }</code></td><td>tokens: the request size at which the Leader is first told how big it has grown, how often it is told again above that, and the size at which the telling turns into an instruction to hand over; for a Worker, the two sizes at which the Leader is told how big that Worker has grown, the second being when to restart it</td></tr>
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, how long a server stop waits for the whole room, and how much longer <code>ovai stop</code> waits past that for the sessions to go</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code></td><td>seconds: a seat waits for you while you type in its box. <code>quiet</code> is how long after your last keystroke you still count as typing, <code>cap</code> the longest a waiting turn is held; <code>0</code> in either turns the hold off, and a value that is not a number or is below 0 is taken as the default. <a href="/reference/#typing">What is held, with a worked timeline</a></td></tr>
+          <tr><td><code>desk</code></td><td><code>{ "limit": 131072 }</code></td><td>bytes: when <code>write_desk</code> finds a desk file past the limit, the server saves it whole beside itself as <code>STATE-&lt;time&gt;.md</code> and tells the seat, once per crossing, to archive what current work no longer needs, or, with most of it still open, to ask you for a higher limit</td></tr>
         </tbody>
       </table>
     </div>
@@ -174,8 +175,8 @@ and you say so to the Leader before you start on it.
       <code>permission</code> &mdash; a rule naming one file, like
       <code>Edit(/knowledge/common.md)</code>, included &mdash; is written there, and
       <code>.claude/allowed.md</code> beside it keeps one line per rule &mdash; who asked, when, what
-      for. An update touches it for two things and no other: it wires the two hooks, the compound
-      one and the subagent one, into a file that lacks them, and turns Claude Code's
+      for. An update touches it for two things and no other: it wires the subagent hook into a file
+      that lacks it, taking out the shell hook versions before 0.26.0 ran, and turns Claude Code's
       commit attribution off in a file that says nothing about it. It adds no rule; it says which
       of the rules a fresh instance is born with the file has not got, and leaves that to you. A
       file that says something else about attribution is yours, and an update leaves it. The
@@ -209,6 +210,14 @@ and you say so to the Leader before you start on it.
       shown to begin with, and the choice is kept by the browser as <code>openovai-comms</code>. A
       hidden row a click reaches &mdash; its Sent or Received line on a Worker's panel, a
       reference &mdash; is shown opened, and hides again when it is folded.
+    </p>
+    <p id="auto">
+      The two bolt switches are Claude Code's auto mode, one for the Leader and one for the
+      Workers. Both are on whenever the server starts, as the CLI starts in auto: a call no rule
+      settles is the classifier's to settle. Turn one off and that role is in Manual, where every
+      such call asks you on a permission popup, until the server stops; the switches are the
+      server's, shared by every page, and kept nowhere. <a href="/permissions/#auto">Permissions</a>
+      has what each mode stops for.
     </p>
     <p>
       At the right edge of the same head, a toggle between light and dark. The page starts light;

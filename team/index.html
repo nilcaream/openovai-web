@@ -119,11 +119,21 @@
       anything has reached the Leader since: up to date, checking, or how many new. It holds two
       kinds of bullet and nothing else: what only you can do, starting with a bold <b>Waiting for
       you:</b>, and the loose ends, started and stopped or found and not closed, that nobody is on.
-      Work that is moving or finished, progress and housekeeping stay out of it, and a bullet goes
+      A result the Leader has reported is a <b>Waiting for you:</b> bullet until you close its
+      topic. Work that is moving, progress and housekeeping stay out of it, and a bullet goes
       the moment it no longer waits or is no longer loose. It is one short bulleted list, the waits
       first, in the same order from one confirmation to the next, and a ticket or a page is a link
-      with a short label. A click on the time asks the Leader to check it. The row appears after
+      with a short label. A click on the time asks the Leader to check it, and a click on a bullet
+      quotes it in your reply, as a line of its own that your row draws as a quote, so the Leader
+      reads the bullet as you saw it. The row appears after
       the Leader's first confirmation, and a switch on the Leader's head hides it.
+    </p>
+    <p id="topics">
+      Each thing you ask for is a topic, open from the ask until you close it: you say it is done,
+      accept it, use the result or drop it. The Leader's report closes nothing, and neither does a
+      Worker's <code>done</code>. The Leader's desk holds what is true now, one entry per open
+      topic; when a topic closes, what is worth knowing again goes into <code>knowledge/</code> and
+      its entry leaves the desk.
     </p>
     <p>
       What the Leader says to you is for you: a turn with nothing in it for you is answered with
@@ -159,12 +169,16 @@
       The rules the instance holds are settled through the Leader, in your words. Say "you will be
       autonomous, push without asking" or "pip install is too much, ask me every time", and the
       Leader answers in plain language first, then calls <code>permission</code> once per rule
-      &mdash; a permission popup on its panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every time</b>. A Worker
-      hired to push is hired after the push is allowed.
+      &mdash; a permission popup on its panel with <b>Allow</b>, <b>Deny</b> and <b>Ask every time</b>,
+      which also moves a rule already held. A Worker hired to push is hired after the push is
+      allowed. To take a rule out, the Leader calls <code>remove_rule</code>: a popup with the rule,
+      where it stands and who asked for it, and <b>Remove</b> and <b>Keep</b>.
       <a href="/permissions/">Permissions</a> has the whole of it.
     </p>
     <p>
-      When a Worker's round is done the Leader retires it: <code>desks/&lt;Name&gt;/</code> is moved
+      A stopped Worker that nothing open names &mdash; no topic on the Leader's desk, no bullet in
+      its status &mdash; is retired, once <code>knowledge/</code> holds what its desk knew:
+      <code>desks/&lt;Name&gt;/</code> is moved
       whole &mdash; the desk, the conversation, the persona &mdash; under <code>archive/</code>, the
       seat leaves the room and the page, and the name is the roster's again. Filed, never deleted.
       One that may be wanted back on the same desk is stopped with <code>stop_worker</code>, not
@@ -182,16 +196,17 @@
       named by its whole path from the instance directory, where every session runs. It writes the desk
       with a tool at every point the work moves, not only at the end, because a written desk is what
       survives and anything worked out and not written is gone with the session. Its files stay
-      inside the instance: <code>/tmp</code> is outside it, so a file tool's read or write there
-      would stop on a permission popup for you.
+      inside the instance: <code>/tmp</code> is outside it, so a file tool's read or write there is
+      no rule's to allow &mdash; the classifier's to judge in auto mode, a permission popup for you
+      in Manual.
     </p>
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
       its own panel lands there and nowhere else. Five tools go to every seat and one is the
-      Worker's own, <code>done</code>; the nine that are the Leader's &mdash;
+      Worker's own, <code>done</code>; the ten that are the Leader's &mdash;
       <code>confirm_status</code>, <code>stop_session</code>, <code>restart_session</code>, <code>stop_worker</code>,
       <code>restart_worker</code>, <code>park</code>, <code>hire</code>, <code>retire</code>,
-      <code>permission</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
+      <code>permission</code>, <code>remove_rule</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
       proposes it to the Leader. When the task ships the Worker reports, writes its desk and calls
       <code>done</code>, with a one-line note if it likes; the Leader gives it the next thing or
       stops it. The desk stays, and <code>hire</code> on its name brings it back on the same desk

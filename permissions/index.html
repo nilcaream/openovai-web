@@ -51,9 +51,11 @@
   <section class="wrap hero">
     <h1>Permissions and safety</h1>
     <p class="lead">
-      A session asks before it uses a tool the instance has not settled. What the instance allows it
-      simply does; what it denies it never gets to try; and anything left undecided stops the run
-      and appears on that session's panel as a permission popup, in the session's own words. A permission popup nobody
+      What the instance allows a session simply does; what it denies it never gets to try. Every
+      seat starts in Claude Code's auto mode, as the CLI does: its classifier settles a call no rule
+      settles, and most such calls run with no stop. A call a rule says to ask about, and in Manual
+      every call no rule settles, stops the run and appears on that session's panel as a permission
+      popup, in the session's own words. A permission popup nobody
       answers is a Deny after ten minutes, or two for a subagent's call, and the session is told
       that nobody answered: it goes on with what it can do without the call and asks for it again
       when you are back.
@@ -64,14 +66,14 @@
     <h2 id="birth">What a session may do from birth</h2>
     <p>
       A fresh instance seeds two settings files once and never touches them again, but for two
-      things: an update wires the two hooks, <a href="#compound">below</a>, into a settings file
-      that lacks them, and turns the harness's commit attribution off in one that says nothing
+      things: an update wires the subagent hook, <a href="#compound">below</a>, into a settings
+      file that lacks it, taking out the shell hook versions before 0.26.0 ran, and turns the harness's commit attribution off in one that says nothing
       about it. It adds no rule: a rule a fresh instance of a newer version is born with and yours
       lacks is asked for on the Leader's panel instead, <a href="#defaults">below</a>. What a fresh
       instance is born allowing:
     </p>
     <ul>
-      <li>the instance's own tool server, so the fifteen tools cost one rule;</li>
+      <li>the instance's own tool server, so the sixteen tools cost one rule;</li>
       <li>Claude Code's <code>AskUserQuestion</code>, a session asking you a question, which is a
         permission popup on its panel already;</li>
       <li>reading any file;</li>
@@ -83,7 +85,7 @@
         workspace knows is written by whoever learnt the thing, at the moment they learnt it, and a
         session that had to ask before recording what it just measured would record nothing;</li>
       <li>a seat's ordinary shell commands: <code>git</code>, <code>mkdir</code>, <code>cd</code>,
-        <code>node</code>, <code>bash</code>, <code>sh</code>, <code>cp</code>, <code>mv</code>,
+        <code>cp</code>, <code>mv</code>,
         <code>rm</code>, <code>ls</code>, <code>cat</code>, <code>tar</code>, <code>diff</code>,
         <code>cmp</code>, <code>sha256sum</code>, <code>shasum</code>, <code>grep</code>,
         <code>find</code>, <code>sed</code>, <code>awk</code>, <code>head</code>, <code>tail</code>,
@@ -91,19 +93,25 @@
         <code>echo</code>, <code>chmod</code>, <code>touch</code>, <code>curl</code> and
         <code>npm</code>.</li>
     </ul>
+    <p>
+      No interpreter is allowed by rule: a rule for <code>node</code>, <code>bash</code> or
+      <code>sh</code> holds whatever program it is handed, so a script is the classifier's to judge
+      in auto mode, or yours on a popup in Manual. An instance made before 0.26.0 keeps the rules it
+      holds.
+    </p>
     <p>And what it is born denying:</p>
     <ul>
       <li>the instance's own account files, and to the Read tool and the tools that write files,
         the account's credential, <code>.local/.credentials.json</code>, and the page's two keys,
         <code>page-session</code> and <code>page-link</code>. These bind the file tools only: a
-        granted <code>Bash(cat:*)</code> or <code>Bash(node:*)</code> still reads either with no
+        granted <code>Bash(cat:*)</code> still reads either with no
         permission popup, and a <code>Bash(&hellip;)</code> deny would stop one spelling of the
         command out of endless ones, so none is added. The rest of <code>.local/</code> stays
         readable, since Claude Code keeps large tool results and skills there for a session to
         read;</li>
       <li><code>git push</code>, <code>sudo</code> and <code>ssh</code>: a push is yours, and a
-        refusal wins over the <code>git</code> rule that would let it through, whatever the hook
-        says.</li>
+        refusal wins over the <code>git</code> rule that would let it through, in either mode and
+        inside a chain of commands too.</li>
     </ul>
     <p>And the two it is born asking for, both of them files that reach every session:</p>
     <ul>
@@ -127,8 +135,18 @@
 
   <section class="wrap prose">
     <h2 id="card">The permission popup</h2>
+    <p id="auto">
+      Every seat starts in auto mode, as the Claude Code CLI does: the two bolt switches on the
+      Leader's head, one for the Leader and one for the Workers, are on whenever the server starts.
+      In auto, Claude Code's classifier settles a call no rule settles; a call it blocks is a row on
+      the session's panel, and the session is told that a block is an answer, never something to
+      spell another way. A switch turned off puts that role in Manual, where every such call asks
+      on a popup, until the server stops; nothing about the switches is saved. Deny rules refuse what
+      they name in either mode, and ask rules and Claude Code's protected paths raise a popup in
+      either mode. The classifier's calls count toward usage the way they do in the CLI.
+    </p>
     <p>
-      A call the instance has not settled stops the run and appears on that session's panel:
+      A call that asks stops the run and appears on that session's panel:
       <code>Paul wants to use Bash</code>, the command and the reason the session gave for it, or
       the path it was going to write. A call one of the session's subagents made says so under the
       heading, in the words the session started the subagent with &mdash; <code>from its subagent
@@ -141,7 +159,7 @@
       <dt>Always allow</dt>
       <dd>where the request says plainly what the whole class of calls is, the permission popup lists the rules
         it saves under <code>Always allow saves:</code>, one to a line &mdash;
-        <code>Bash(node:*)</code>, a command by its first word (<code>git</code> by its subcommand:
+        <code>Bash(make:*)</code>, a command by its first word (<code>git</code> by its subcommand:
         <code>Bash(git push:*)</code>), or <code>Edit(/projects/app/**)</code>, a write by the
         directory it was in &mdash; and pressing it lets the call through and leaves the instance
         allowing that shape.</dd>
@@ -203,50 +221,28 @@
     <p>
       Claude Code matches a Bash rule against a command from its first character, so an instance
       that allows <code>git</code>, <code>cd</code> and <code>npm</code> would still be stopped on
-      <code>cd app &amp;&amp; npm test</code>: no one rule holds the whole. Two hooks and the permission popup meet
-      that.
+      <code>cd app &amp;&amp; npm run lint &amp;&amp; make dist</code>: no one rule holds the
+      whole. In auto mode the classifier settles such a line; in Manual it stops on a popup.
     </p>
     <p>
-      The permission popup offers one rule per side: <code>cd app &amp;&amp; npm test &amp;&amp; make build</code>
-      offers <b>Always allow <code>Bash(npm:*)</code> and <code>Bash(make:*)</code></b>,
-      <code>cd</code> being held from birth &mdash; and never a rule for the words Claude Code runs
-      without asking anyway (<code>ls</code>, <code>cat</code>, <code>grep</code>, <code>cd</code>
-      and the rest of its built-in read-only set).
+      The permission popup offers one rule per side the instance does not hold yet:
+      <code>cd app &amp;&amp; npm run lint &amp;&amp; make dist</code> offers <b>Always allow
+      <code>Bash(make:*)</code></b>, <code>cd</code> and <code>npm</code> being held from birth
+      &mdash; and never a rule for the words Claude Code runs without asking anyway
+      (<code>ls</code>, <code>cat</code>, <code>grep</code>, <code>cd</code> and the rest of its
+      built-in read-only set). A side whose first word is a path, a variable or a word of the
+      shell's own, such as <code>for</code>, makes the popup offer nothing for the whole line.
     </p>
     <p>
-      And a hook, <code>lib/hooks/compound.mjs</code>, runs before every Bash call, a subagent's
-      included, before any question is asked. Both hooks are named in the settings as <code>sh
-      "${CLAUDE_PROJECT_DIR}/lib/hooks/run.sh" compound</code> (or <code>subagent</code>), which
-      runs them on the Node.js the instance's version pins, not on whatever <code>node</code> the
-      session's <code>PATH</code> has; an update replaces the older commands with these and keeps
-      any hook of your own. It reads the command as text and cuts it into sides the way the permission popup
-      does:
-    </p>
-    <ul>
-      <li>Every side a command the instance's own allow list holds, and no side one its deny list
-        refuses: it answers <em>allow</em>, so a compound of allowed commands runs without a
-        stop.</li>
-      <li>The same, but with a backtick or <code>$(</code> in it, which Claude Code would read as a
-        program hidden in the line: it refuses, with a reason the session reads &mdash; put the
-        pattern in a file for <code>grep -f</code>, or the steps in a script &mdash; and the session
-        spells the command again. You are not asked.</li>
-      <li>More than one plain command &mdash; a pipe, a chain, a loop, an assignment,
-        <code>$(</code>, a here-document &mdash; with a side no rule allows: it refuses, with a
-        reason that says to create the script with the Write tool, in <code>temp/</code> or on the
-        desk, and run only <code>bash &lt;file&gt;</code>. The session writes the script and runs
-        it, and the permission popup you are asked on, if any, shows one short line.</li>
-      <li>One plain command no rule allows, a line with a side the deny list refuses, and a line
-        the hook cannot read, such as a quote that is not closed: it answers nothing, and the
-        harness asks. Such a line is never sent toward a script, so a new program run on its own is
-        still yours to answer.</li>
-    </ul>
-    <p>
-      The list is read from the settings on every call, so a rule you settle later is honoured at
-      the next command, and a rule you take out stops counting.
+      No hook runs before a shell command. The one that let a chain of allowed commands through,
+      and refused other chains toward a script, ran until 0.26.0; an update takes it out of
+      <code>.claude/settings.json</code>.
     </p>
     <p>
       A subagent a session starts with the Agent tool is given none of the instance's rules by
-      Claude Code. A second hook, <code>lib/hooks/subagent.mjs</code>, runs when one starts and
+      Claude Code. A hook, <code>lib/hooks/subagent.mjs</code>, named in the settings as <code>sh
+      "${CLAUDE_PROJECT_DIR}/lib/hooks/run.sh" subagent</code> so it runs on the Node.js the
+      instance's version pins, runs when one starts and
       hands it <code>customization/common.md</code>, word for word, in the frame a seat reads it
       in; the role files stay with the seats, and with no <code>common.md</code> it is handed
       nothing.
@@ -288,9 +284,32 @@
       down in <code>.claude/allowed.md</code>, one line per rule with the list it went to, who
       asked, when and what for.
     </p>
+    <p>
+      A rule the instance already holds is moved on the same popup: it says where the rule stands
+      now &mdash; <code>Now: asked every time</code> &mdash; and the press moves it to the list
+      pressed. A rule written by hand as <code>Bash(npm *)</code> is the rule
+      <code>Bash(npm:*)</code>, as Claude Code reads it: settling one spelling takes the other out of
+      the other lists.
+    </p>
+    <p id="remove">
+      To take a rule out, say so to the Leader: it calls <code>remove_rule</code> with the rule and
+      why, and its panel shows a removal popup &mdash; the rule, the list that holds it, the
+      Leader's why, the line <code>.claude/allowed.md</code> has for it (or that it has none,
+      written by hand or when the instance was made), and for one of ovai's defaults, what it is
+      for. Two buttons, <b>Remove</b> and <b>Keep</b>. Only the press writes: Remove takes the rule
+      out of every list that holds it, either spelling, and adds a <code>removed from</code> line
+      to <code>.claude/allowed.md</code>; a removed default is also remembered as ignored, so it is
+      not offered again after an update, and the popup says so. The press reaches the Leader as an
+      event, decision remove or keep. The rules that keep the file tools away from the instance's
+      own settings, login and page keys are refused: they stay yours to remove by hand.
+    </p>
+    <p>
+      A rule moved or removed, from a popup or by hand, applies at every session's next call, with
+      no restart.
+    </p>
     <p id="defaults">
       A rule a fresh instance is born with that yours holds in none of its lists &mdash; after an
-      update, most of the time, or because you took it out &mdash; is asked for by ovai itself: one
+      update, most of the time, or because you took it out by hand &mdash; is asked for by ovai itself: one
       permission popup per rule on the Leader's panel, at every start of the server, saying that it
       came with the update, what it does and why. It has two buttons: what ovai recommends, labelled
       as what it does (<b>Allow</b>, <b>Deny</b> or <b>Ask every time</b>), and <b>Ignore</b>, which
@@ -299,7 +318,7 @@
       the Leader is not told about it.
     </p>
     <figure class="shot">
-      <a href="/media/media-13.png"><img src="/media/media-13.png" width="1077" height="384" alt=""></a>
+      <a href="/media/media-13.png"><img src="/media/media-13.png" width="1077" height="385" alt=""></a>
       <figcaption><code>.claude/allowed.md</code>: one line per rule &mdash; the list, who asked, when, what for</figcaption>
     </figure>
   </section>

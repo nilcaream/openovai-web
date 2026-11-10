@@ -70,6 +70,16 @@
       seat's own words for what went wrong are on its panel; the server's are in
       <code>runtime.log</code>.
     </p>
+    <p>
+      A reply cut in the middle by Claude's service (&ldquo;API Error: 529 Overloaded&rdquo;,
+      &ldquo;Request timed out&rdquo;) is a row of ovai's own: whether your message reached the
+      session, what it did before the failure, and what to send. Claude Code has already tried the
+      request again by itself, up to 10 times over about three minutes, and the panel said so
+      meanwhile. Send <code>go on</code>: the session kept your message and what its calls
+      returned, so you get the reply and nothing is done twice. A session that stopped over the
+      failure says so, and asks you to send the message again. The row's link goes to
+      <a href="https://status.claude.com/">status.claude.com</a>.
+    </p>
   </section>
 
   <section class="wrap prose">

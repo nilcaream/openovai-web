@@ -271,7 +271,14 @@ cd openovai
 <pre>~/workspace/bin/ovai update</pre>
     </div>
     <p>
-      It asks GitHub for the latest release, and if that is newer than the version this instance is
+      You do not have to look for one: the server asks GitHub once a day, and when a newer release
+      is out the version on the Leader's head turns red. Hovering it names the release and its
+      date; a click asks first, then stops the server, runs the update and starts the server
+      again, even when the update failed. On port 0 the version is red and takes no click.
+      <code>"update": { "check": false }</code> in <code>openovai.json</code> turns the asking off.
+    </p>
+    <p>
+      <code>ovai update</code> asks GitHub for the latest release, and if that is newer than the version this instance is
       on it takes it, once it has checked it: the release's signature against the keys in the
       instance's own <code>lib/RELEASE_KEYS</code>, the package against the <code>SHA256SUMS</code>
       that signature covers, and the <code>lib/VERSION</code> inside against the tag, all before
@@ -325,7 +332,7 @@ cd openovai
       &lt;clone&gt;</code>.
     </p>
     <figure class="shot">
-      <a href="/media/media-7.png"><img src="/media/media-7.png" width="875" height="486" alt=""></a>
+      <a href="/media/media-7.png"><img src="/media/media-7.png" width="875" height="425" alt=""></a>
       <figcaption><code>ovai update</code> refusing while a session runs, then taking the release</figcaption>
     </figure>
     <p>
@@ -349,7 +356,8 @@ cd openovai
           <tr><td><code>ovai url</code></td><td>a new one-time link to the running page, for another browser; the link before it no longer opens anything. <code>not running</code> (exit 3) when there is no server</td></tr>
           <tr><td><code>ovai status</code></td><td><code>not running</code> (exit 3), or <code>running at &lt;url&gt; (pid, since)</code> &mdash; found out by asking the address, not by trusting a file</td></tr>
           <tr><td><code>ovai stop</code></td><td>parks the room &mdash; every Worker is closed and the Leader writes its desk and stops, by a deadline &mdash; then closes the server; not running is not a failure</td></tr>
-          <tr><td><code>ovai restart</code></td><td>the two in a row, and prints the new address</td></tr>
+          <tr><td><code>ovai restart</code></td><td>the two in a row, and prints the new address; the power button on the Leader's head does the same</td></tr>
+          <tr><td><code>ovai runs</code></td><td>every seat's <a href="/team/#runs">long runs</a> and where each stands; <code>ovai run --stop &lt;Name&gt;/&lt;run&gt;</code> stops one. A seat starts a run in its shell with <code>ovai run &lt;name&gt; -- &lt;command&gt;</code></td></tr>
           <tr><td><code>ovai configuration</code></td><td>what this instance is: version, who works here, on which models, the port, how it signs in, whether it has a credential, every desk with what it runs on, and last what the sessions get of the shell's Claude Code variables, as the server last started with them</td></tr>
           <tr><td><code>ovai login</code></td><td>signs the instance in, once, under <code>--auth login</code></td></tr>
           <tr><td><code>ovai claude</code></td><td>opens Claude Code on this instance, to reach its own commands &mdash; its configuration is the instance's rather than yours. A permission rule changed there applies at each seat's next call; the rest is not live when it quits: a seat reads its configuration when it starts, so <code>ovai restart</code> is what picks it up, and that interrupts whatever the seats are doing. The Leader is told that admin mode ran &mdash; within seconds when the server is running, else at its next start &mdash; and which of the instance's configuration files changed, by name</td></tr>

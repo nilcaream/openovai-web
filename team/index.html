@@ -203,10 +203,10 @@
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
       its own panel lands there and nowhere else. Five tools go to every seat and one is the
-      Worker's own, <code>done</code>; the ten that are the Leader's &mdash;
+      Worker's own, <code>done</code>; the twelve that are the Leader's &mdash;
       <code>confirm_status</code>, <code>stop_session</code>, <code>restart_session</code>, <code>stop_worker</code>,
       <code>restart_worker</code>, <code>park</code>, <code>hire</code>, <code>retire</code>,
-      <code>permission</code>, <code>remove_rule</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
+      <code>permission</code>, <code>remove_rule</code>, <code>settings</code>, <code>wake</code> &mdash; refuse a Worker in words, so a Worker that wants a rule
       proposes it to the Leader. When the task ships the Worker reports, writes its desk and calls
       <code>done</code>, with a one-line note if it likes; the Leader gives it the next thing or
       stops it. The desk stays, and <code>hire</code> on its name brings it back on the same desk
@@ -302,7 +302,30 @@
       own stands. <code>ovai configuration</code> lists every desk with what it resolves to. A model
       may name the effort it runs at, <code>opus/high</code>: the effort goes to Claude Code as
       <code>--effort</code>, and with none written Claude Code picks its own. A new instance runs
-      its Leader on <code>opus</code> and its Workers on <code>sonnet</code>.
+      its Leader on <code>opus</code> and its Workers on <code>sonnet</code>. A model written as an
+      alias, <code>opus</code> or <code>sonnet</code>, runs the newest model of that name the pinned
+      Claude Code ships, so a newer model arrives with an update; a full id such as
+      <code>claude-opus-5-5</code> pins that one version.
+    </p>
+    <p id="runs">
+      Work that may outlast a session, an overnight sweep or a long build, is a run: a Worker starts
+      it in its shell with <code>&lt;instance&gt;/bin/ovai run &lt;name&gt; -- &lt;command&gt;</code>.
+      A run survives its Worker's stop, restart, idle close and quota stop, and a server stop,
+      restart or update; a reboot ends it, and it is then told as lost. When it ends, the Worker that
+      started it is told, or the Leader when that Worker is not running; a parked room starts nobody
+      for it. Each run is a directory on its Worker's desk, <code>desks/&lt;Name&gt;/runs/&lt;run&gt;/</code>,
+      with its command, its log and how it ended, and the Leader cannot retire a Worker with a run
+      going or one whose end it has not been told. A seat has at most 8 runs going and a run is
+      stopped after 24 hours (<code>runs.most</code>, <code>runs.hours</code>). A background command
+      started any other way still ends with its session, and the sessions are told so.
+    </p>
+    <p id="wake">
+      The Leader sets a wake-up with <code>wake</code>: a time, <code>hh:mm</code>, a date and time
+      or a usage window's reset, and a short reason. At that time the server starts the Leader, or
+      tells it when it is running. It sets one by itself when work waits on a time, or when asked
+      (&ldquo;pick this up at 9:30&rdquo;). There is one at a time, a message still starts the
+      Leader sooner, and parking the room or a server stop cancels it. The line at the foot of the
+      Leader's panel shows the wake-up and the seats with a run going.
     </p>
   </section>
 

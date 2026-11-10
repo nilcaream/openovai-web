@@ -73,7 +73,7 @@
       instance is born allowing:
     </p>
     <ul>
-      <li>the instance's own tool server, so the sixteen tools cost one rule;</li>
+      <li>the instance's own tool server, so the eighteen tools cost one rule;</li>
       <li>Claude Code's <code>AskUserQuestion</code>, a session asking you a question, which is a
         permission popup on its panel already;</li>
       <li>reading any file;</li>
@@ -103,7 +103,9 @@
     <ul>
       <li>the instance's own account files, and to the Read tool and the tools that write files,
         the account's credential, <code>.local/.credentials.json</code>, and the page's two keys,
-        <code>page-session</code> and <code>page-link</code>. These bind the file tools only: a
+        <code>page-session</code> and <code>page-link</code>; and to the tools that write files,
+        <code>openovai.json</code>, which the server takes while it runs and the Leader changes with
+        its <code>settings</code> tool, on your words. These bind the file tools only: a
         granted <code>Bash(cat:*)</code> still reads either with no
         permission popup, and a <code>Bash(&hellip;)</code> deny would stop one spelling of the
         command out of endless ones, so none is added. The rest of <code>.local/</code> stays

@@ -112,8 +112,15 @@ and you say so to the Leader before you start on it.
       here, on which models, on which port, how it signs in; no absolute path, so an instance can
       be moved and still be itself &mdash; and an install over the instance with <code>--force</code>
       writes any option you give into it. Everything below the first group is optional: absent, the
-      default holds. The server reads the file when it starts, so <code>ovai restart</code> after
-      an edit.
+      default holds. The server reads the file again within about 5 seconds of a save and tells the
+      Leader the names of the keys that changed: every setting takes effect at once, a default
+      model from each session's next start, and <code>user</code>, <code>leader</code>,
+      <code>port</code> and <code>auth</code> still wait for <code>ovai restart</code>. A file that
+      does not read as JSON changes nothing, and the Leader is told. The easier way is to ask the
+      Leader (&ldquo;raise the desk limit to 256 KB&rdquo;, &ldquo;Workers on sonnet&rdquo;): its
+      <code>settings</code> tool lists each setting as the server holds it, or writes a checked
+      change and applies it at once. The sessions' file tools are denied this file; an instance
+      updated from an older version is asked for that rule on the Leader's panel.
     </p>
     <div class="table">
       <table>
@@ -133,6 +140,8 @@ and you say so to the Leader before you start on it.
           <tr><td><code>park</code></td><td><code>{ "deadline": 1800, "timeout": 20, "margin": 15 }</code></td><td>seconds: how long the <code>park</code> tool waits for the Workers when its caller gives no deadline, how long a server stop waits for the whole room, and how much longer <code>ovai stop</code> waits past that for the sessions to go</td></tr>
           <tr><td><code>typing</code></td><td><code>{ "quiet": 10, "cap": 30 }</code></td><td>seconds: a seat waits for you while you type in its box. <code>quiet</code> is how long after your last keystroke you still count as typing, <code>cap</code> the longest a waiting turn is held; <code>0</code> in either turns the hold off, and a value that is not a number or is below 0 is taken as the default. <a href="/reference/#typing">What is held, with a worked timeline</a></td></tr>
           <tr><td><code>desk</code></td><td><code>{ "limit": 131072 }</code></td><td>bytes: when <code>write_desk</code> finds a desk file past the limit, the server saves it whole beside itself as <code>STATE-&lt;time&gt;.md</code> and tells the seat, once per crossing, to archive what current work no longer needs, or, with most of it still open, to ask you for a higher limit</td></tr>
+          <tr><td><code>update</code></td><td><code>{ "check": true }</code></td><td>whether the server asks GitHub once a day for the latest release: one request, with nothing about the instance in it, and nothing downloaded. A newer one turns the version on the Leader's head red. <code>false</code> for an instance that is offline or must not reach GitHub</td></tr>
+          <tr><td><code>runs</code></td><td><code>{ "most": 8, "hours": 24 }</code></td><td>how many <a href="/team/#runs">long runs</a> a seat may have going, and after how many hours a run is stopped</td></tr>
         </tbody>
       </table>
     </div>
@@ -161,8 +170,9 @@ and you say so to the Leader before you start on it.
     <p>
       Each of these takes <code>model</code> or <code>model/effort</code>: <code>opus/high</code>
       runs the seat on <code>opus</code> at high effort, and with no effort written Claude Code picks
-      its own for the model. A new instance offers <code>opus</code> for the Leader and
-      <code>sonnet</code> for the Workers; the <a href="/defaults/#models">defaults page</a> has the
+      its own for the model. An alias such as <code>opus</code> follows Claude Code to the newest
+      model of that name, and a full id such as <code>claude-opus-5-5</code> pins one version. A new
+      instance offers <code>opus</code> for the Leader and <code>sonnet</code> for the Workers; the <a href="/defaults/#models">defaults page</a> has the
       whole check.
     </p>
   </section>

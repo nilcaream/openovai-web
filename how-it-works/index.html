@@ -169,8 +169,9 @@
       line at the foot of its panel and the cards in it say it, and that line says
       <code>Disconnected</code>, with every dot red and no state word on any head, while the page
       has lost the server's stream. The head of the Leader's panel carries, after the model, the
-      version the server runs &mdash; <code>0.26.0</code>, or the eight characters of the commit on
-      a build of <code>main</code> &mdash; then the account's usage windows &mdash; the session
+      version the server runs &mdash; <code>0.27.0</code>, or the eight characters of the commit on
+      a build of <code>main</code>, red when a newer release is out: hovering it names the release
+      and its date, and a click asks, then stops the server, updates and starts it again &mdash; then the account's usage windows &mdash; the session
       window with the time to its reset, the weekly window over all models, and the weekly window
       of the one model that has its own, like
       <code>8% (3h) · all 86% (6d) · fable 20% (6d)</code>, kept across restarts, read every 5
@@ -184,6 +185,25 @@
       one for the Workers', where a classifier settles a call no rule settles instead of a popup;
       both are on at every start, as the CLI is, a switch turned off is Manual until the server
       stops, and neither is kept anywhere.
+    </p>
+    <p>
+      Last on the Leader's head come two buttons. A circular arrow asks every running session to
+      read its skills and then its plugins again, with no restart, and each panel gets one row that
+      says what was applied; plugins that would change the tools the conversation's cache rests on
+      are held until that session's next start. A power button does what <code>ovai restart</code>
+      does, after asking, since the room parks as at <code>ovai stop</code>. While the server is
+      away the line at the foot of the Leader's panel says <code>Restarting…</code> or
+      <code>Updating…</code>, and when no server answers in time it names <code>runtime.log</code>
+      and <code>ovai start</code>. An instance on port 0 has neither the power button nor a click on
+      the version: it comes back on another port, where the page cannot follow.
+    </p>
+    <p>
+      Off a turn, that line says what comes next: the state, <code>Waiting for instructions</code>
+      or that the Leader has left, then the Leader's wake-up or a quota window's reset, whichever
+      comes first, then the seats with a long run going, joined by <code>·</code>, as in
+      <code>Waiting for instructions · Wake-up: 18:40 · Runs: Paul</code>. A time today is the
+      time alone, within the week the weekday, further on the date; hovering the line says each
+      part in full.
     </p>
     <p>
       Right above the Leader's box stands its <a href="/team/#status">status</a>:
@@ -215,7 +235,26 @@
       tool line such as <code>Reading &hellip;</code> names a file inside the instance by its path from the instance directory
       and any other file by its absolute path. Scrolled more than 80&nbsp;px above the newest row,
       any panel shows <code>&darr; latest</code>, and a click on it takes you to the newest row; on
-      the Leader's panel it says <code>&darr; new messages</code> once a row lands below you.
+      the Leader's panel it says <code>&darr; new messages</code> once a row lands below you. A
+      scroll the browser's find makes lets a panel stop following the newest row, as a scroll by
+      hand does. A stamp row writes its date in ISO 8601, as in
+      <code>2026-11-13 Friday 13:33:14</code>.
+    </p>
+    <p>
+      Each box keeps the last 10 messages typed on its panel. With the cursor at the very start of
+      the box, Up shows the previous one, greyed; Up and Down move through them, and Down past the
+      newest or Escape brings back what you were typing. Enter or a click puts the message shown
+      into the box to edit, and only the next Enter sends it.
+    </p>
+    <p>
+      When Claude's service fails a request, Claude Code tries it again by itself, up to 10 times
+      over about three minutes; meanwhile the Leader's line reads <code>Claude's service failed,
+      trying again (3 of 10)</code>, and a Worker's head <code>retrying (3 of 10)</code>. When the
+      turn is cut after all, the panel shows a row of ovai's own in place of the service's words:
+      whether the message reached the session, each thing it did before the failure, and what to
+      send. The session keeps the message and what its calls returned, so <code>go on</code> gets
+      the reply and nothing is done twice; ovai does not send it by itself. The row ends with
+      Claude Code's own words and a link to <a href="https://status.claude.com/">status.claude.com</a>.
     </p>
     <figure class="shot">
       <a class="light" href="/media/media-4.png"><img src="/media/media-4.png" width="406" height="1072" alt=""></a>
@@ -395,10 +434,10 @@
   </section>
 
   <section class="wrap prose">
-    <h2 id="tools">The sixteen tools</h2>
+    <h2 id="tools">The eighteen tools</h2>
     <p>
-      The server serves sixteen tools over the secret route. Five go to every seat, one is the
-      Workers' and ten are the Leader's; a seat asking for one that is not its own is refused in
+      The server serves eighteen tools over the secret route. Five go to every seat, one is the
+      Workers' and twelve are the Leader's; a seat asking for one that is not its own is refused in
       words. The whole of it costs one permission rule, seeded at install.
     </p>
     <div class="table">
@@ -421,6 +460,8 @@
           <tr><td><code>retire</code></td><td>Leader</td><td>file a stopped Worker's desk under <code>archive/</code></td></tr>
           <tr><td><code>permission</code></td><td>Leader</td><td>settle one rule for the whole instance, on a permission popup you answer; a rule already held is moved by the press</td></tr>
           <tr><td><code>remove_rule</code></td><td>Leader</td><td>ask for one held rule to be taken out, on a popup you answer Remove or Keep</td></tr>
+          <tr><td><code>settings</code></td><td>Leader</td><td>list every setting of <code>openovai.json</code> as the server holds it, or write a checked change on your words and apply it at once, a model from each seat's next start</td></tr>
+          <tr><td><code>wake</code></td><td>Leader</td><td>be started, or told, at a time: <code>hh:mm</code>, a date and time, or a quota window's reset, with a short reason; one at a time, forgotten by a park or a server stop</td></tr>
         </tbody>
       </table>
     </div>

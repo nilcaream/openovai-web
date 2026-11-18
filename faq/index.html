@@ -215,10 +215,23 @@
   </section>
 
   <section class="wrap prose">
+    <h2 id="voice">The microphone button is greyed</h2>
+    <p>
+      Voice input is off until you ask the Leader to turn it on; the button's hover says so. Once it
+      is on, the first click on the button, or Tab in the Leader's box, installs it, about
+      2.1&nbsp;GB under <code>~/.local/share/openovai/voice/</code>, and the voice pill on the
+      Leader's bottom line says which step it is at. Speech is turned into text on this machine and
+      nothing goes to a cloud service: <a href="/how-it-works/#voice">voice input</a>. If an install
+      fails the pill says <code>Voice failed, click to retry</code>, with the reason in its hover.
+    </p>
+  </section>
+
+  <section class="wrap prose">
     <h2 id="two">Can I run two instances?</h2>
     <p>
       Yes; that is what an instance being a directory is for. Two on one machine share the runtimes
-      under <code>~/.local/share/openovai/</code> and nothing else: not the account, not the
+      and the voice input install under <code>~/.local/share/openovai/</code>, where a version is
+      removed only once no instance pins it and no running process uses it, and nothing else: not the account, not the
       transcripts, not the port &mdash; each has its own Claude Code home. For two different
       accounts install both with <code>--auth login</code> and sign each in; with
       <code>--auth inherit</code> they share the one token. Give them different ports, or

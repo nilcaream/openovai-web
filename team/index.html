@@ -202,7 +202,7 @@
     </p>
     <p>
       A Worker reaches the Leader with <code>message</code>, and only that way: what it says on
-      its own panel lands there and nowhere else. Five tools go to every seat and one is the
+      its own panel lands there and nowhere else. Six tools go to every seat and one is the
       Worker's own, <code>done</code>; the twelve that are the Leader's &mdash;
       <code>confirm_status</code>, <code>stop_session</code>, <code>restart_session</code>, <code>stop_worker</code>,
       <code>restart_worker</code>, <code>park</code>, <code>hire</code>, <code>retire</code>,
@@ -316,7 +316,10 @@
       for it. Each run is a directory on its Worker's desk, <code>desks/&lt;Name&gt;/runs/&lt;run&gt;/</code>,
       with its command, its log and how it ended, and the Leader cannot retire a Worker with a run
       going or one whose end it has not been told. A seat has at most 8 runs going and a run is
-      stopped after 24 hours (<code>runs.most</code>, <code>runs.hours</code>). A background command
+      stopped after 24 hours (<code>runs.most</code>, <code>runs.hours</code>). When a run's command
+      ends or the run is stopped, whatever it started that is still running, such as a server, is
+      ended too, and the run's log says what was ended; <code>ovai stop</code> and <code>ovai
+      update</code> name only the runs still going. A background command
       started any other way still ends with its session, and the sessions are told so.
     </p>
     <p id="wake">

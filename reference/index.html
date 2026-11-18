@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reference — OpenOv AI</title>
-<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance directory file by file, the keys of openovai.json, the eighteen tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
+<meta name="description" content="Everything with a name, in tables: the openovai and ovai commands and exit codes, the instance directory file by file, the keys of openovai.json, the nineteen tools and their arguments, the server events, the seeded permission rules, the columns of runtime.log, the plugin contract, and what it needs.">
 <link rel="canonical" href="https://openov.ai/reference/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://openov.ai/reference/">
@@ -52,7 +52,7 @@
     <h1>Reference</h1>
     <p class="lead">
       Everything with a name, in tables. The two commands, the instance directory, the configuration
-      keys, the eighteen tools and what they take, the events a session receives, the rules an
+      keys, the nineteen tools and what they take, the events a session receives, the rules an
       instance is born with, the log, the plugin contract, and what it needs to run.
     </p>
     <p>
@@ -158,7 +158,7 @@
           <tr><td><code>archive/</code></td><td>the people</td><td>retired desks, moved whole: <code>&lt;day&gt;-&lt;Name&gt;-&lt;slug of the final title&gt;/</code>; appears at the first retire</td></tr>
           <tr><td><code>reference/</code></td><td>your material</td><td>kept to look at: documents, sources, clones for analysis; never worked on</td></tr>
           <tr><td><code>projects/</code></td><td>your material</td><td>worked on; a reference that needs edits is cloned fresh here, never moved</td></tr>
-          <tr><td><code>temp/</code></td><td>your material</td><td>scratch, deletable by anyone at any time</td></tr>
+          <tr><td><code>temp/</code></td><td>your material</td><td>scratch, deletable by anyone at any time; the server keeps each <a href="/how-it-works/#diff">diff view</a>'s capture in <code>temp/diffs/</code> for 24 hours</td></tr>
           <tr><td><code>.claude/</code></td><td>Claude Code</td><td>the project settings for the instance: <code>settings.json</code> with the rules, <code>allowed.md</code> with one line per rule granted from a permission popup, <code>ignored-defaults.json</code> with the new default rules you pressed Ignore on</td></tr>
           <tr><td><code>.local/</code></td><td>Claude Code</td><td>its config dir for the instance: account, transcripts, memory (off)</td></tr>
         </tbody>
@@ -190,6 +190,7 @@
           <tr><td><code>desk</code></td><td><code>{ "limit": 131072 }</code> &mdash; bytes; a desk file past it is saved whole beside itself and its seat told once</td></tr>
           <tr><td><code>update</code></td><td><code>{ "check": true }</code> &mdash; ask GitHub once a day for a newer release; <code>false</code> for an instance that is offline or must not reach GitHub</td></tr>
           <tr><td><code>runs</code></td><td><code>{ "most": 8, "hours": 24 }</code> &mdash; long runs going per seat, and hours before a run is stopped</td></tr>
+          <tr><td><code>voice</code></td><td><code>{ "on": false, "language": "en" }</code> &mdash; the Leader's <a href="/how-it-works/#voice">voice input</a>, and the Whisper language code it listens for</td></tr>
         </tbody>
       </table>
     </div>
@@ -258,10 +259,10 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
   </section>
 
   <section class="wrap prose">
-    <h2 id="tools">The eighteen tools</h2>
+    <h2 id="tools">The nineteen tools</h2>
     <p>
       Served over <code>POST /mcp/&lt;secret&gt;</code>, one secret per process, and named
-      <code>mcp__openovai__&lt;tool&gt;</code> to the session. Five go to every seat, one is the
+      <code>mcp__openovai__&lt;tool&gt;</code> to the session. Six go to every seat, one is the
       Workers' and twelve are the Leader's; a seat asking for one that is not its own is refused in
       words.
     </p>
@@ -274,6 +275,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
           <tr><td><code>index</code></td><td>everyone</td><td><code>tags</code> (left out: the header &mdash; how many notes, when the directory last changed, every tag with its count, and any file it could not read; given: the notes carrying those tags, the ones carrying more of what was asked first)</td><td>&mdash;; a file it cannot read is named in the header rather than failing the call</td></tr>
           <tr><td><code>validate</code></td><td>everyone</td><td>none</td><td>&mdash;; every problem is one line of the answer, naming the rule it breaks</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td><code>title</code> (one line, up to 120 characters), <code>status</code> (one line, up to 80, no <code>|</code>); both required; writes the header line alone, and the body below it is edited in place</td><td>an empty title or status, a newline in either, a <code>|</code> in status, any other key</td></tr>
+          <tr><td><code>diff</code></td><td>everyone</td><td><code>repository</code> (a path from the instance directory), <code>from</code> (the old side: a commit id, a tag or a branch), <code>to</code> (the new side, as <code>from</code>, or <code>worktree</code> for the working tree with its uncommitted and untracked files); all required; captures both sides of every file that differs and answers with the <code>/diff/&lt;id&gt;</code> link, kept 24 hours under <code>temp/diffs/</code></td><td>a path that is not a directory inside the instance, not in a git repository, or whose repository or git directory is outside the instance; a directory the file view never shows; a revision that is not a commit or starts with <code>-</code>; more than 1000 files differ</td></tr>
           <tr><td><code>done</code></td><td>Worker</td><td><code>note</code> (one line, up to 200 characters, optional); the Leader is told with a <code>done</code> event and decides whether the Worker stops; it ends nothing, and the report still goes as a message</td><td>a note of more than one line or 200 characters; the Leader calling it</td></tr>
           <tr><td><code>confirm_status</code></td><td>Leader</td><td>none; reads <code>desks/&lt;Leader&gt;/STATUS.md</code> as it stands at the call and shows it on the Leader's panel, stamped with the time of the call, until the next call; an edit not confirmed shows nothing</td><td>no <code>STATUS.md</code>, or an empty one; a Worker calling it</td></tr>
           <tr><td><code>restart_session</code></td><td>Leader</td><td>none; ends the Leader's own process and starts a successor on its desk</td><td>the desk was not written since the event that asked, or since the turn began; a Worker calling it</td></tr>
@@ -360,7 +362,7 @@ wrote &lt;seat&gt; - queue x2 (#41..#42: message, user), 0 waiting, after typing
       <table>
         <thead><tr><th>list</th><th>rule</th><th>what</th></tr></thead>
         <tbody>
-          <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the eighteen tools and every plugin</td></tr>
+          <tr><td>allow</td><td><code>mcp__openovai</code></td><td>the tool server: the nineteen tools and every plugin</td></tr>
           <tr><td>allow</td><td><code>AskUserQuestion</code></td><td>a session asking you a question: the question is itself a popup on its panel, answered there</td></tr>
           <tr><td>allow</td><td><code>Read(/**)</code></td><td>reading any file</td></tr>
           <tr><td>allow</td><td><code>Edit(/reference/**)</code>, <code>Edit(/projects/**)</code>, <code>Edit(/temp/**)</code></td><td>writes under the three trees that are yours; <code>Edit(&hellip;)</code> governs every tool that writes a file, Write included &mdash; a <code>Write(&hellip;)</code> rule matches nothing</td></tr>
@@ -409,7 +411,7 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
         <thead><tr><th>column</th><th>what</th></tr></thead>
         <tbody>
           <tr><td>moment</td><td>ISO 8601 to the millisecond with the offset of the machine's zone &mdash; the clock the page and the desks keep</td></tr>
-          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>died</code>, <code>closed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>unread</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>mode</code>, <code>blocked</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>config</code>, <code>wake</code>, <code>run</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>, <code>release</code>, <code>unopened</code>, <code>helper</code>, <code>reload</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
+          <tr><td>event</td><td>one word, and the event is the level. The whole set: <code>started</code>, <code>error</code>, <code>plugins</code>, <code>parking</code>, <code>parked</code>, <code>hired</code>, <code>retired</code>, <code>called</code>, <code>tool</code>, <code>failed</code>, <code>checkpoint</code>, <code>died</code>, <code>closed</code>, <code>queued</code>, <code>wrote</code>, <code>unwritten</code>, <code>self-started</code>, <code>unpaired</code>, <code>interrupt</code>, <code>unread</code>, <code>dropped</code>, <code>redelivered</code>, <code>asked</code>, <code>answered</code>, <code>mode</code>, <code>blocked</code>, <code>restart</code>, <code>held</code>, <code>released</code>, <code>quota</code>, <code>untold</code>, <code>config</code>, <code>wake</code>, <code>run</code>, <code>stop</code>, <code>stopped</code>, <code>leftovers</code>, <code>usage</code>, <code>release</code>, <code>unopened</code>, <code>helper</code>, <code>reload</code>, <code>voice</code>, <code>runtime</code>. A row with an event outside the set is a mistake in the code and is refused there</td></tr>
           <tr><td>seat</td><td>the session the row is about; <code>-</code> for the server itself</td></tr>
           <tr><td>id</td><td>the tool-use id on <code>called</code>, <code>tool</code> and <code>failed</code>, else <code>-</code>; <code>grep toolu_&hellip; runtime.log</code> is a call's whole life, and the three rows name the tool in full, as Claude Code does</td></tr>
         </tbody>
@@ -438,6 +440,9 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
       <code>closed</code> that a close reached its deadline with no desk written, and when the desk
       last was.
       <code>leftovers</code> says what a seat left running was ended with its session.
+      <code>voice</code> says voice input was installed, or where its install or a transcription
+      failed and why. <code>runtime</code> says which runtime no instance uses was removed, or why
+      the sweep kept them all.
     </p>
   </section>
 
@@ -459,7 +464,7 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
         <thead><tr><th>not served when</th></tr></thead>
         <tbody>
           <tr><td>the name is not a letter followed by letters, digits and hyphens, up to 32 in all</td></tr>
-          <tr><td>the name is one of the eighteen the server serves itself</td></tr>
+          <tr><td>the name is one of the nineteen the server serves itself</td></tr>
           <tr><td>the file does not load</td></tr>
           <tr><td>the file loads and lacks one of the three exports</td></tr>
         </tbody>
@@ -485,8 +490,12 @@ queued Paul - message #54, 1 waiting 2026-09-20T03:02:10.884+02:00 stopped Paul 
       Node.js, npm and Claude Code are not requirements: each release pins the exact versions it was
       tested with, in <code>lib/RUNTIME</code>, and the installer fetches them under
       <code>~/.local/share/openovai/</code>, per user, shared between instances, used by absolute
-      path. This release pins Node.js 24.21.0 and Claude Code 2.1.323. Nothing global, no
-      <code>sudo</code>.
+      path. This release pins Node.js 24.21.0 and Claude Code 2.1.329. Nothing global, no
+      <code>sudo</code>. Every server start removes the Claude Code and Node.js versions there, and
+      the voice installs, that no instance of the user pins and no running process uses, one
+      <code>runtime</code> row each; anything fetched within the last hour is kept. An instance
+      still on an older version is counted while it runs, and if a stopped one lost a version it
+      pins, its next <code>ovai start</code> fetches it again.
     </p>
   </section>
 

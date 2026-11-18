@@ -169,7 +169,7 @@
       line at the foot of its panel and the cards in it say it, and that line says
       <code>Disconnected</code>, with every dot red and no state word on any head, while the page
       has lost the server's stream. The head of the Leader's panel carries, after the model, the
-      version the server runs &mdash; <code>0.27.0</code>, or the eight characters of the commit on
+      version the server runs &mdash; <code>0.28.0</code>, or the eight characters of the commit on
       a build of <code>main</code>, red when a newer release is out: hovering it names the release
       and its date, and a click asks, then stops the server, updates and starts it again &mdash; then the account's usage windows &mdash; the session
       window with the time to its reset, the weekly window over all models, and the weekly window
@@ -198,12 +198,14 @@
       the version: it comes back on another port, where the page cannot follow.
     </p>
     <p>
-      Off a turn, that line says what comes next: the state, <code>Waiting for instructions</code>
+      That line is a pill in a row of its own under the rows, and it stays there whatever the rows
+      are scrolled to. Off a turn, it says what comes next: the state, <code>Waiting for instructions</code>
       or that the Leader has left, then the Leader's wake-up or a quota window's reset, whichever
       comes first, then the seats with a long run going, joined by <code>·</code>, as in
       <code>Waiting for instructions · Wake-up: 18:40 · Runs: Paul</code>. A time today is the
-      time alone, within the week the weekday, further on the date; hovering the line says each
-      part in full.
+      time alone, within the week the weekday, further on the date; hovering the pill opens a box
+      above it, drawn by the page itself, that says each part in full. A wake-up or a reset that
+      has passed leaves the line by itself, with no reload of the page.
     </p>
     <p>
       Right above the Leader's box stands its <a href="/team/#status">status</a>:
@@ -234,8 +236,10 @@
       403&rdquo; reads as written. A
       tool line such as <code>Reading &hellip;</code> names a file inside the instance by its path from the instance directory
       and any other file by its absolute path. Scrolled more than 80&nbsp;px above the newest row,
-      any panel shows <code>&darr; latest</code>, and a click on it takes you to the newest row; on
-      the Leader's panel it says <code>&darr; new messages</code> once a row lands below you. A
+      any panel shows a pill that says <code>&darr; Latest</code>, and a click on it takes you to
+      the newest row; on the Leader's panel it says <code>&darr; 2 new</code> once messages land
+      below you, and it stands at the right of the bottom line, on a Worker's at the bottom right of
+      its rows. A
       scroll the browser's find makes lets a panel stop following the newest row, as a scroll by
       hand does. A stamp row writes its date in ISO 8601, as in
       <code>2026-11-13 Friday 13:33:14</code>.
@@ -268,21 +272,31 @@
       <code>http(s)</code> and <code>mailto</code> and opens in a new tab, an image is shown as a
       link &mdash; so nothing a session says makes the page fetch anything. A code block wider than
       the panel scrolls inside its frame with a thin scrollbar in the theme's colours, and its copy
-      button stays in the frame's top-right corner, shown while the block is hovered. A click on a
+      button stays in the frame's top-right corner, shown while the block is hovered. A command a
+      session gives you to paste into a terminal comes in such a block, never as inline code, one
+      job per block: the commands of one job, such as a stop, an update and a start, share the
+      block, one to a line, each line but the last ending in <code>&amp;&amp;</code>, so it pastes
+      whole and stops at the first command that fails. A click on a
       row's time puts a reference to it, like <code>(ref/15:08:11/123)</code>, into the box where
       the cursor is; on the panel the reference is a link that brings the row into view, and the
       session gets the whole row with your line, as <code>&lt;ref to="15:08:11/123" from="Anna"
       at="&hellip;"&gt;&hellip;&lt;/ref&gt;</code> inside the <code>&lt;user&gt;</code>. There is no
       Send button under the text box and no button that starts or ends a seat. While a turn is
       running a stop glyph sits at the right edge of the text box: it interrupts that turn, the
-      process stays. The other buttons are the popups: a permission popup, and a question a session
+      process stays. On the Leader's box the <a href="#voice">microphone button</a> stands at its
+      right, in one group with it over the box's edge; on a computer with a mouse the group shows
+      while the mouse moves and for 2&nbsp;s after, and fades while you type, so it never covers the
+      text. The other buttons are the popups: a permission popup, and a question a session
       asks, which reads as a form &mdash; its options in a column, Other last with a line of its
       own to type in, and Send and Cancel.
     </p>
     <p id="files">
-      A file a reply or a message names opens read-only in a tab of its own. A backticked path, or a
-      markdown link to one, is a link when the file view would show that file, and plain code when
-      it would not; in <code>path:12</code> the path is the link and the line stays in the words.
+      A file a reply or a message names opens read-only in a tab of its own. A backticked path, a
+      markdown link to one, or a bare path in the words with a slash in it, such as
+      projects/site/index.html, is a link when the file is there and the file view would show it,
+      and plain text when it would not, so words like and/or never link; an absolute path is linked
+      when it is inside the instance. Nothing in a code block, and nothing in your own rows, is
+      linked. In <code>path:12</code> the path is the link and the line stays in the words.
       Paths are read from the instance directory, which is why every session is told to name a file or a
       directory by its whole path from there, and one outside the instance by its absolute path. The
       view is <code>/view/&lt;path from the instance directory&gt;</code>: a markdown file drawn the way
@@ -304,6 +318,52 @@
       desktop session, through <code>su</code> for instance, has no display to open anything on, and
       the panel says that. The view
       shows none of these three and says where each opens.
+    </p>
+    <p id="diff">
+      Ask any session to show a change &mdash; &ldquo;show me the work from last week&rdquo;,
+      &ldquo;r24 vs r26&rdquo;, &ldquo;what is uncommitted in projects/site&rdquo; &mdash; and its
+      reply links a diff view. The session turns your words into exact revisions, and its
+      <code>diff</code> tool captures both sides of every file that differs, the working tree's
+      uncommitted and untracked files included. The link, <code>/diff/&lt;id&gt;</code>, opens in a
+      tab of its own: one file at a time with the list of files beside it, side by side or unified,
+      three unchanged lines around each change and the rest folded, Next and Previous for changes
+      (<code>n</code> and <code>p</code>, or F7 and Shift+F7) and for files (<code>[</code> and
+      <code>]</code>), word wrap on or off, and highlighting in the page's theme. It only shows: no
+      comments on lines, no editing, no marks inside a changed line, no blame. A capture is what
+      the repository held when the session asked, kept 24 hours under <code>temp/diffs/</code>. A
+      file the file view never shows, such as a key or a <code>.env</code>, is listed by its name
+      with no content; one that is not UTF-8 text or is larger than 1&nbsp;MiB is listed with a
+      note, as is every file past 32&nbsp;MiB in all; a diff of more than 1000 files is refused.
+    </p>
+    <p id="voice">
+      The Leader's box has a microphone button that turns speech into text on this machine, with
+      faster-whisper and the Whisper large-v3-turbo model on the CPU: nothing goes to a cloud
+      service and no model rewrites the text, which lands at the cursor to read, edit and send. It
+      is off until you ask the Leader to turn it on (<code>voice.on</code>, and
+      <code>voice.language</code>, English unless you ask for another); while it is off the button
+      is there, greyed, and its hover says to ask the Leader. Turning it on installs nothing: the
+      first click on the button, or Tab in the Leader's box, installs it, about 2.1&nbsp;GB under
+      <code>~/.local/share/openovai/voice/</code>, shared by every instance on the machine &mdash;
+      its own Python, the packages, every wheel pinned by its sha256, and the model, every file
+      checked against a sha256 ovai ships. Meanwhile a voice pill at the left of the Leader's
+      bottom line says which step it is at, from <code>Voice 1/4: runtime...</code> to
+      <code>Voice 4/4: model 42%</code>, or <code>Voice failed, click to retry</code> with the
+      reason in its hover.
+    </p>
+    <p>
+      To dictate, click the button or press Tab in the Leader's box, speak, then click or press Tab
+      again. The recording is cut at pauses and each part is turned into text while you go on
+      speaking, so the wait after you stop is a few seconds however long you spoke. Meanwhile the
+      box takes no typing and the voice pill says <code>Listening... 0:07</code>, then
+      <code>Turning speech into text…</code>, its ground filling as the work goes; after a recording
+      that gave no text it says why for a few seconds, such as <code>No speech heard</code> or
+      <code>Microphone appears muted</code>. While speech is turned into text the button is a cross:
+      a click on it, or Esc, stops the work, and the text of the parts already done lands in the
+      box; Esc while recording does the same. One dictation runs at a time: one started in another
+      tab takes the voice, and the tab that had it ends its recording and says <code>Another tab
+      took the voice</code>. A line sent after dictating reaches the Leader marked as voice, so it
+      reads it as transcribed speech, and Whisper is given a glossary of the team's names, the
+      projects and the words on the Leader's panel, to spell them.
     </p>
     <p>
       The page draws from one stream. It opens an <code>EventSource</code> on <code>/events</code>
@@ -329,7 +389,10 @@
       answer out, and the answer lands whole in the transcript. A turn with nothing in it for the
       panel is answered with exactly <code>&lt;noop/&gt;</code>: it is kept in the conversation,
       marked, and the panel shows nothing for it. A reply that has words and then ends in
-      <code>&lt;noop/&gt;</code> shows its words, since they were sent.
+      <code>&lt;noop/&gt;</code> shows its words, since they were sent. For the progress notes a
+      session writes between its calls, Claude's service returns only its own short summary of the
+      longer note, and no client receives the original words; such a row ends in a faint
+      <code>· summary</code>, as the terminal draws it.
     </p>
     <p>
       The server is the only writer of that stdin, and every line carries a frame the server sets
@@ -434,9 +497,9 @@
   </section>
 
   <section class="wrap prose">
-    <h2 id="tools">The eighteen tools</h2>
+    <h2 id="tools">The nineteen tools</h2>
     <p>
-      The server serves eighteen tools over the secret route. Five go to every seat, one is the
+      The server serves nineteen tools over the secret route. Six go to every seat, one is the
       Workers' and twelve are the Leader's; a seat asking for one that is not its own is refused in
       words. The whole of it costs one permission rule, seeded at install.
     </p>
@@ -449,6 +512,7 @@
           <tr><td><code>index</code></td><td>everyone</td><td>what is in <code>knowledge/</code>: the header, or the notes carrying a tag</td></tr>
           <tr><td><code>validate</code></td><td>everyone</td><td>check every note against the rules, one line per problem</td></tr>
           <tr><td><code>write_desk</code></td><td>everyone</td><td>the header of the caller's own desk: title, status</td></tr>
+          <tr><td><code>diff</code></td><td>everyone</td><td>capture both sides of every file that differs between two revisions, or in the working tree, and return the link to the <a href="#diff">diff view</a></td></tr>
           <tr><td><code>done</code></td><td>Worker</td><td>say the work is done, with a one-line note if it likes; the Leader decides whether it stops</td></tr>
           <tr><td><code>confirm_status</code></td><td>Leader</td><td>say the Leader's <code>STATUS.md</code> is current: the panel shows it as it stands at the call, stamped with the call's time</td></tr>
           <tr><td><code>restart_session</code></td><td>Leader</td><td>end the Leader's own process and start a successor on the same desk</td></tr>

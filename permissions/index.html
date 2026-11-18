@@ -73,7 +73,7 @@
       instance is born allowing:
     </p>
     <ul>
-      <li>the instance's own tool server, so the eighteen tools cost one rule;</li>
+      <li>the instance's own tool server, so the nineteen tools cost one rule;</li>
       <li>Claude Code's <code>AskUserQuestion</code>, a session asking you a question, which is a
         permission popup on its panel already;</li>
       <li>reading any file;</li>
@@ -148,6 +148,15 @@
       either mode. The classifier's calls count toward usage the way they do in the CLI.
     </p>
     <p>
+      Auto mode also sets some allow rules aside and lets its classifier judge those calls: a rule
+      that runs any package, such as <code>Bash(pnpm dlx *)</code>, and wildcard shell rules that
+      name no program or start with <code>$HOME</code>. It stops some shell commands that ran
+      before, and may block a git command that discards changes until the working tree has been
+      checked. So a call can get the <code>Blocked by auto mode</code> row with an allow rule in
+      place; ask the Leader for an <code>ask</code> rule to answer such calls on a popup instead.
+      That is Claude Code's own behaviour since 2.1.329, the version this release pins.
+    </p>
+    <p>
       A call that asks stops the run and appears on that session's panel:
       <code>Paul wants to use Bash</code>, the command and the reason the session gave for it, or
       the path it was going to write. A call one of the session's subagents made says so under the
@@ -164,7 +173,9 @@
         <code>Bash(make:*)</code>, a command by its first word (<code>git</code> by its subcommand:
         <code>Bash(git push:*)</code>), or <code>Edit(/projects/app/**)</code>, a write by the
         directory it was in &mdash; and pressing it lets the call through and leaves the instance
-        allowing that shape.</dd>
+        allowing that shape. Claude Code suggests a rule only when saving it would let the same
+        command run again with no popup, so a command whose rule would not match it next time
+        comes to a popup with Allow and Deny alone.</dd>
       <dt>Deny</dt>
       <dd>takes the sentence you type beside it. The call's error reads <code>Ana denied this call
         on the panel: "&hellip;"</code>, under your name, and every session is told that a Deny
